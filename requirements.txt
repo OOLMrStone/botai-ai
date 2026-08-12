@@ -1,0 +1,9 @@
+# Runtime dependencies (mirrors [project.dependencies] in pyproject.toml).
+# Kept as a separate file so Docker can cache the dependency layer.
+fastapi>=0.141,<1.0
+uvicorn[standard]>=0.52,<1.0
+pydantic>=2.13,<3.0
+pydantic-settings>=2.15,<3.0
+openai>=3.0,<4.0
+httpx>=0.28,<1.0
+python-multipart>=0.0.20,<1.0

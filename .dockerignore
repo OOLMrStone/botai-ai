@@ -1,0 +1,16 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+.git/
+.idea/
+.env
+.env.*
+!.env.example
+# tests/ is deliberately NOT excluded: the `dev` target copies it so the suite
+# can be run inside the container. The `prod` target never copies it.
+docs/
+README.md

@@ -1,0 +1,852 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Проверка задания ЕГЭ · профильная математика</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#fff; --ink:#12141a; --muted:#666e7a; --line:#e2e5ea;
+    --accent:#2f6df6; --good:#12855a; --mid:#b57b12; --bad:#c0392b; --chip:#eef1f6;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#101216; --card:#171a20; --ink:#e8eaee; --muted:#98a0ad; --line:#262b34;
+           --accent:#6f9bff; --good:#3fbe8c; --mid:#e0a83c; --bad:#f0705f; --chip:#1e222a; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:940px;margin:0 auto;padding:24px 16px 80px}
+  h1{font-size:20px;margin:0 0 4px}
+  .sub{color:var(--muted);font-size:13px;margin-bottom:20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
+  label{display:block;font-weight:600;font-size:13px;margin:14px 0 6px}
+  label:first-child{margin-top:0}
+  input,select,textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;
+       background:var(--bg);color:var(--ink);font:inherit}
+  textarea{resize:vertical;min-height:72px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .row>*{flex:1;min-width:180px}
+  button{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:11px 20px;
+       font:600 15px/1 inherit;cursor:pointer;margin-top:18px}
+  button:disabled{opacity:.55;cursor:default}
+  .hint{color:var(--muted);font-size:12px;margin-top:6px}
+  #preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  #preview img{height:96px;border-radius:8px;border:1px solid var(--line)}
+  .grades{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:6px}
+  @media(max-width:640px){.grades{grid-template-columns:1fr}}
+  .g{border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center;background:var(--card)}
+  .g.main{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 22%,transparent)}
+  .g .n{font-size:34px;font-weight:700;line-height:1.1}
+  .g .t{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  .g .sub2{font-size:11px;color:var(--muted);opacity:.75;margin-top:2px;min-height:14px}
+  .g.risk{border-style:dashed}
+  .g.risk .n{font-size:30px}
+  .g.risk.safe{border-style:solid;border-color:var(--good)}
+  .callout.alt{border-left-color:var(--muted)}
+  /* --- tester feedback ------------------------------------------------ */
+  #fb{margin-top:14px;border:1px dashed var(--line);border-radius:10px;padding:14px}
+  #fb h4{margin:0 0 8px;font-size:13px}
+  #fb .vs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+  #fb .vs button{margin:0;padding:7px 14px;font-size:13px;border-radius:8px;
+       background:var(--chip);color:var(--ink);border:1px solid var(--line)}
+  #fb .vs button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  #fb .exp{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+  #fb .exp label{font-weight:400;font-size:12px;color:var(--muted);margin:0}
+  #fb .exp input{width:70px;padding:5px 8px}
+  #fb textarea{min-height:60px;margin-top:8px}
+  #fb .done{color:var(--good);font-weight:600}
+  .g .c{font-size:12px;color:var(--muted);margin-top:8px;text-align:left}
+  .good{color:var(--good)} .mid{color:var(--mid)} .bad{color:var(--bad)}
+  .callout{border-left:3px solid var(--accent);background:var(--chip);padding:12px 14px;border-radius:0 8px 8px 0;margin:14px 0}
+  .callout h4{margin:0 0 6px;font-size:13px}
+  details{border-top:1px solid var(--line);padding:12px 0}
+  summary{cursor:pointer;font-weight:600;font-size:14px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px;display:block;overflow-x:auto}
+  th,td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;white-space:nowrap}
+  code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
+  pre{background:var(--chip);padding:12px;border-radius:8px;overflow-x:auto;white-space:pre-wrap}
+  .chip{display:inline-block;background:var(--chip);border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0}
+  .chip.warn{background:color-mix(in srgb,var(--mid) 25%,transparent)}
+  .err{border-color:var(--bad)}
+  .err pre{background:color-mix(in srgb,var(--bad) 12%,transparent)}
+  .spin{display:inline-block;width:13px;height:13px;border:2px solid #fff6;border-top-color:#fff;
+        border-radius:50%;animation:s .8s linear infinite;vertical-align:-2px;margin-right:8px}
+  @keyframes s{to{transform:rotate(360deg)}}
+  .hidden{display:none}
+
+  /* --- progress + live console --------------------------------------- */
+  .steps{display:flex;gap:8px;margin-bottom:12px}
+  .step{flex:1;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:var(--bg);
+        transition:border-color .2s,background .2s}
+  .step .sn{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  .step .sl{font-size:13px;font-weight:600;margin-top:2px}
+  .step .sm{font-size:11px;color:var(--muted);margin-top:3px;word-break:break-all}
+  .step.run{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent)}
+  .step.ok{border-color:var(--good)}
+  .step.ok .sn{color:var(--good)}
+  .step.fail{border-color:var(--bad)}
+  .bar{height:5px;background:var(--chip);border-radius:999px;overflow:hidden;margin-bottom:12px}
+  .bar>i{display:block;height:100%;width:0;background:var(--accent);border-radius:999px;
+         transition:width .4s ease}
+  .bar.done>i{background:var(--good)}
+  .bar.fail>i{background:var(--bad)}
+  #console{background:#0d1016;color:#c9d3e0;border-radius:8px;padding:10px 12px;max-height:290px;
+           overflow-y:auto;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.5}
+  #console .ln{white-space:pre-wrap;word-break:break-word;border-bottom:1px solid #1a1f28;padding:2px 0}
+  #console .ln:last-child{border-bottom:0}
+  #console .ts{color:#5c6b80;margin-right:8px}
+  #console .i{color:#6f9bff} #console .o{color:#3fbe8c}
+  #console .w{color:#e0a83c} #console .e{color:#f0705f}
+  #console .payload{color:#8896a8;display:block;margin:3px 0 3px 16px;max-height:170px;overflow:auto;
+                    background:#11151c;border-radius:6px;padding:6px 8px}
+  .toolbar{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
+  .toolbar label{margin:0;font-weight:400;font-size:12px;color:var(--muted);display:flex;gap:5px;align-items:center}
+  .toolbar input[type=checkbox]{width:auto}
+  .mini{background:var(--chip);color:var(--ink);padding:5px 11px;font-size:12px;margin:0;border-radius:7px}
+  .elapsed{margin-left:auto;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+
+  /* --- feature toggles ------------------------------------------------ */
+  .feat{display:flex;gap:9px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line)}
+  .feat:last-child{border-bottom:0}
+  .feat input{width:auto;margin-top:3px;flex:0 0 auto}
+  .feat .ft{font-weight:600;font-size:13px}
+  .feat .fd{font-size:12px;color:var(--muted);margin-top:2px}
+  .feat .fh{font-size:12px;color:var(--muted);opacity:.8;margin-top:3px;font-style:italic}
+  .feat .fs{font-size:11px;color:var(--muted);opacity:.7}
+  .feat.changed .ft::after{content:" · изменён";color:var(--mid);font-weight:400;font-size:11px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Проверка решения · вторая часть ЕГЭ, профильная математика</h1>
+  <div class="sub">Две оценки: на что ты нарешал — и сколько из этого можно потерять на оформлении.
+    · <a href="/ui/console.html" style="color:var(--accent);text-decoration:none">консоль запросов</a></div>
+
+  <details class="card" id="howto" style="padding:14px 18px">
+    <summary style="font-size:14px">Как тестировать · прочти один раз</summary>
+    <ol class="hint" style="margin:10px 0 0;padding-left:20px;line-height:1.7;font-size:13px">
+      <li>Впиши <b>условие задачи</b> и выбери номер задания — без условия проверка бессмысленна.</li>
+      <li>Загрузи <b>фото решения</b>. Снимай при ровном свете, лист целиком, без сильного наклона.
+          Если фото нет — вставь решение текстом, тогда распознавание пропускается.</li>
+      <li>Проверка идёт <b>1–3 минуты</b>: это три запроса к модели подряд. Прогресс виден на полосе,
+          вкладку закрывать нельзя.</li>
+      <li>Посмотри на две оценки. <b>Если ты не согласен — нажми «Нет, неверно» под результатом</b>
+          и напиши, что не так. Это и есть самое ценное для нас.</li>
+      <li>Отзыв уходит вместе с полным логом прогона — фото, промпты, ответы модели, флаги.
+          Присылать что-то отдельно не нужно.</li>
+    </ol>
+    <div class="hint" style="margin-top:10px">
+      «Настройки пайплайна» ниже — для сравнения режимов. Если не сравниваешь специально,
+      не трогай их: так результаты остаются сопоставимыми.
+    </div>
+  </details>
+
+  <form id="form" class="card">
+    <div class="row">
+      <div>
+        <label for="task">Задание</label>
+        <select id="task">
+          <option value="13">13 — уравнение (2 балла)</option>
+          <option value="14">14 — стереометрия (3)</option>
+          <option value="15">15 — неравенство (2)</option>
+          <option value="16">16 — экономическая (2)</option>
+          <option value="17">17 — планиметрия (3)</option>
+          <option value="18">18 — параметр (4)</option>
+          <option value="19">19 — числа и их свойства (4)</option>
+        </select>
+      </div>
+      <div>
+        <label for="answer">Верный ответ <span style="font-weight:400;color:var(--muted)">— необязательно</span></label>
+        <input id="answer" placeholder="например: −4π/3; −2π/3">
+      </div>
+    </div>
+
+    <label for="statement">Условие задачи</label>
+    <textarea id="statement" placeholder="а) Решите уравнение 2sin²x + 3cos x = 0.&#10;б) Найдите все корни на отрезке [−3π/2; 0]."></textarea>
+
+    <label for="files">Фотография решения</label>
+    <input id="files" type="file" accept="image/*" multiple>
+    <div class="hint">Можно несколько страниц. Фото обрабатывает только этап 1.</div>
+    <div id="preview"></div>
+
+    <label for="text">…или текст решения</label>
+    <textarea id="text" placeholder="Если vision-модель не настроена, вставь решение текстом — этап 1 будет пропущен."></textarea>
+
+    <details id="featbox" style="margin-top:16px">
+      <summary>Настройки пайплайна <span id="featbadge" class="chip" style="margin-left:6px"></span></summary>
+      <div class="hint" style="margin:8px 0 4px">
+        Флаги включают и выключают отдельные указания в промптах. Прогони один
+        и тот же снимок дважды с разными флагами и сравни отчёты — оценки,
+        токены и стоимость записаны в каждом. Помеченные
+        «<span class="chip warn">меняет состав этапов</span>» меняют сам ход проверки,
+        а «<span class="chip">параметр запроса · дороже</span>» — режим работы модели,
+        и в тексте промпта их не видно.
+      </div>
+      <div id="features"></div>
+    </details>
+
+    <button id="go" type="submit">Проверить</button>
+  </form>
+
+  <div id="progress" class="card hidden">
+    <div class="bar" id="bar"><i></i></div>
+    <div class="steps" id="steps"></div>
+    <div id="console"></div>
+    <div class="toolbar">
+      <label><input type="checkbox" id="autoscroll" checked> автопрокрутка</label>
+      <button type="button" class="mini" id="copyLog">Скопировать лог</button>
+      <button type="button" class="mini" id="saveLog">Лог (.txt)</button>
+      <button type="button" class="mini" id="saveReport" disabled>Скачать отчёт (.json)</button>
+      <button type="button" class="mini" id="saveReportMd" disabled>Отчёт (.md)</button>
+      <button type="button" class="mini" id="clearLog">Очистить</button>
+      <span class="elapsed" id="elapsed">0.0 с · $0.0000</span>
+    </div>
+  </div>
+
+  <div id="out"></div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+$("files").addEventListener("change", () => {
+  const box = $("preview"); box.innerHTML = "";
+  for (const f of $("files").files) {
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(f);
+    img.onload = () => URL.revokeObjectURL(img.src);
+    box.appendChild(img);
+  }
+});
+
+/* Russian plurals: 1 балл, 2-4 балла, 5+ баллов — and the teens are all
+   "баллов" regardless of last digit (11 баллов, not 11 балл). */
+function plural(n, one, few, many) {
+  const mod100 = Math.abs(n) % 100, mod10 = mod100 % 10;
+  if (mod100 >= 11 && mod100 <= 14) return many;
+  if (mod10 === 1) return one;
+  if (mod10 >= 2 && mod10 <= 4) return few;
+  return many;
+}
+const points = (n) => `${n} ${plural(n, "балл", "балла", "баллов")}`;
+
+function tone(score, max) {
+  if (max === 0) return "";
+  const r = score / max;
+  return r >= 0.99 ? "good" : r > 0 ? "mid" : "bad";
+}
+
+function gradeCard(g, title, sub, max, main) {
+  return `<div class="g ${main ? "main" : ""}">
+    <div class="t">${title}</div>
+    <div class="sub2">${sub}</div>
+    <div class="n ${tone(g.score, max)}">${g.score}<span style="font-size:16px;color:var(--muted)"> / ${max}</span></div>
+    <div class="c">${esc(g.criterion_matched)}</div>
+    ${g.penalized?.length ? `<div class="c">учтено: ${g.penalized.map(esc).join(", ")}</div>` : ""}
+    ${g.forgiven?.length ? `<div class="c">прощено: ${g.forgiven.map(esc).join(", ")}</div>` : ""}
+  </div>`;
+}
+
+/* The gap is the point of showing two numbers, so it gets its own tile
+   between them rather than being left for the reader to subtract. */
+function riskCard(n, max) {
+  const none = n === 0;
+  return `<div class="g risk ${none ? "safe" : ""}">
+    <div class="t">под угрозой</div>
+    <div class="sub2">${none ? "оформление не подводит" : "заработано, но не защищено"}</div>
+    <div class="n ${none ? "good" : "mid"}">${none ? "0" : "−" + n}</div>
+    <div class="c">${none
+      ? "Всё, что решено, засчитают: рассуждения видны на бумаге."
+      : `Эти баллы ты <b>уже заработал</b> математикой, но при строгой проверке их можно не получить — рассуждение осталось в голове, а не в записи.`}</div>
+  </div>`;
+}
+
+function render(d) {
+  const max = d.max_score;
+  const mocked = (d.stages || []).some(s => s.mocked);
+  const usage = (d.stages || []).reduce((a, s) => a + (s.usage?.total_tokens || 0), 0);
+  const ms = (d.stages || []).reduce((a, s) => a + (s.latency_ms || 0), 0);
+
+  const stages = (d.stages || []).map(s => `<tr>
+      <td>${esc(s.stage)}</td><td>${esc(s.provider)} / ${esc(s.model)}${s.mocked ? " <span class='chip warn'>mock</span>" : ""}</td>
+      <td>${s.usage?.total_tokens ?? 0}</td><td>${s.latency_ms} мс</td><td>${s.attempts}</td>
+      <td><code>${esc(s.trace_id)}</code></td></tr>`).join("");
+
+  const findings = (d.analysis?.findings || []).map(f => `<tr>
+      <td><code>${esc(f.id)}</code></td><td>${esc(f.type)}</td><td>${esc(f.part) || "—"}:${f.line}</td>
+      <td>${esc(f.what)}<div style="color:var(--muted)">как надо: ${esc(f.correct_version)}</div></td>
+      <td>${esc(f.severity)}</td>
+      <td>${f.propagates ? "→" : "·"} ${f.affects_answer ? "ответ" : ""} ${f.is_defensible ? "<span class='chip'>защитимо</span>" : ""}</td>
+    </tr>`).join("");
+
+  const r = d.reconstruction;
+  const transcript = r ? (r.parts || []).map(p =>
+      `${p.label ? "Пункт " + esc(p.label) : "Решение"}${p.label_is_inferred ? " (разметка восстановлена)" : ""}\n` +
+      (p.lines || []).map(l => `${l.n}. ${l.latex}${l.confidence < 0.75 ? `   [уверенность ${l.confidence.toFixed(2)}]` : ""}`).join("\n")
+    ).join("\n\n") : "";
+
+  $("out").innerHTML = `
+    <div class="card">
+      ${mocked ? `<div class="chip warn">это не настоящая проверка — часть этапов выполнил mock-провайдер</div>` : ""}
+      <div class="grades">
+        ${gradeCard(d.base, "за решение", "на что ты нарешал", max, true)}
+        ${riskCard(d.points_at_risk ?? 0, max)}
+        ${gradeCard(d.presentation, "с учётом оформления", "что не отнимут", max, false)}
+      </div>
+      <div class="hint" style="text-align:center;margin-bottom:14px">${esc(d.risk_comment)}</div>
+
+      <p style="margin:0 0 4px">${esc(d.summary)}</p>
+
+      ${(d.points_at_risk ?? 0) > 0 ? `<div class="callout">
+        <h4>Как защитить ${points(d.points_at_risk)}</h4>
+        ${esc(d.how_to_protect_points)}
+      </div>` : ""}
+
+      ${d.base?.score < max ? `<div class="callout alt">
+        <h4>Чего не хватило по математике</h4>
+        ${esc(d.how_to_raise_base)}
+      </div>` : ""}
+
+      <div>
+        <span class="chip">задание ${d.task_number} · ${esc(d.topic_ru)}</span>
+        <span class="chip">уверенность ${(d.confidence ?? 0).toFixed(2)}</span>
+        <span class="chip">${usage} токенов</span>
+        <span class="chip">${(ms / 1000).toFixed(1)} с</span>
+      </div>
+      ${(d.notes || []).length ? `<div class="hint" style="margin-top:10px">${d.notes.map(esc).join("<br>")}</div>` : ""}
+
+      ${findings ? `<details open><summary>Находки (${d.analysis.findings.length})</summary>
+        <table><tr><th>id</th><th>тип</th><th>где</th><th>что</th><th>важность</th><th></th></tr>${findings}</table>
+      </details>` : ""}
+
+      ${r ? `<details><summary>Что мы прочитали на фотографии</summary>
+        <pre>${esc(transcript)}</pre>
+        ${(r.normalizations || []).length ? `<h4>Исправлено при распознавании</h4><table>
+          <tr><th>строка</th><th>прочитано</th><th>приведено к</th><th>почему</th></tr>
+          ${r.normalizations.map(n => `<tr><td>${n.line}</td><td><code>${esc(n.read_as)}</code></td><td><code>${esc(n.normalized_to)}</code></td><td>${esc(n.reason)}</td></tr>`).join("")}
+        </table>` : ""}
+        ${(r.drawings || []).length ? `<h4>Чертёж</h4>${r.drawings.map(g => `<pre>${esc(
+            "Изображено: " + g.figure + "\nПостроения: " + (g.constructions || []).join("; ") +
+            "\nОбозначения: " + (g.labels || []).join("; ") + "\nОтметки: " + (g.markings || []).join("; ") +
+            ((g.contradictions || []).length ? "\nПротиворечия: " + g.contradictions.join("; ") : ""))}</pre>`).join("")}` : ""}
+        ${(r.illegible || []).length ? `<h4>Не разобрали</h4><ul>${r.illegible.map(i => `<li>${esc(i.where)}: ${esc(i.probable_content)}</li>`).join("")}</ul>` : ""}
+        ${(r.suspicious_content || []).length ? `<h4 class="bad">Попытка повлиять на проверку</h4><ul>${r.suspicious_content.map(s => `<li>${esc(s)}</li>`).join("")}</ul>` : ""}
+      </details>` : ""}
+
+      ${d.analysis ? `<details><summary>Разбор</summary><pre>${esc(
+          "Метод: " + d.analysis.method_summary + "\nВерный ответ: " + d.analysis.correct_answer +
+          "\nОтвет ученика верен: " + (d.analysis.student_answer_correct ? "да" : "нет") +
+          "\nПолнота: " + d.analysis.completeness +
+          (d.analysis.blocking_issue ? "\nБлокирующая проблема: " + d.analysis.blocking_issue : ""))}</pre></details>` : ""}
+
+      <div id="fb" data-id="${esc(d.request_id)}">
+        <h4>Оценка похожа на правду?</h4>
+        <div class="hint" style="margin:0 0 8px">
+          Ответ уходит нам вместе с полным логом этого прогона — фото, промпты,
+          ответы модели, флаги. Отдельно ничего присылать не нужно.
+        </div>
+        <div class="vs">
+          <button type="button" data-v="ok">Да, верно</button>
+          <button type="button" data-v="wrong">Нет, неверно</button>
+          <button type="button" data-v="unsure">Не уверен</button>
+        </div>
+        <div class="exp">
+          <label>ожидал за решение <input type="number" id="fbBase" min="0" max="${max}"></label>
+          <label>с учётом оформления <input type="number" id="fbPres" min="0" max="${max}"></label>
+          <label>кто проверял <input type="text" id="fbWho" style="width:130px" placeholder="имя"></label>
+        </div>
+        <textarea id="fbComment" placeholder="Что не так? Например: «пункт б решён полностью, но балл не поставлен»"></textarea>
+        <button type="button" id="fbSend" style="margin-top:10px">Отправить</button>
+        <span id="fbStatus" style="margin-left:10px;font-size:13px"></span>
+      </div>
+
+      <details><summary>Этапы и стоимость</summary>
+        <table><tr><th>этап</th><th>модель</th><th>токены</th><th>время</th><th>попыток</th><th>trace</th></tr>${stages}</table>
+      </details>
+    </div>`;
+}
+
+/* ---------- feature toggles -------------------------------------------- */
+/* Rendered from /debug/features so the registry in app/features.py stays the
+   only place a toggle is declared. With the debug toolkit off the panel is
+   simply hidden — the run then uses whatever the deployment configured. */
+let featureDefs = [];
+let runContext = null;   // the `started` payload, for the exported log header
+
+async function loadFeatures() {
+  try {
+    const res = await fetch("/api/v1/features");
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    featureDefs = (await res.json()).features || [];
+  } catch {
+    $("featbox").style.display = "none";
+    return;
+  }
+  $("features").innerHTML = featureDefs.map(f => `
+    <label class="feat" for="ft_${esc(f.key)}">
+      <input type="checkbox" id="ft_${esc(f.key)}" data-key="${esc(f.key)}" ${f.enabled ? "checked" : ""}>
+      <span>
+        <span class="ft">${esc(f.title_ru)}${f.changes_flow ? ` <span class="chip warn">меняет состав этапов</span>` : ""}${f.request_extra ? ` <span class="chip">параметр запроса · дороже</span>` : ""}</span>
+        <span class="fd">${esc(f.description_ru)}</span>
+        ${f.hypothesis_ru ? `<span class="fh">Гипотеза: ${esc(f.hypothesis_ru)}</span>` : ""}
+        <span class="fs">${esc(f.stages.join(", "))} · по умолчанию ${f.default ? "вкл" : "выкл"}</span>
+      </span>
+    </label>`).join("");
+  $("features").querySelectorAll("input").forEach(i => i.addEventListener("change", markFeatures));
+  markFeatures();
+}
+
+/* Only deviations are sent, so a request says what it is testing rather than
+   pinning every flag and freezing this run against later default changes. */
+function featureOverrides() {
+  const out = {};
+  for (const f of featureDefs) {
+    const box = $("ft_" + f.key);
+    if (box && box.checked !== f.default) out[f.key] = box.checked;
+  }
+  return out;
+}
+
+function markFeatures() {
+  const changed = featureOverrides();
+  for (const f of featureDefs) {
+    $("ft_" + f.key)?.closest(".feat")?.classList.toggle("changed", f.key in changed);
+  }
+  const n = Object.keys(changed).length;
+  $("featbadge").textContent = n ? `изменено: ${n}` : "по умолчанию";
+  $("featbadge").className = "chip" + (n ? " warn" : "");
+  if (n) $("featbox").open = true;
+}
+
+/* ---------- live console ---------------------------------------------- */
+let t0 = 0, timer = null, logLines = [];
+
+function stamp() {
+  return ((performance.now() - t0) / 1000).toFixed(1).padStart(5) + "s";
+}
+
+function log(cls, msg, payload) {
+  const line = document.createElement("div");
+  line.className = "ln";
+  line.innerHTML = `<span class="ts">${stamp()}</span><span class="${cls}">${esc(msg)}</span>`;
+  if (payload !== undefined) {
+    const pre = document.createElement("span");
+    pre.className = "payload";
+    pre.textContent = typeof payload === "string" ? payload : JSON.stringify(payload, null, 2);
+    line.appendChild(pre);
+  }
+  $("console").appendChild(line);
+  logLines.push(`${stamp()} ${msg}` + (payload !== undefined
+    ? "\n" + (typeof payload === "string" ? payload : JSON.stringify(payload, null, 2)) : ""));
+  if ($("autoscroll").checked) $("console").scrollTop = $("console").scrollHeight;
+}
+
+function setSteps(total) {
+  $("steps").innerHTML = "";
+  for (let i = 1; i <= total; i++) {
+    const d = document.createElement("div");
+    d.className = "step";
+    d.id = "step" + i;
+    d.innerHTML = `<div class="sn">этап ${i}</div><div class="sl">ожидание</div><div class="sm"></div>`;
+    $("steps").appendChild(d);
+  }
+}
+
+function stepEl(i) { return $("step" + i); }
+
+function progress(done, total, cls) {
+  $("bar").className = "bar" + (cls ? " " + cls : "");
+  $("bar").firstElementChild.style.width = Math.round((done / total) * 100) + "%";
+}
+
+/* ---------- SSE ------------------------------------------------------- */
+/* EventSource is GET-only and this is a multipart POST, so the stream is
+   parsed by hand off fetch(). Frames are `event:`/`data:` separated by a
+   blank line; a partial frame stays in `buf` until the rest arrives. */
+async function* sseFrames(response) {
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buf = "";
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream: true });
+    let sep;
+    while ((sep = buf.indexOf("\n\n")) !== -1) {
+      const frame = buf.slice(0, sep);
+      buf = buf.slice(sep + 2);
+      if (frame.startsWith(":")) continue;          // keepalive
+      let event = "message", data = "";
+      for (const line of frame.split("\n")) {
+        if (line.startsWith("event:")) event = line.slice(6).trim();
+        else if (line.startsWith("data:")) data += line.slice(5).trim();
+      }
+      if (data) yield { event, data: JSON.parse(data) };
+    }
+  }
+}
+
+function showError(title, detail, hint) {
+  $("out").innerHTML = `<div class="card err"><b>${esc(title)}</b>
+    <pre>${esc(detail)}</pre>${hint ? `<div class="hint">${esc(hint)}</div>` : ""}</div>`;
+}
+
+$("form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = $("go");
+  const statement = $("statement").value.trim();
+  const text = $("text").value.trim();
+  if (!statement) { alert("Заполни условие задачи."); return; }
+  if (!$("files").files.length && !text) { alert("Загрузи фото решения или вставь его текстом."); return; }
+
+  const fd = new FormData();
+  fd.append("task_number", $("task").value);
+  fd.append("statement", statement);
+  if (text) fd.append("solution_text", text);
+  if ($("answer").value.trim()) fd.append("reference_answer", $("answer").value.trim());
+  for (const f of $("files").files) fd.append("files", f);
+  const overrides = featureOverrides();
+  if (Object.keys(overrides).length) fd.append("features", JSON.stringify(overrides));
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>Проверяем…';
+  $("out").innerHTML = "";
+  $("console").innerHTML = "";
+  logLines = [];
+  runContext = null;
+  $("progress").classList.remove("hidden");
+  setSteps(text ? 2 : 3);
+  progress(0, 1, "");
+
+  lastReport = null;
+  $("saveReport").disabled = true;
+  $("saveReportMd").disabled = true;
+
+  t0 = performance.now();
+  clearInterval(timer);
+  const tick = () => {
+    const cost = spentKnown ? "$" + spent.toFixed(4) : "$?";
+    $("elapsed").textContent = ((performance.now() - t0) / 1000).toFixed(1) + " с · " + cost;
+  };
+  timer = setInterval(tick, 100);
+
+  let total = text ? 2 : 3, got = 0, finished = false, spent = 0, spentKnown = true;
+
+  try {
+    const res = await fetch("/api/v1/grade/photo/stream", { method: "POST", body: fd });
+    if (!res.ok) {
+      let detail;
+      try { detail = JSON.stringify(await res.json(), null, 2); } catch { detail = await res.text(); }
+      log("e", `HTTP ${res.status}`, detail);
+      showError(`Ошибка ${res.status}`, detail);
+      return;
+    }
+
+    for await (const { event, data } of sseFrames(res)) {
+      if (event === "started") {
+        total = data.total_stages;
+        setSteps(total);
+        runContext = data;
+        // Always stated, defaults included. A benchmark log that is silent at
+        // defaults is unreadable next to one that is not: you cannot tell a
+        // default run from an older build that had no flags at all.
+        const changed = data.features_changed || {};
+        const flags = Object.keys(changed).length
+          ? Object.entries(changed).map(([k, v]) => `${k}=${v ? "вкл" : "выкл"}`).join(", ")
+          : "по умолчанию";
+        log(Object.keys(changed).length ? "w" : "i",
+            `задание ${data.task_number} · макс ${data.max_score} · флаги: ${flags}`);
+
+      } else if (event === "stage_start") {
+        const el = stepEl(data.index);
+        el.className = "step run";
+        el.querySelector(".sl").textContent = data.label.replace(/^Этап \d+ — /, "");
+        el.querySelector(".sm").textContent = data.model;
+
+      } else if (event === "stage_done") {
+        got = data.index;
+        const el = stepEl(data.index);
+        el.className = "step ok";
+        if (data.cost?.usd === null || data.cost?.usd === undefined) spentKnown = false;
+        else spent += Number(data.cost.usd);
+        el.querySelector(".sm").textContent =
+          `${(data.latency_ms / 1000).toFixed(1)} с · ${data.usage?.total_tokens ?? 0} tok · ${money(data.cost)}`;
+        progress(got, total, got === total ? "done" : "");
+        // Only what the model produced. The prompt is in the report file, not
+        // here: it is the same text every run and it buried the one line that
+        // actually differs. Timing, tokens and cost already live on the tile
+        // above, so the log does not repeat them either.
+        if (data.output) log("o", `${data.stage}:`, data.output);
+        else log("i", `${data.stage}: детали скрыты (DEBUG_ENABLED=false)`);
+
+      } else if (event === "stage_skipped") {
+        log("w", `этап «${data.stage}» пропущен: ${data.reason}`);
+
+      } else if (event === "log") {
+        log(data.level === "warn" ? "w" : "i", data.message);
+
+      } else if (event === "report") {
+        reportReady(data);
+
+      } else if (event === "result") {
+        finished = true;
+        progress(total, total, "done");
+        log("o", `готово: за решение ${data.base.score}, с учётом оформления ` +
+                 `${data.presentation.score} из ${data.max_score} ` +
+                 `(под угрозой ${data.points_at_risk})`);
+        render(data);
+        wireFeedback();
+
+      } else if (event === "error") {
+        finished = true;
+        progress(1, 1, "fail");
+        for (let i = got + 1; i <= total; i++) stepEl(i).className = "step fail";
+        log("e", `ошибка [${data.code}]: ${data.message}`);
+        showError(`Ошибка: ${data.code}`, data.message,
+          data.code === "llm_misconfigured" ? "Проверь LLM_API_KEY и баланс аккаунта в .env."
+          : data.code === "llm_timeout" ? "Модель не ответила за LLM_TIMEOUT_S. Бесплатные модели медленные — увеличь таймаут или возьми модель побыстрее."
+          : data.code === "llm_rate_limited" ? "Провайдер ограничил частоту запросов. Подожди и повтори."
+          : "");
+      }
+    }
+
+    if (!finished) {
+      log("e", "поток оборвался, не дойдя до результата");
+      showError("Соединение прервано",
+        "Сервер закрыл поток до того, как прислал результат. Смотри лог выше и `docker compose logs`.");
+    }
+  } catch (err) {
+    log("e", "сбой соединения: " + err);
+    showError("Сеть недоступна", String(err));
+  } finally {
+    clearInterval(timer);
+    $("elapsed").textContent = ((performance.now() - t0) / 1000).toFixed(1) + " с";
+    btn.disabled = false;
+    btn.textContent = "Проверить";
+  }
+});
+
+/* ---------- report download ------------------------------------------- */
+/* The server sends the finished report as the last SSE event, so saving it
+   needs no second request and no debug token in the page. */
+let lastReport = null;
+
+function money(cost) {
+  if (!cost || cost.usd === null || cost.usd === undefined) return "—";
+  if (cost.source === "mock") return "$0 (mock)";
+  const tag = cost.source === "table" ? " (оценка)" : cost.source === "partial" ? " (неполно)" : "";
+  return "$" + Number(cost.usd).toFixed(4) + tag;
+}
+
+function saveFile(name, text, mime) {
+  const url = URL.createObjectURL(new Blob([text], { type: mime }));
+  const a = document.createElement("a");
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function reportReady(rep) {
+  lastReport = rep;
+  $("saveReport").disabled = false;
+  $("saveReportMd").disabled = false;
+  const est = rep.total_cost?.source === "table" ? " — оценка по таблице тарифов, не счёт" : "";
+  log("o", `отчёт готов: ${rep.stages.length} ${plural(rep.stages.length, "этап", "этапа", "этапов")}, ` +
+           `${rep.total_usage?.total_tokens ?? 0} токенов, ${money(rep.total_cost)}${est}`);
+}
+
+$("saveReport").addEventListener("click", () => {
+  if (!lastReport) return;
+  saveFile(`report_${lastReport.request_id}.json`,
+           JSON.stringify(lastReport, null, 2), "application/json");
+});
+
+$("saveReportMd").addEventListener("click", () => {
+  if (!lastReport) return;
+  // Rendered server-side so the file matches /debug/reports/{id}?fmt=md exactly.
+  fetch(`/debug/reports/${lastReport.request_id}?fmt=md&download=0`,
+        { headers: { "X-Debug-Token": debugToken() } })
+    .then(r => r.ok ? r.text() : Promise.reject(`HTTP ${r.status}`))
+    .then(t => saveFile(`report_${lastReport.request_id}.md`, t, "text/markdown"))
+    .catch(e => log("e", "не удалось получить .md: " + e +
+                        " — укажи токен в поле ниже или скачай .json"));
+});
+
+/* The .md rendering lives behind the debug gate; the token is asked for
+   rather than embedded, so the page stays safe to serve with debug off. */
+/* Only the .md report needs this. Everything a tester does — grading, the
+   flag panel, the .json report, sending feedback — works without it. There is
+   no default: guessing "local-dev-token" is what silently 403'd the flag
+   panel on the first deployment. */
+function debugToken() {
+  let t = localStorage.getItem("debug_token");
+  if (!t) {
+    t = prompt("X-Debug-Token — есть только у команды. Для .md-отчёта:", "") || "";
+    if (t) localStorage.setItem("debug_token", t);
+  }
+  return t;
+}
+
+/* ---------- tester feedback -------------------------------------------
+   Bound after each render, because the block is re-created with the result. */
+let fbVerdict = "unsure";
+
+function wireFeedback() {
+  const box = $("fb");
+  if (!box) return;
+  fbVerdict = "unsure";
+  box.querySelectorAll(".vs button").forEach(b => {
+    b.addEventListener("click", () => {
+      fbVerdict = b.dataset.v;
+      box.querySelectorAll(".vs button").forEach(x => x.classList.toggle("on", x === b));
+    });
+  });
+  $("fbSend").addEventListener("click", async () => {
+    const id = box.dataset.id;
+    $("fbStatus").textContent = "отправляем…";
+    try {
+      const res = await fetch(`/api/v1/reports/${encodeURIComponent(id)}/feedback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          verdict: fbVerdict,
+          comment: $("fbComment").value.trim(),
+          expected_base: $("fbBase").value === "" ? null : Number($("fbBase").value),
+          expected_presentation: $("fbPres").value === "" ? null : Number($("fbPres").value),
+          tester: $("fbWho").value.trim(),
+        }),
+      });
+      if (!res.ok) throw new Error((await res.json())?.error?.message || `HTTP ${res.status}`);
+      $("fbStatus").innerHTML = '<span class="done">Спасибо, отправлено ✓</span>';
+      $("fbSend").disabled = true;
+      log("o", `отзыв отправлен: ${fbVerdict}`);
+    } catch (e) {
+      $("fbStatus").textContent = "не отправилось: " + e;
+    }
+  });
+  // Remember the tester's name between runs — they will submit many.
+  try {
+    $("fbWho").value = localStorage.getItem("tester_name") || "";
+    $("fbWho").addEventListener("change", () => localStorage.setItem("tester_name", $("fbWho").value));
+  } catch { /* private window */ }
+}
+
+/* ---------- exported log ------------------------------------------------
+   What a tester actually sends back. The on-screen console stays short on
+   purpose, but the exported text has to stand alone: someone reading it a
+   week later, with no access to this machine, must be able to say what was
+   tested, under which settings, and what came out. Every field here is
+   already in the report — this is the readable arrangement of it. */
+function pad(s, n) { s = String(s); return s + " ".repeat(Math.max(0, n - s.length)); }
+
+function buildExport() {
+  const L = [];
+  const rep = lastReport;
+  const ctx = runContext || {};
+
+  L.push("ЕГЭ · проверка второй части — лог прогона");
+  L.push("=".repeat(64));
+  L.push(`время          ${rep?.created_at || new Date().toISOString()}`);
+  L.push(`запрос         ${rep?.request_id || ctx.request_id || "—"}`);
+  L.push(`задание        ${rep?.task_number ?? ctx.task_number ?? "—"}` +
+         (ctx.topic_ru ? ` — ${ctx.topic_ru}` : ""));
+  L.push(`макс. балл     ${rep?.grades?.max_score ?? ctx.max_score ?? "—"}`);
+  L.push(`решение        ${(ctx.images ?? 0) > 0 ? `фото (${ctx.images})` : "текст"}`);
+  if (rep?.statement) L.push(`условие        ${rep.statement.replace(/\n/g, " ").slice(0, 200)}`);
+
+  // Flags: all of them, deviations marked. A comparison between two runs is
+  // only valid if both logs state the full set, not just what changed.
+  L.push("");
+  L.push("ФЛАГИ  (× — отличается от значения по умолчанию)");
+  const active = rep?.features || ctx.features || {};
+  const changed = rep?.features_changed || ctx.features_changed || {};
+  if (Object.keys(active).length === 0) L.push("  (нет данных)");
+  for (const [key, on] of Object.entries(active)) {
+    const def = featureDefs.find(f => f.key === key);
+    const mark = key in changed ? "×" : " ";
+    const dflt = def ? `по умолчанию ${def.default ? "вкл" : "выкл"}` : "";
+    L.push(`  ${mark} ${pad(key, 24)} ${pad(on ? "вкл" : "выкл", 5)} ${dflt}`);
+  }
+
+  if (rep?.prompt_versions && Object.keys(rep.prompt_versions).length) {
+    L.push("");
+    L.push("ВЕРСИИ ПРОМПТОВ");
+    for (const [k, v] of Object.entries(rep.prompt_versions)) L.push(`  ${pad(k, 24)} v${v}`);
+  }
+
+  if (rep?.stages?.length) {
+    L.push("");
+    L.push("ЭТАПЫ");
+    for (const st of rep.stages) {
+      L.push(`  ${pad(st.stage, 16)}${pad(st.provider + "/" + st.model, 42)}` +
+             `${pad((st.latency_ms / 1000).toFixed(1) + " с", 9)}` +
+             `${pad((st.usage?.total_tokens ?? 0) + " tok", 12)}${money(st.cost)}` +
+             (st.attempts > 1 ? `  попыток ${st.attempts}` : ""));
+    }
+    L.push(`  ${pad("ИТОГО", 16)}${pad("", 42)}` +
+           `${pad((rep.total_latency_ms / 1000).toFixed(1) + " с", 9)}` +
+           `${pad((rep.total_usage?.total_tokens ?? 0) + " tok", 12)}${money(rep.total_cost)}`);
+  }
+
+  L.push("");
+  L.push("РЕЗУЛЬТАТ");
+  if (rep?.grades) {
+    const g = rep.grades;
+    L.push(`  за решение           ${g.base.score} / ${g.max_score}`);
+    L.push(`  с учётом оформления  ${g.presentation.score} / ${g.max_score}`);
+    L.push(`  под угрозой          ${g.points_at_risk}`);
+    L.push(`  уверенность          ${g.confidence}`);
+    L.push(`  находок              ${rep.findings?.length ?? 0}`);
+    L.push("");
+    L.push(`  итог: ${g.summary || ""}`);
+    L.push(`  риск: ${g.risk_comment || ""}`);
+    L.push(`  защитить: ${g.how_to_protect_points || ""}`);
+    L.push(`  поднять базовую: ${g.how_to_raise_base || ""}`);
+  } else if (rep?.error) {
+    L.push(`  ОШИБКА [${rep.error.code}] ${rep.error.message}`);
+  } else {
+    L.push("  (прогон не завершён)");
+  }
+
+  if (rep?.findings?.length) {
+    L.push("");
+    L.push("НАХОДКИ");
+    for (const f of rep.findings) {
+      L.push(`  ${pad(f.id, 5)}[${f.type}/${f.severity}] defensible=${f.is_defensible}`);
+      L.push(`       ${(f.what || "").slice(0, 150)}`);
+    }
+  }
+
+  if (rep?.notes?.length) {
+    L.push("");
+    L.push("ЗАМЕТКИ");
+    for (const n of rep.notes) L.push(`  - ${n}`);
+  }
+
+  L.push("");
+  L.push("ЛОГ");
+  L.push("-".repeat(64));
+  L.push(...logLines);
+  return L.join("\n");
+}
+
+$("copyLog").addEventListener("click", () => {
+  navigator.clipboard.writeText(buildExport()).then(() => {
+    $("copyLog").textContent = "Скопировано";
+    setTimeout(() => $("copyLog").textContent = "Скопировать лог", 1500);
+  });
+});
+
+$("saveLog").addEventListener("click", () => {
+  const id = lastReport?.request_id || "run";
+  saveFile(`log_${id}.txt`, buildExport(), "text/plain;charset=utf-8");
+});
+$("clearLog").addEventListener("click", () => { $("console").innerHTML = ""; logLines = []; });
+
+loadFeatures();
+</script>
+</body>
+</html>

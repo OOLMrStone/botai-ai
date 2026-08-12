@@ -1,0 +1,57 @@
+# Default stack is the *dev* stack: source is bind-mounted and uvicorn reloads.
+#   docker compose up --build
+# Production-shaped run (no mount, no reloader, non-root):
+#   docker compose --profile prod up --build grading-api-prod
+services:
+  grading-api:
+    build:
+      context: .
+      target: dev
+    container_name: ege-grading-api
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      APP_ENV: ${APP_ENV:-local}
+      APP_PORT: "8000"
+      # Nothing here overrides .env; these are only fallbacks so the stack
+      # boots on a clean checkout with no .env at all.
+      LLM_PROVIDER: ${LLM_PROVIDER:-mock}
+      DEBUG_ENABLED: ${DEBUG_ENABLED:-true}
+      DEBUG_TOKEN: ${DEBUG_TOKEN:-local-dev-token}
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    volumes:
+      - ./app:/srv/app
+      # Mounted, not baked: editing a prompt is the most common change in this
+      # project and must not need an image rebuild.
+      - ./prompts:/srv/prompts
+      - ./tests:/srv/tests
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=4).status == 200 else 1)
+      interval: 15s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+    restart: unless-stopped
+
+  grading-api-prod:
+    profiles: ["prod"]
+    build:
+      context: .
+      target: prod
+    container_name: ege-grading-api-prod
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      APP_ENV: prod
+      APP_LOG_FORMAT: json
+      DEBUG_ENABLED: "false"
+    ports:
+      - "${APP_PORT_PROD:-8001}:8000"
+    restart: unless-stopped

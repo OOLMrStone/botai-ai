@@ -1,0 +1,32 @@
+# Reference copy of what lives at /etc/caddy/Caddyfile ON THE HOST.
+# Caddy runs as a systemd service, not in this stack — see docs/DEPLOYMENT.md.
+# Edit the file on the server, then: caddy validate --config /etc/caddy/Caddyfile
+#                                    systemctl reload caddy
+api.botai-ege.ru {
+	encode zstd gzip
+
+	# Unauthenticated liveness probe, so uptime monitoring needs no password.
+	handle /health {
+		respond "ok" 200
+	}
+
+	handle {
+		# One password over the whole app: the service spends real money per
+		# request, and the debug surface testers need exposes prompts and
+		# student work. Hash generated with `caddy hash-password`.
+		basicauth {
+			tester <bcrypt-hash>
+		}
+
+		# flush_interval -1 disables response buffering — without it the SSE
+		# progress bar sits empty for minutes and then dumps at once, which
+		# looks exactly like a hang. Long timeouts stop mid-run cuts.
+		reverse_proxy 127.0.0.1:8080 {
+			flush_interval -1
+			transport http {
+				read_timeout 30m
+				write_timeout 30m
+			}
+		}
+	}
+}

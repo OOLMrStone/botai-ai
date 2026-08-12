@@ -1,0 +1,28 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+
+.env
+.env.*
+!.env.example
+
+.idea/workspace.xml
+.idea/misc.xml
+.DS_Store
+
+# API keys — never commit
+*.key
+secrets/
+openrouter.txt
+deepseekfree.txt
+deepseekkey.txt
+
+# Pulled test-session reports: contain photographs of student work.
+collected-reports/
+review.html
