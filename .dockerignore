@@ -1,16 +1,28 @@
-.venv/
-venv/
-__pycache__/
-*.py[cod]
-.pytest_cache/
-.ruff_cache/
-*.egg-info/
-.git/
-.idea/
-.env
-.env.*
-!.env.example
-# tests/ is deliberately NOT excluded: the `dev` target copies it so the suite
-# can be run inside the container. The `prod` target never copies it.
-docs/
-README.md
+# Build context allowlist: tests and validator are used only by the dev stage.
+**
+!Dockerfile
+!requirements.txt
+!requirements-dev.txt
+!pyproject.toml
+!app/
+!app/**
+!prompts/
+!prompts/legacy/
+!prompts/legacy/**
+!tasks/
+!tasks/*/
+!tasks/*/prompts/
+!tasks/*/prompts/**
+!scripts/
+!scripts/validate_response.py
+!deploy/
+!deploy/build_runtime.py
+!tests/
+!tests/**
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/.DS_Store
+**/.gitkeep
+**/README.md
+**/AGENTS.md

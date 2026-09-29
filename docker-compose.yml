@@ -27,6 +27,17 @@ services:
       # project and must not need an image rebuild.
       - ./prompts:/srv/prompts
       - ./tests:/srv/tests
+      - ./tasks:/srv/tasks:ro
+      - ./tasks/common/prompts:/srv/prompts/common:ro
+      - ./tasks/14/prompts:/srv/prompts/14:ro
+      - ./tasks/15/prompts:/srv/prompts/15:ro
+      - ./tasks/16/prompts:/srv/prompts/16:ro
+      - ./tasks/17/prompts:/srv/prompts/17:ro
+      - ./tasks/18/prompts:/srv/prompts/18:ro
+      - ./tasks/19/prompts:/srv/prompts/19:ro
+      - ./tasks/20/prompts:/srv/prompts/20:ro
+      - ./scripts/validate_response.py:/srv/scripts/validate_response.py:ro
+      - photo-reports:/srv/data/suspicious-submissions
     healthcheck:
       test:
         - CMD
@@ -54,4 +65,9 @@ services:
       DEBUG_ENABLED: "false"
     ports:
       - "${APP_PORT_PROD:-8001}:8000"
+    volumes:
+      - photo-reports:/srv/data/suspicious-submissions
     restart: unless-stopped
+
+volumes:
+  photo-reports:

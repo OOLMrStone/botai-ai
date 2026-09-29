@@ -1,0 +1,229 @@
+{
+  "references": [
+    {
+      "reference_id": "Б",
+      "statement": "Решите неравенство 50(3^x − 2 + 3^(−x))/(3^x + 2 + 3^(−x)) − (20·3^x + 20)/(3^x + 1) ≤ (5·3^(x+1) − 15)/(3^x + 1)",
+      "reference_answer": "[−1; 2]",
+      "reference_solution": "Пусть t=3^x>0. После переноса правой части влево получается (15t²−140t+45)/(t+1)²≤0. Знаменатель положителен, числитель равен 5(3t−1)(t−9). Поэтому 1/3≤t≤9, откуда −1≤x≤2.",
+      "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора.",
+      "verified": true,
+      "source_cells": {
+        "id": "A3",
+        "task_number": "B3",
+        "type": "C3",
+        "description": "D3",
+        "expected_solution_score": "E3",
+        "expected_presentation_score": "F3",
+        "reference_answer": "G3",
+        "photos": "H3"
+      },
+      "statement_source": {
+        "sheet": "Прогоны",
+        "cell": "E4",
+        "text": "Решите неравенство 50(3^x − 2 + 3^(−x))/(3^x + 2 + 3^(−x)) − (20·3^x + 20)/(3^x + 1) ≤ (5·3^(x+1) − 15)/(3^x + 1)"
+      }
+    },
+    {
+      "reference_id": "Д",
+      "statement": "Решите неравенство log₃²(25 − x²) − 3·log₃(25 − x²) + 2 ≥ 0",
+      "reference_answer": "(−5; −√22] ∪ [−4; 4] ∪ [√22; 5)",
+      "reference_solution": "ОДЗ: 25−x²>0, то есть −5<x<5. Пусть u=log₃(25−x²). Тогда (u−1)(u−2)≥0, то есть u≤1 или u≥2. С учётом ОДЗ первая ветвь даёт 0<25−x²≤3, или 22≤x²<25; вторая даёт 25−x²≥9, или x²≤16. Объединяем полученные промежутки.",
+      "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора.",
+      "verified": true,
+      "source_cells": {
+        "id": "A6",
+        "task_number": "B6",
+        "type": "C6",
+        "description": "D6",
+        "expected_solution_score": "E6",
+        "expected_presentation_score": "F6",
+        "reference_answer": "G6",
+        "photos": "H6"
+      },
+      "statement_source": {
+        "sheet": "Прогоны",
+        "cell": "E15",
+        "text": "Решите неравенство log₃²(25 − x²) − 3·log₃(25 − x²) + 2 ≥ 0"
+      }
+    },
+    {
+      "reference_id": "И",
+      "statement": "Решите неравенство (log₂(32x) − 1)/(log₂²x − log₂x⁵) ≥ −1.",
+      "reference_answer": "(0; 1) ∪ {4} ∪ (32; +∞)",
+      "reference_solution": "ОДЗ: x>0, log₂x≠0 и log₂x≠5. Пусть t=log₂x. Тогда log₂(32x)=t+5, log₂(x⁵)=5t. После переноса −1 влево получаем (t−2)²/[t(t−5)]≥0, t≠0 и t≠5. Дробь неотрицательна при t<0, t=2 или t>5. Возвращаясь к x=2^t, получаем (0;1)∪{4}∪(32;+∞).",
+      "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора.",
+      "verified": true,
+      "source_cells": {
+        "id": "A10",
+        "task_number": "B10",
+        "type": "C10",
+        "description": "D10",
+        "expected_solution_score": "E10",
+        "expected_presentation_score": "F10",
+        "reference_answer": "G10",
+        "photos": "H10"
+      },
+      "statement_source": "Тестовый набор — тексты для бота.txt"
+    },
+    {
+      "reference_id": "К",
+      "statement": "Решите неравенство 5^(log₅²x) + x^(log₅x) ≥ 2·⁴√5.",
+      "reference_answer": "(0; 1/√5] ∪ [√5; +∞)",
+      "reference_solution": "ОДЗ: x>0. Пусть t=log₅x, тогда x=5^t и x^(log₅x)=5^(t²). Неравенство равносильно 2·5^(t²)≥2·5^(1/4), откуда t²≥1/4. Следовательно t≤−1/2 или t≥1/2, то есть 0<x≤1/√5 или x≥√5.",
+      "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора.",
+      "verified": true,
+      "source_cells": {
+        "id": "A11",
+        "task_number": "B11",
+        "type": "C11",
+        "description": "D11",
+        "expected_solution_score": "E11",
+        "expected_presentation_score": "F11",
+        "reference_answer": "G11",
+        "photos": "H11"
+      },
+      "statement_source": "Тестовый набор — тексты для бота.txt"
+    },
+    {
+      "reference_id": "Л",
+      "statement": "Решите неравенство ((x − 1)² + 4(x + 1)²)/2 ≤ (3x + 1)²/4.",
+      "reference_answer": "{−3}",
+      "reference_solution": "Умножим обе части на 4>0: 2(x−1)²+8(x+1)²≤(3x+1)². После переноса и раскрытия скобок получаем x²+6x+9=(x+3)²≤0. Квадрат неотрицателен, поэтому x=−3.",
+      "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора.",
+      "verified": true,
+      "source_cells": {
+        "id": "A12",
+        "task_number": "B12",
+        "type": "C12",
+        "description": "D12",
+        "expected_solution_score": "E12",
+        "expected_presentation_score": "F12",
+        "reference_answer": "G12",
+        "photos": "H12"
+      },
+      "statement_source": "Тестовый набор — тексты для бота.txt"
+    },
+    {
+      "reference_id": "P16",
+      "statement": "Решите неравенство 5^(2x) + 5^(x+1) + 5^(1−x) + 1/5^(2x) ≤ 12.",
+      "reference_answer": "{0}",
+      "reference_solution": "Пусть t=5^x>0. Умножение на t²>0 даёт t⁴+5t³−12t²+5t+1≤0. Многочлен равен (t−1)²(t²+7t+1). При t>0 второй множитель строго положителен, поэтому неравенство выполняется только при t=1. Отсюда x=0.",
+      "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора.",
+      "verified": true,
+      "source_cells": {
+        "id": "A22",
+        "task_number": "B22",
+        "type": "C22",
+        "description": "D22",
+        "expected_solution_score": "E22",
+        "expected_presentation_score": "F22",
+        "reference_answer": "G22",
+        "photos": "H22"
+      },
+      "statement_source": "raw/16.1.jpg"
+    },
+    {
+      "reference_id": "P17",
+      "statement": "Решите неравенство (3^(2x) − 3^x − 90)/(3^x − 82) ≤ 1.",
+      "reference_answer": "[2log₃2; log₃82)",
+      "reference_solution": "Пусть t=3^x>0, t≠82. Перенесём 1 влево: (t²−2t−8)/(t−82)=(t−4)(t+2)/(t−82)≤0. При t>0 множитель t+2 положителен. Метод интервалов даёт 4≤t<82. Поэтому log₃4≤x<log₃82, где log₃4=2log₃2.",
+      "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора.",
+      "verified": true,
+      "source_cells": {
+        "id": "A23",
+        "task_number": "B23",
+        "type": "C23",
+        "description": "D23",
+        "expected_solution_score": "E23",
+        "expected_presentation_score": "F23",
+        "reference_answer": "G23",
+        "photos": "H23"
+      },
+      "statement_source": "raw/16.2.jpg, нижняя задача"
+    },
+    {
+      "reference_id": "P18",
+      "statement": "Решите неравенство (8^(−x) − 5·0,5^x)/(2^(−x) − 2^(x+4)) ≥ 0.",
+      "reference_answer": "(−∞; −2) ∪ [−log₂√5; +∞)",
+      "reference_solution": "Пусть t=2^(−x)>0. Знаменатель равен t−16/t, поэтому t≠4. Неравенство равносильно t²(t²−5)/(t²−16)≥0. Поскольку t²>0, получаем 0<t≤√5 или t>4. Первая ветвь даёт x≥−log₂√5, вторая x<−2. Точка −2 исключена, −log₂√5 включена.",
+      "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора.",
+      "verified": true,
+      "source_cells": {
+        "id": "A24",
+        "task_number": "B24",
+        "type": "C24",
+        "description": "D24",
+        "expected_solution_score": "E24",
+        "expected_presentation_score": "F24",
+        "reference_answer": "G24",
+        "photos": "H24"
+      },
+      "statement_source": "raw/18.jpg и TXT секция M2"
+    },
+    {
+      "reference_id": "P19",
+      "statement": "Решите неравенство (4^x − 2^(x+3) + 7)/(4^x − 5·2^x + 4) ≤ (2^x − 9)/(2^x − 4) + 1/(2^x − 6).",
+      "reference_answer": "(−∞; 0) ∪ (0; 2) ∪ (log₂6; 3]",
+      "reference_solution": "Пусть t=2^x>0. Исходные знаменатели дают t≠1, t≠4, t≠6. Разложим t²−8t+7=(t−1)(t−7), t²−5t+4=(t−1)(t−4) и сократим t−1 с сохранением запрета t≠1. После переноса правой части влево получаем 2/(t−4)−1/(t−6)=(t−8)/[(t−4)(t−6)]≤0. При t>0 и сохранённых запретах решение: (0;1)∪(1;4)∪(6;8]. Возврат к x даёт (−∞;0)∪(0;2)∪(log₂6;3].",
+      "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора.",
+      "verified": true,
+      "source_cells": {
+        "id": "A25",
+        "task_number": "B25",
+        "type": "C25",
+        "description": "D25",
+        "expected_solution_score": "E25",
+        "expected_presentation_score": "F25",
+        "reference_answer": "G25",
+        "photos": "H25"
+      },
+      "statement_source": "raw/19.1.jpg"
+    },
+    {
+      "reference_id": "P20",
+      "statement": "Решите неравенство 1/(3^x − 1) + (9^(x+1/2) − 3^(x+3) + 3)/(3^x − 9) ≥ 3^(x+1).",
+      "reference_answer": "(0; 1] ∪ (2; +∞)",
+      "reference_solution": "Пусть t=3^x>0, t≠1 и t≠9. Здесь 9^(x+1/2)=3t², 3^(x+3)=27t, 3^(x+1)=3t. После переноса правой части влево получаем 1/(t−1)+(3t²−27t+3)/(t−9)−3t = 4(t−3)/[(t−1)(t−9)]≥0. При t>0 метод интервалов даёт (1;3]∪(9;+∞). Следовательно x∈(0;1]∪(2;+∞).",
+      "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора.",
+      "verified": true,
+      "source_cells": {
+        "id": "A26",
+        "task_number": "B26",
+        "type": "C26",
+        "description": "D26",
+        "expected_solution_score": "E26",
+        "expected_presentation_score": "F26",
+        "reference_answer": "G26",
+        "photos": "H26"
+      },
+      "statement_source": "raw/19.2.jpg, нижняя задача"
+    },
+    {
+      "reference_id": "P21",
+      "statement": "Решите неравенство (320 − 4^(−x−1))/(128 − 2^(−x)) ≥ 2,5.",
+      "reference_answer": "(−∞; −7) ∪ [−1 − log₂5; +∞)",
+      "reference_solution": "Пусть t=2^x>0. Тогда 4^(−x−1)=1/(4t²), 2^(−x)=1/t; ОДЗ: t≠1/128. После переноса 5/2 влево получаем (10t−1)/[4t(128t−1)]≥0. С учётом t>0 решение: (0;1/128)∪[1/10;+∞). Следовательно x<−7 или x≥−log₂10=−1−log₂5.",
+      "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора.",
+      "verified": true,
+      "source_cells": {
+        "id": "A27",
+        "task_number": "B27",
+        "type": "C27",
+        "description": "D27",
+        "expected_solution_score": "E27",
+        "expected_presentation_score": "F27",
+        "reference_answer": "G27",
+        "photos": "H27"
+      },
+      "statement_source": "raw/21.jpg"
+    }
+  ],
+  "count": 11,
+  "scope": "Проверка условий и правильных ответов отдельно от оценок ученических работ. Решения ниже написаны заново; баллы и дефекты учеников не являются входными данными.",
+  "aliases": {
+    "X4": "И",
+    "X5": "Д",
+    "X6": "Л",
+    "M2": "P18"
+  }
+}

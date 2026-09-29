@@ -1,123 +1,73 @@
-# ЕГЭ Math Part 2 — AI grading microservice
+# Bot AI — standalone photo grading
 
-Grades развёрнутые решения of part 2 of the Russian ЕГЭ in profile
-mathematics (задания 13–19) against the marking criteria, and returns a score
-with per-error feedback in Russian.
+A FastAPI microservice for checking photographed ЕГЭ mathematics solutions. The current test workflow uses the inequalities prompt package (project task 16, corresponding to ФИПИ-2026 task 15), with one score from 0 to 2 and feedback in Russian. Integration with the main application's users, tasks and database is outside this implementation.
 
-Python 3.14 · FastAPI · OpenAI-compatible LLM · Docker Compose
+Python 3.14 · FastAPI · OpenAI-compatible model · Docker Compose
 
-## Quick start
+## Run locally without model charges
 
 ```bash
 cp .env.example .env
-docker compose up --build
+LLM_PROVIDER=mock LLM_VISION_PROVIDER=mock docker compose up --build
 ```
 
-→ <http://localhost:8000/docs>
+Open [the test form](http://localhost:8000/ui/). Mock mode returns a clearly labelled demonstration: it does not recognize or grade the uploaded work.
 
-Ships with `LLM_PROVIDER=mock`: the whole service works end to end with no API
-key and no spend, returning synthetic-but-schema-valid grades. For real
-grading set in `.env`:
+1. Attach one image containing the problem statement and reference solution or correct answer.
+2. Attach one to four images of the student's work, in order.
+3. Submit and inspect the recognized text, analysis and single score, or the reason grading was declined.
 
-```
-LLM_PROVIDER=openai
-LLM_API_KEY=sk-...
-LLM_MODEL=gpt-5          # verify against your provider's catalogue
-```
+Each image may be up to 8 MiB. A complete request may contain all five images. Preparation and grading share a 240-second deadline; retries are manual. A readable statement and correct answer are required. A missing complete reference solution is allowed and shown in the form.
 
-`LLM_BASE_URL` points the same provider at any OpenAI-compatible gateway.
+## How the new workflow works
 
-### Without Docker
+A separate model session transcribes the task image into request-local `Statement.md` and `Solution.md`. It does not solve the problem. One subsequent conversation reads the approved instructions, analyzes the student's images, saves unscored `Notes.md`, reads grading instructions and criteria, and writes and validates `response.json`. The server enforces tool permissions and order and returns the exact validated text.
+
+The result contains `task`, `solution_image_ids`, `is_graded`, `rejection_reason`, `ocr`, `analysis` and `grading`. A declined submission has no score: its three result fields are `null`. Technical failures are errors, never zero grades. Structural validation does not establish mathematical correctness.
+
+The test service creates local test IDs. It does not claim they are records in the main application's database. Suspected attacks produce private reports linked to these IDs; reports and associated solution images expire after 30 days. There is no report dashboard or automatic blocking.
+
+## Configuration and real-model testing
+
+Both task preparation and the new grading conversation use `LLM_PROVIDER`, `LLM_BASE_URL`, `LLM_MODEL` and `LLM_API_KEY`. The old `LLM_VISION_*` overrides belong to the legacy pipeline and do not select the model for `/api/v1/photo-check`.
+
+Keep real credentials in the environment or a private `.env`; never commit them. After changing environment settings, recreate the container:
 
 ```bash
-.venv/bin/pip install -r requirements-dev.txt
-.venv/bin/python main.py          # or: uvicorn app.main:app --reload
-.venv/bin/python -m pytest        # 81 tests, all offline, ~2s
+docker compose up -d --force-recreate
 ```
 
-## Grading a solution
+A restart alone preserves the previous container environment. Do not switch models silently: check the configured provider's image and tool support and alias policy. DeepSeek publishes model and alias changes in its [official updates](https://api-docs.deepseek.com/updates/).
 
-```bash
-curl -s -X POST localhost:8000/api/v1/grade \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "task_number": 13,
-    "statement": "а) Решите уравнение 2sin²x + 3cos x = 0. б) Найдите корни на [−3π/2; 0].",
-    "student_solution": "2(1−cos²x)+3cos x=0 ⇒ cos x=−1/2 ⇒ x=±2π/3+2πk. На отрезке: x=−2π/3."
-  }'
-```
-
-```jsonc
-{
-  "score": 1,
-  "max_score": 2,
-  "verdict": "partially_correct",
-  "criterion_matched": "Обоснованно получен верный ответ в пункте а) ИЛИ ...",
-  "summary": "Уравнение решено верно, но при отборе корней потерян x = −4π/3.",
-  "errors": [{"severity": "major", "where": "пункт б)", "description": "...", "how_to_fix": "..."}],
-  "missing_justifications": ["..."],
-  "answer_check": {"student_answer": "−2π/3", "expected_answer": "−4π/3; −2π/3", "matches": false},
-  "confidence": 0.82,
-  "meta": {"provider": "openai", "usage": {...}, "attempts": 1, "trace_ids": ["llm_..."]}
-}
-```
-
-The published criteria for the problem at hand can be passed as
-`criteria_override` and take precedence over the built-in registry — see
-[docs/DOMAIN_EGE.md](docs/DOMAIN_EGE.md) for why that matters.
+Paid model calls require a direct user request in the current message. Offline tests and mock runs verify service behavior; saved evals document the already completed model runs.
 
 ## API
 
-| endpoint | |
-|---|---|
-| `POST /api/v1/grade` | grade one solution |
-| `POST /api/v1/grade/batch` | grade up to `GRADING_BATCH_LIMIT` concurrently |
-| `GET /api/v1/tasks` | задания 13–19 with rubrics and max scores |
-| `GET /api/v1/tasks/{n}` | one task |
-| `GET /health`, `/health/ready` | liveness / readiness (`?probe=true` calls the model) |
-| `/debug/*` | debug toolkit — off by default |
+| Endpoint | Purpose |
+| --- | --- |
+| `POST /api/v1/photo-check` | Multipart upload: one `task_image`, one to four repeated `solution_images` fields |
+| `GET /api/v1/photo-check/config` | Form configuration and local test identity; no model call |
+| `GET /ui/` | Standalone test form |
+| `GET /health` | Application liveness when called directly on the application |
+| `GET /health/ready` | Legacy readiness; do not use `?probe=true` without authorization because it calls a model |
 
-## Debug toolkit
+The existing text and legacy photo endpoints remain for compatibility; their contracts are different from the new standalone workflow. See the local [API documentation](http://localhost:8000/docs) when enabled.
 
-Off unless `DEBUG_ENABLED=true` *and* the request carries a matching
-`X-Debug-Token`; force-disabled when `APP_ENV=prod`. Highlights:
+## Offline verification
 
 ```bash
-# the exact prompt, without calling the model
-curl -X POST localhost:8000/debug/grading/preview-prompt \
-  -H 'X-Debug-Token: local-dev-token' -H 'Content-Type: application/json' -d '{...}'
-
-# what we sent and what came back, with retries and token usage
-curl localhost:8000/debug/llm/traces -H 'X-Debug-Token: local-dev-token'
-
-# grade a built-in sample end to end
-curl -X POST 'localhost:8000/debug/grading/sample?name=13_partial' \
-  -H 'X-Debug-Token: local-dev-token'
+.venv/bin/python -m pytest
+.venv/bin/python scripts/validate_response.py response.json
 ```
 
-Plus a deterministic offline provider you can script with exact replies and
-simulated failures, and `debug.force_score` for instant free grades while
-building a frontend. Full guide: [docs/DEBUG_TOOLKIT.md](docs/DEBUG_TOOLKIT.md).
+Install development dependencies from `requirements-dev.txt` in a Python 3.14 virtual environment if needed. The tests run offline. The standalone validator shares its implementation with the service; server sessions additionally check the task and image IDs against the request.
 
 ## Documentation
 
-| | |
-|---|---|
-| [CLAUDE.md](CLAUDE.md) | working context, layout, invariants |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | how a request flows, why the layers split that way |
-| [docs/DOMAIN_EGE.md](docs/DOMAIN_EGE.md) | how part 2 is marked; rubric provenance |
-| [docs/LLM_LAYER.md](docs/LLM_LAYER.md) | the model wrapper; adding a provider |
-| [docs/DEBUG_TOOLKIT.md](docs/DEBUG_TOOLKIT.md) | testing without spend |
-| [docs/ROADMAP.md](docs/ROADMAP.md) | what is next and why |
+- [Working instructions](AGENTS.md)
+- [Current written contract](docs/grading/service.md)
+- [Prompt package and validator](tasks/16/README.md)
+- [Deployment and access](docs/DEPLOYMENT.md)
+- [Legacy architecture](docs/ARCHITECTURE.md) and [debug toolkit](docs/DEBUG_TOOLKIT.md)
 
-## Production
-
-```bash
-docker compose --profile prod up --build grading-api-prod   # :8001
-```
-
-Non-root, no reloader, no dev dependencies, JSON logs, debug toolkit hard-off,
-`/docs` and `/openapi.json` disabled. Read
-[docs/ROADMAP.md](docs/ROADMAP.md) before shipping — there is no auth, rate
-limiting or persistence yet, and the built-in rubrics need reconciling against
-the official ones.
+The test service was deployed on 27 September 2026. Existing eval results and their limits are documented in [task 16](tasks/16/README.md). Deployment and current migration verification are tracked in [DEPLOYMENT.md](docs/DEPLOYMENT.md); a historical deployment test does not certify later edits.

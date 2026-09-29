@@ -1,0 +1,242 @@
+{
+  "name": "kostyan_evals",
+  "source": "https://disk.360.yandex.ru/d/mN-r2pZegKg2eA",
+  "source_task_number": 15,
+  "target_task_number": 16,
+  "source_scenarios": 15,
+  "cases": [
+    {
+      "id": "K-B-2",
+      "source_case_id": "Б",
+      "source_task_number": 15,
+      "case_type": "ordinary",
+      "problem_and_reference_answer": "problems/B/task.png",
+      "solution": [
+        "cases/K-B-2/solution-01.jpg"
+      ],
+      "expected": "cases/K-B-2/expected.json",
+      "provenance": "cases/K-B-2/provenance.json"
+    },
+    {
+      "id": "K-B-3",
+      "source_case_id": "Б",
+      "source_task_number": 15,
+      "case_type": "ordinary",
+      "problem_and_reference_answer": "problems/B/task.png",
+      "solution": [
+        "cases/K-B-3/solution-01.jpg"
+      ],
+      "expected": "cases/K-B-3/expected.json",
+      "provenance": "cases/K-B-3/provenance.json"
+    },
+    {
+      "id": "K-B-4",
+      "source_case_id": "Б",
+      "source_task_number": 15,
+      "case_type": "ordinary",
+      "problem_and_reference_answer": "problems/B/task.png",
+      "solution": [
+        "cases/K-B-4/solution-01.jpg",
+        "cases/K-B-4/solution-02.jpg"
+      ],
+      "expected": "cases/K-B-4/expected.json",
+      "provenance": "cases/K-B-4/provenance.json"
+    },
+    {
+      "id": "K-D-11",
+      "source_case_id": "Д",
+      "source_task_number": 15,
+      "case_type": "ordinary",
+      "problem_and_reference_answer": "problems/D/task.png",
+      "solution": [
+        "cases/K-D-11/solution-01.jpg"
+      ],
+      "expected": "cases/K-D-11/expected.json",
+      "provenance": "cases/K-D-11/provenance.json"
+    },
+    {
+      "id": "K-D-12",
+      "source_case_id": "Д",
+      "source_task_number": 15,
+      "case_type": "ordinary",
+      "problem_and_reference_answer": "problems/D/task.png",
+      "solution": [
+        "cases/K-D-12/solution-01.jpg"
+      ],
+      "expected": "cases/K-D-12/expected.json",
+      "provenance": "cases/K-D-12/provenance.json"
+    },
+    {
+      "id": "K-D-13",
+      "source_case_id": "Д",
+      "source_task_number": 15,
+      "case_type": "ordinary",
+      "problem_and_reference_answer": "problems/D/task.png",
+      "solution": [
+        "cases/K-D-13/solution-01.jpg"
+      ],
+      "expected": "cases/K-D-13/expected.json",
+      "provenance": "cases/K-D-13/provenance.json"
+    },
+    {
+      "id": "K-I",
+      "source_case_id": "И",
+      "source_task_number": 15,
+      "case_type": "ordinary",
+      "problem_and_reference_answer": "problems/I/task.png",
+      "solution": [
+        "cases/K-I/solution-01.png"
+      ],
+      "expected": "cases/K-I/expected.json",
+      "provenance": "cases/K-I/provenance.json"
+    },
+    {
+      "id": "K-K",
+      "source_case_id": "К",
+      "source_task_number": 15,
+      "case_type": "ordinary",
+      "problem_and_reference_answer": "problems/K/task.png",
+      "solution": [
+        "cases/K-K/solution-01.png"
+      ],
+      "expected": "cases/K-K/expected.json",
+      "provenance": "cases/K-K/provenance.json"
+    },
+    {
+      "id": "K-L",
+      "source_case_id": "Л",
+      "source_task_number": 15,
+      "case_type": "ordinary",
+      "problem_and_reference_answer": "problems/L/task.png",
+      "solution": [
+        "cases/K-L/solution-01.png"
+      ],
+      "expected": "cases/K-L/expected.json",
+      "provenance": "cases/K-L/provenance.json"
+    },
+    {
+      "id": "K-X4",
+      "source_case_id": "X4",
+      "source_task_number": 15,
+      "case_type": "ordinary",
+      "problem_and_reference_answer": "problems/I/task.png",
+      "solution": [
+        "cases/K-X4/solution-01.png"
+      ],
+      "expected": "cases/K-X4/expected.json",
+      "provenance": "cases/K-X4/provenance.json"
+    },
+    {
+      "id": "K-X5",
+      "source_case_id": "X5",
+      "source_task_number": 15,
+      "case_type": "ordinary",
+      "problem_and_reference_answer": "problems/D/task.png",
+      "solution": [
+        "cases/K-X5/solution-01.png"
+      ],
+      "expected": "cases/K-X5/expected.json",
+      "provenance": "cases/K-X5/provenance.json"
+    },
+    {
+      "id": "K-X6",
+      "source_case_id": "X6",
+      "source_task_number": 15,
+      "case_type": "ordinary",
+      "problem_and_reference_answer": "problems/L/task.png",
+      "solution": [
+        "cases/K-X6/solution-01.png"
+      ],
+      "expected": "cases/K-X6/expected.json",
+      "provenance": "cases/K-X6/provenance.json"
+    },
+    {
+      "id": "K-P16",
+      "source_case_id": "P16",
+      "source_task_number": 15,
+      "case_type": "ordinary",
+      "problem_and_reference_answer": "problems/P16/task.png",
+      "solution": [
+        "cases/K-P16/solution-01.jpg",
+        "cases/K-P16/solution-02.jpg"
+      ],
+      "expected": "cases/K-P16/expected.json",
+      "provenance": "cases/K-P16/provenance.json"
+    },
+    {
+      "id": "K-P17",
+      "source_case_id": "P17",
+      "source_task_number": 15,
+      "case_type": "ordinary",
+      "problem_and_reference_answer": "problems/P17/task.png",
+      "solution": [
+        "cases/K-P17/solution-01.jpg",
+        "cases/K-P17/solution-02.jpg"
+      ],
+      "expected": "cases/K-P17/expected.json",
+      "provenance": "cases/K-P17/provenance.json"
+    },
+    {
+      "id": "K-P18",
+      "source_case_id": "P18",
+      "source_task_number": 15,
+      "case_type": "ordinary",
+      "problem_and_reference_answer": "problems/P18/task.png",
+      "solution": [
+        "cases/K-P18/solution-01.jpg"
+      ],
+      "expected": "cases/K-P18/expected.json",
+      "provenance": "cases/K-P18/provenance.json"
+    },
+    {
+      "id": "K-P19",
+      "source_case_id": "P19",
+      "source_task_number": 15,
+      "case_type": "ordinary",
+      "problem_and_reference_answer": "problems/P19/task.png",
+      "solution": [
+        "cases/K-P19/solution-01.jpg",
+        "cases/K-P19/solution-02.jpg"
+      ],
+      "expected": "cases/K-P19/expected.json",
+      "provenance": "cases/K-P19/provenance.json"
+    },
+    {
+      "id": "K-P20",
+      "source_case_id": "P20",
+      "source_task_number": 15,
+      "case_type": "ordinary",
+      "problem_and_reference_answer": "problems/P20/task.png",
+      "solution": [
+        "cases/K-P20/solution-01.jpg",
+        "cases/K-P20/solution-02.jpg"
+      ],
+      "expected": "cases/K-P20/expected.json",
+      "provenance": "cases/K-P20/provenance.json"
+    },
+    {
+      "id": "K-P21",
+      "source_case_id": "P21",
+      "source_task_number": 15,
+      "case_type": "ordinary",
+      "problem_and_reference_answer": "problems/P21/task.png",
+      "solution": [
+        "cases/K-P21/solution-01.jpg"
+      ],
+      "expected": "cases/K-P21/expected.json",
+      "provenance": "cases/K-P21/provenance.json"
+    },
+    {
+      "id": "K-M2",
+      "source_case_id": "M2",
+      "source_task_number": 15,
+      "case_type": "negative",
+      "problem_and_reference_answer": "problems/P18/task.png",
+      "solution": [
+        "cases/K-M2/solution-01.jpg"
+      ],
+      "expected": "cases/K-M2/expected.json",
+      "provenance": "cases/K-M2/provenance.json"
+    }
+  ]
+}

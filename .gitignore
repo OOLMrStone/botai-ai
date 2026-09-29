@@ -12,8 +12,7 @@ dist/
 .env.*
 !.env.example
 
-.idea/workspace.xml
-.idea/misc.xml
+.idea/
 .DS_Store
 
 # API keys — never commit
@@ -26,3 +25,13 @@ deepseekkey.txt
 # Pulled test-session reports: contain photographs of student work.
 collected-reports/
 review.html
+
+# Private local test submission storage
+data/
+
+# Local run artifacts (metrics and reviews are curated under tasks/16/evals/results).
+output/evals/
+output/json-examples/
+# Private tutor photos stay local; manifests and evaluation findings are versioned.
+tasks/16/evals/kostyan/raw/
+tasks/16/evals/kostyan/assets/

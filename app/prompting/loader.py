@@ -277,13 +277,13 @@ _library: PromptLibrary | None = None
 
 
 def default_root() -> Path:
-    """`<repo>/prompts` — the package lives at `<repo>/app`."""
+    """`<repo>/prompts/legacy` — the package lives at `<repo>/app`."""
     from app.config import get_settings
 
     configured = get_settings().app.prompts_dir
     if configured:
         return Path(configured)
-    return Path(__file__).resolve().parents[2] / "prompts"
+    return Path(__file__).resolve().parents[2] / "prompts" / "legacy"
 
 
 def get_prompt_library() -> PromptLibrary:

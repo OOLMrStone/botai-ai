@@ -1,0 +1,21 @@
+{
+  "score": 0,
+  "expected_outcome": "rejected",
+  "case_type": "negative",
+  "source_case_id": "M2",
+  "source": {
+    "workbook": "raw/Тесты бота-проверяющего.xlsx",
+    "sheet": "Тестовый набор",
+    "cells": {
+      "id": "A31",
+      "task_number": "B31",
+      "type": "C31",
+      "description": "D31",
+      "expected_solution_score": "E31",
+      "expected_presentation_score": "F31",
+      "reference_answer": "G31",
+      "photos": "H31"
+    }
+  },
+  "verdict": "Фото 14.jpg (решение №13) отправлено как №15 с условием P18. Ожидается 0 В исходном наборе ожидался 0; текущий контракт требует отказа без оценки."
+}

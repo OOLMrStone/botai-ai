@@ -1,0 +1,21 @@
+{
+  "score": 2,
+  "expected_outcome": "graded",
+  "case_type": "ordinary",
+  "source_case_id": "Д",
+  "source": {
+    "workbook": "raw/Тесты бота-проверяющего.xlsx",
+    "sheet": "Тестовый набор",
+    "cells": {
+      "id": "A6",
+      "task_number": "B6",
+      "type": "C6",
+      "description": "D6",
+      "expected_solution_score": "E6",
+      "expected_presentation_score": "F6",
+      "reference_answer": "G6",
+      "photos": "H6"
+    }
+  },
+  "verdict": "Работа ученика: log₃²(25 − x²), исправленная цифра 22"
+}

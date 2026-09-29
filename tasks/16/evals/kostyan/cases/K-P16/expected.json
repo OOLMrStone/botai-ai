@@ -1,0 +1,21 @@
+{
+  "score": 2,
+  "expected_outcome": "graded",
+  "case_type": "ordinary",
+  "source_case_id": "P16",
+  "source": {
+    "workbook": "raw/Тесты бота-проверяющего.xlsx",
+    "sheet": "Тестовый набор",
+    "cells": {
+      "id": "A22",
+      "task_number": "B22",
+      "type": "C22",
+      "description": "D22",
+      "expected_solution_score": "E22",
+      "expected_presentation_score": "F22",
+      "reference_answer": "G22",
+      "photos": "H22"
+    }
+  },
+  "verdict": "Две страницы; разложение (t − 1)²(t² + 7t + 1); ответ «0»"
+}

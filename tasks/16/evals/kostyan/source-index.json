@@ -1,0 +1,121 @@
+{
+  "public_url": "https://disk.360.yandex.ru/d/mN-r2pZegKg2eA",
+  "files": [
+    {
+      "name": "11.jpg",
+      "path": "/11.jpg",
+      "size": 148803,
+      "sha256": "a07ca4f33594cf95e1e8b24a6f9f5ed125d716d276cad4b427ae05c998e74b9c",
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "12.jpg",
+      "path": "/12.jpg",
+      "size": 151937,
+      "sha256": "66f8edfc15ec8257ca624414b0428c09e46181f9a653f6bed15b71fea22c98ac",
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "13.jpg",
+      "path": "/13.jpg",
+      "size": 117780,
+      "sha256": "8034aa02eda1e3e6ace61d0a746566ffced00e95a65033135a445e4b4675492c",
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "14.jpg",
+      "path": "/14.jpg",
+      "size": 127330,
+      "sha256": "6ba1091ffeee403201da50b22396a4c4dca588d92d2d4b1f777b5ba893cafe19",
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "16.1.jpg",
+      "path": "/16.1.jpg",
+      "size": 167904,
+      "sha256": "a4053e82910e1d61f281715a596d1d8aedeef7d01f2417532812b4eceab2c3dd",
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "16.2.jpg",
+      "path": "/16.2.jpg",
+      "size": 141436,
+      "sha256": "80107145fd23b29cd2192b29f94c7d3929f43bde83d140d8c2c837933019cc30",
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "17.jpg",
+      "path": "/17.jpg",
+      "size": 148536,
+      "sha256": "49bc9ac2732e7422732201ad35994aca7474bccba54eac3a5057c60c32dd171f",
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "18.jpg",
+      "path": "/18.jpg",
+      "size": 143899,
+      "sha256": "90cbce1765d76b7544606be9e59b9b99291c89ad9b16655e36770e7a058937a3",
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "19.1.jpg",
+      "path": "/19.1.jpg",
+      "size": 153048,
+      "sha256": "917446bec14e56512de7c1818e593503ed43826f62a4c555dd7a69f40bad3b03",
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "19.2.jpg",
+      "path": "/19.2.jpg",
+      "size": 149945,
+      "sha256": "00c8f73bfcac63238f90c1d1524cab114473a4cce504e56b02b0909e75266f5b",
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "2.jpg",
+      "path": "/2.jpg",
+      "size": 197287,
+      "sha256": "6dc91d313618051210d00760f801cd7ac6ffb216264b623e2c9645c3d0a090ac",
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "20.2.jpg",
+      "path": "/20.2.jpg",
+      "size": 139210,
+      "sha256": "7041c7c3cc2ec2231b192687d4b9143e4c33bcf052e535b7a981d648dab483d7",
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "21.jpg",
+      "path": "/21.jpg",
+      "size": 145668,
+      "sha256": "e70824b257844583cacb8201e05558cae11b33945b06441fb0e54003ae886352",
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "3.jpg",
+      "path": "/3.jpg",
+      "size": 183633,
+      "sha256": "0ff3008e9c8af61e983efebc8ee3e28b61b33f3ba80a0e4b9f72567067ff879b",
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "4.1.jpg",
+      "path": "/4.1.jpg",
+      "size": 159834,
+      "sha256": "dc903c967eaba5700b61458fc50bf2e5244f66ab28dea516967eafdb56ca8e42",
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "4.2.jpg",
+      "path": "/4.2.jpg",
+      "size": 144253,
+      "sha256": "67f7a9b5ccad13ea92ad79b47f05fbab258cc357755b6a9f568480aaf39f8acc",
+      "mime_type": "image/jpeg"
+    }
+  ],
+  "other_directories": [
+    "/логи"
+  ],
+  "selection_note": "По просьбе пользователя оставлены только фотографии заданий15 и один чужой пример14.jpg. Из смешанной таблицы сохранены только выбранные строки в source-rows.json; исходная таблица доступна по public_url."
+}

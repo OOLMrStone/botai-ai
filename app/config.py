@@ -46,7 +46,7 @@ class AppSettings(BaseSettings):
     # Comma separated. Kept as a plain string because pydantic-settings would
     # otherwise try to JSON-decode a list-typed field and choke on `*`.
     cors_origins: str = "*"
-    # Where the editable prompt files live. Empty = <repo>/prompts. Point it
+    # Where the editable prompt files live. Empty = <repo>/prompts/legacy. Point it
     # elsewhere to run a prompt variant without touching the image.
     prompts_dir: str = ""
 
@@ -111,9 +111,8 @@ class VisionOverrides(BaseSettings):
     """Stage-1-only overrides, prefixed `LLM_VISION_`.
 
     Stage 1 reads a photograph; stages 2 and 3 only read text. Those are
-    different capabilities and often different vendors — DeepSeek V4, for
-    instance, is text-only, so it can run the reasoning stages while a
-    vision-capable endpoint handles transcription. Any field left empty falls
+    different capabilities and may use different vendors. Verify image support
+    against the actual provider and model. Any field left empty falls
     back to the corresponding `LLM_*` value.
     """
 
@@ -194,6 +193,14 @@ class DebugSettings(BaseSettings):
     report_limit: int = Field(default=20, ge=1, le=10_000)
 
 
+class PhotoSettings(BaseSettings):
+    model_config = _BASE_CONFIG | SettingsConfigDict(env_prefix="PHOTO_")
+    deadline_seconds: float = Field(default=240, gt=0, le=240)
+    max_model_turns: int = Field(default=32, ge=12, le=48)
+    concurrency: int = Field(default=2, ge=1, le=8)
+    reports_dir: str = "./data/suspicious-submissions"
+
+
 class Settings(BaseModel):
     app: AppSettings
     llm: LLMSettings
@@ -201,6 +208,7 @@ class Settings(BaseModel):
     grading: GradingSettings
     debug: DebugSettings
     features: FeatureSettings = Field(default_factory=FeatureSettings)
+    photo: PhotoSettings = Field(default_factory=PhotoSettings)
 
     @property
     def vision_llm(self) -> LLMSettings:

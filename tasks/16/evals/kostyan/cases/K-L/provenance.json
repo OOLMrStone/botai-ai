@@ -1,0 +1,18 @@
+{
+  "source_case_id": "Л",
+  "photo_variant": null,
+  "solution_inputs": [
+    {
+      "type": "literal_text_render",
+      "source": {
+        "file": "Тестовый набор — тексты для бота.txt",
+        "header_line": 188,
+        "statement": "Решите неравенство ((x − 1)² + 4(x + 1)²)/2 ≤ (3x + 1)²/4.",
+        "solution": "Решим неравенство:\n\n((x − 1)² + 4(x + 1)²)/2 ≤ (3x + 1)²/4 ⇔ 2(x − 1)² + 8(x + 1)² ≤ (3x + 1)² ⇔\n\n⇔ 2x² − 4x + 2 + 8x² + 16x + 8 ≤ 9x² + 6x + 1 ⇔\n\n⇔ x² + 6x + 9 ≤ 0 ⇔ (x + 3)² ≤ 0 ⇔ x = −3.\n\nОтвет: {−3}."
+      },
+      "text_sha256": "234378cb1382e8ad8ca7f1ebff9a11d462ebd91cd27b72e73278c05fbeb10de8"
+    }
+  ],
+  "reference_id": "Л",
+  "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+}

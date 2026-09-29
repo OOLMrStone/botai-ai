@@ -20,7 +20,7 @@ from app.api.deps import SettingsDep
 from app.core.errors import NotFoundError
 from app.features import describe as describe_features
 from app.features import resolve as resolve_features
-from app.grading.pipeline import get_pipeline
+from app.legacy_grading.pipeline import get_pipeline
 from app.reporting import TesterFeedback, get_report_store
 
 logger = logging.getLogger(__name__)

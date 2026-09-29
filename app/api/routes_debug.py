@@ -31,7 +31,7 @@ from app.features import describe as describe_features
 from app.features import resolve as resolve_features
 from app.domain.schemas import GradeRequest, GradeResponse, LLMVerdict
 from app.domain.tasks import CRITERIA_SOURCE, TASK_REGISTRY
-from app.grading import prompts
+from app.legacy_grading import prompts
 from app.llm.providers import MockProvider
 from app.llm.recorder import TraceRecord
 from app.llm.pricing import load_rates
@@ -217,7 +217,22 @@ async def mock_reset(_: DebugGate, client: LLMDep) -> dict[str, str]:
 # grading introspection
 # --------------------------------------------------------------------------
 @router.post("/grading/preview-prompt", summary="Render the prompt without calling the model")
-async def preview_prompt(_: DebugGate, service: ServiceDep, request: GradeRequest) -> dict[str, Any]:
+async def preview_prompt(
+    _: DebugGate, request: GradeRequest,
+    workflow: Literal["legacy", "photo"] = Query(default="legacy"),
+) -> dict[str, Any]:
+    if workflow == "photo":
+        from app.grading.session import ADAPTER, TOOLS, Session, load_package
+        from app.grading.provider import PREP_PROMPT
+        package = load_package()
+        task = {"id": "test-preview-task", "task_number": 16, "max_score": 2,
+                "statement": request.statement, "reference_answer": request.reference_answer or "Preview only",
+                "reference_solution": request.reference_solution}
+        session = Session(task, ["test-preview-image"], package)
+        return {"preparation": PREP_PROMPT, "main": package["main.md"] + "\n\n" + ADAPTER,
+                "files": {**package, **session.files}, "tools": TOOLS}
+    from app.legacy_grading.service import get_grading_service
+    service = get_grading_service()
     spec, criteria, max_score = service.resolve(request)
     messages = prompts.build_messages(request, spec, criteria, max_score)
     rendered = prompts.render(messages)

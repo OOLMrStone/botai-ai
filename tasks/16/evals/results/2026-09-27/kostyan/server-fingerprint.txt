@@ -1,0 +1,15 @@
+sha256:8963e203f16f6b0eb18fbc4ab89efe74371b7f0c8cdf11af6eadd29b00ad8f64
+383f884293b705f1a8b47bbd4f3bc3d4ec3bc495a8482c3ffde547ec714d459d  /srv/docs/grading-v2/drafts/task-16/analysis.md
+ebfc4e1afc0fc966c3afd03c94221949522346c5bd8824fb09a92087fb0b748a  /srv/docs/grading-v2/drafts/task-16/criteria.md
+976f5f8c04352a5a2fa870afb76063b8ec334e71936f0369339f63d072ef6e5d  /srv/docs/grading-v2/drafts/task-16/grading.md
+c58d5649e213f8d4a41eef54147dcf29288ad5445b735c540bc2e99cdb6aa22f  /srv/docs/grading-v2/drafts/task-16/main.md
+2c651bffa98fe6c898e82b9458385c6bdff1868d32a6287b5e7cc861798403b7  /srv/docs/grading-v2/drafts/task-16/ocr.md
+97685ecfe4da14a258dd61705e48f01de8d9040cdc8877a1618834da705453d0  /srv/docs/grading-v2/drafts/task-16/popular_mistakes.md
+44a500871573a5c5bb09186b8b7701abbd46c6d1ce2d82e209b6ef9f98fda7e5  /srv/docs/grading-v2/drafts/task-16/response-format.md
+ac96e99eec25c36ac86d78d70799f4a4e1e7a4d6de6170815e6d3ab83bad89c9  /srv/app/grading_v2/__init__.py
+da44e4eb893bab5b162c04982afc21345f1cc29b2eb75887633da318e34fd6a6  /srv/app/grading_v2/images.py
+d004a07d8fb62c0801fb0ec412d23914b318563440142388dc5a8b1f83193ffe  /srv/app/grading_v2/provider.py
+a14813e9f5ed49d9cceadf59a47828cb947fb23aa8d72f23edbd2ff349c1eedc  /srv/app/grading_v2/reports.py
+5b45ed7b7272fd46b13f631e2bf5ee1ca2c437ba6a10290300439d18281ae714  /srv/app/grading_v2/service.py
+39c76886423e656ce6c0dfd4de3f73c42c63f4240c25efcf78e24c441995d777  /srv/app/grading_v2/session.py
+836b65edb89ddc208aebef0b3bf2060ad155275757f0eaefd83fe74d4e319154  /srv/app/grading_v2/validator.py

@@ -1,0 +1,18 @@
+{
+  "source_case_id": "Б",
+  "photo_variant": "4",
+  "solution_inputs": [
+    {
+      "original": "raw/4.1.jpg",
+      "prepared_from": "raw/4.1.jpg",
+      "sha256": "dc903c967eaba5700b61458fc50bf2e5244f66ab28dea516967eafdb56ca8e42"
+    },
+    {
+      "original": "raw/4.2.jpg",
+      "prepared_from": "raw/4.2.jpg",
+      "sha256": "67f7a9b5ccad13ea92ad79b47f05fbab258cc357755b6a9f568480aaf39f8acc"
+    }
+  ],
+  "reference_id": "Б",
+  "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+}

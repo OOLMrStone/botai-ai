@@ -1,0 +1,21 @@
+{
+  "score": 1,
+  "expected_outcome": "graded",
+  "case_type": "ordinary",
+  "source_case_id": "P21",
+  "source": {
+    "workbook": "raw/Тесты бота-проверяющего.xlsx",
+    "sheet": "Тестовый набор",
+    "cells": {
+      "id": "A27",
+      "task_number": "B27",
+      "type": "C27",
+      "description": "D27",
+      "expected_solution_score": "E27",
+      "expected_presentation_score": "F27",
+      "reference_answer": "G27",
+      "photos": "H27"
+    }
+  },
+  "verdict": "В промежуточной строке x ≥ −1 − log₂5, в ответе круглая скобка → ответ отличается исключением точки → 1"
+}

@@ -8,7 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.config import get_settings, reset_settings_cache
-from app.grading import reset_grading_service
+from app.legacy_grading import reset_grading_service
 from app.llm import reset_llm_client
 from tests.conftest import DEBUG_HEADERS
 
@@ -28,9 +28,9 @@ def test_debug_accepts_the_right_token(client):
 
 # -- the request console ----------------------------------------------------
 def test_console_page_is_served(client):
-    res = client.get("/ui/console.html")
+    res = client.get("/ui/")
     assert res.status_code == 200
-    assert "X-Debug-Token" in res.text
+    assert "<html" in res.text
 
 
 def test_console_page_ships_no_token_of_its_own(client, settings):
@@ -39,14 +39,14 @@ def test_console_page_ships_no_token_of_its_own(client, settings):
     The page is static and therefore reachable with the toolkit off, so a
     token baked into it would be readable by anyone who can open the UI.
     """
-    body = client.get("/ui/console.html").text
+    body = client.get("/ui/").text
     assert settings.debug.token not in body
     assert "test-token" not in body
 
 
 def test_console_page_does_not_weaken_the_gate(client):
     """Regression guard: opening the console must not open /debug with it."""
-    assert client.get("/ui/console.html").status_code == 200
+    assert client.get("/ui/").status_code == 200
     assert client.get("/debug/ping").status_code == 403
     assert client.get("/debug/config").status_code == 403
 

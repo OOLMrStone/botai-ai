@@ -1,0 +1,9 @@
+{
+  "model": "deepseek-v4-flash",
+  "cases": 21,
+  "input": "Separate original task+answer image and original student solution image; no expert score or verdict",
+  "comparison": "Exact final grading.score against expected.score; refusals and HTTP errors separate",
+  "repetitions": 1,
+  "advice_review": "Independent qualitative agent assessment, good/medium/bad; correctness, relevance, concrete usefulness; no advice separate",
+  "prompts_frozen": true
+}

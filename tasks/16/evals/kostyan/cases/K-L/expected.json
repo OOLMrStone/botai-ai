@@ -1,0 +1,21 @@
+{
+  "score": 2,
+  "expected_outcome": "graded",
+  "case_type": "ordinary",
+  "source_case_id": "Л",
+  "source": {
+    "workbook": "raw/Тесты бота-проверяющего.xlsx",
+    "sheet": "Тестовый набор",
+    "cells": {
+      "id": "A12",
+      "task_number": "B12",
+      "type": "C12",
+      "description": "D12",
+      "expected_solution_score": "E12",
+      "expected_presentation_score": "F12",
+      "reference_answer": "G12",
+      "photos": "H12"
+    }
+  },
+  "verdict": "Эталон; задача без ОДЗ и отбора"
+}

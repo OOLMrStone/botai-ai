@@ -1,0 +1,21 @@
+{
+  "score": 1,
+  "expected_outcome": "graded",
+  "case_type": "ordinary",
+  "source_case_id": "X6",
+  "source": {
+    "workbook": "raw/Тесты бота-проверяющего.xlsx",
+    "sheet": "Тестовый набор",
+    "cells": {
+      "id": "A18",
+      "task_number": "B18",
+      "type": "C18",
+      "description": "D18",
+      "expected_solution_score": "E18",
+      "expected_presentation_score": "F18",
+      "reference_answer": "G18",
+      "photos": "H18"
+    }
+  },
+  "verdict": "8(x + 1)² раскрыто как 8x² + 8x + 8 → ответ ∅. Верная последовательность шагов → 1"
+}

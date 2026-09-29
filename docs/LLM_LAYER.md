@@ -1,3 +1,5 @@
+> Scope: retained text / legacy photo pipeline documentation. For the current photo service, start with [service.md](grading/service.md). Project task 16 corresponds to ФИПИ-2026 task 15; the legacy rubric registry retains its original numbering.
+
 # The LLM layer
 
 `app/llm/` — provider-agnostic model access. Knows nothing about the ЕГЭ.
@@ -93,7 +95,7 @@ it — closing every object, requiring every key, stripping `default`/`title`.
 Consequence for model design: **no `minimum`/`maximum` on schema fields.**
 Strict mode ignores them, so they buy nothing and cost a 502 when the model
 returns an out-of-range value. Enforce bounds after parsing — for grading,
-that is `grading/postprocess.py`.
+that is `app/legacy_grading/postprocess.py`.
 
 ### JSON extraction and repair
 
@@ -172,7 +174,7 @@ await client.complete_structured(..., extra_body={"thinking": {"type": "enabled"
 The settings say what a stage normally does; the call says what *this run* is
 testing. That is how the `deep_think_*` toggles work — they are registry data
 (`Feature.request_extra`), not pipeline code, so adding another such switch
-needs no edit to `grading/pipeline.py`.
+needs no edit to `app/legacy_grading/pipeline.py`.
 
 A per-call `None` **removes** a key (RFC 7396 merge-patch). That is the only
 way to say "send nothing here": the absence of `thinking` means the provider's

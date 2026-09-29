@@ -15,6 +15,7 @@ os.environ.update(
         "APP_LOG_LEVEL": "WARNING",
         "APP_LOG_FORMAT": "console",
         "LLM_PROVIDER": "mock",
+        "LLM_VISION_PROVIDER": "mock",
         "LLM_MODEL": "mock-model",
         "LLM_API_KEY": "",
         "LLM_MAX_RETRIES": "2",
@@ -30,8 +31,8 @@ import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
 from app.config import get_settings, reset_settings_cache  # noqa: E402
-from app.grading import reset_grading_service  # noqa: E402
-from app.grading.pipeline import reset_pipeline  # noqa: E402
+from app.legacy_grading import reset_grading_service  # noqa: E402
+from app.legacy_grading.pipeline import reset_pipeline  # noqa: E402
 from app.llm import get_llm_client, reset_llm_client  # noqa: E402
 from app.llm.recorder import reset_recorder  # noqa: E402
 

@@ -1,0 +1,18 @@
+{
+  "source_case_id": "X5",
+  "photo_variant": null,
+  "solution_inputs": [
+    {
+      "type": "literal_text_render",
+      "source": {
+        "file": "Тестовый набор — тексты для бота.txt",
+        "header_line": 349,
+        "statement": "Решите неравенство log₃²(25 − x²) − 3·log₃(25 − x²) + 2 ≥ 0.",
+        "solution": "Пусть log₃(25 − x²) = t, тогда\n\nt² − 3t + 2 ≥ 0 ⇔ (t − 1)(t − 2) ≥ 0 ⇔\n\n[ t ≤ 1\n[ t ≥ 2\n\n[ log₃(25 − x²) ≤ 1      ⇔     [ 25 − x² ≤ 3     ⇔     [ x² ≥ 22\n[ log₃(25 − x²) ≥ 2            [ 25 − x² ≥ 9           [ x² ≤ 16\n\n[ x ≤ −√22 или x ≥ √22\n[ −4 ≤ x ≤ 4\n\nОтвет: (−∞; −√22] ∪ [−4; 4] ∪ [√22; +∞)."
+      },
+      "text_sha256": "1531a4fe32ae6a564f1f5957e39e48b2b278c4b22868d164ed9998dd4b014393"
+    }
+  ],
+  "reference_id": "Д",
+  "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+}

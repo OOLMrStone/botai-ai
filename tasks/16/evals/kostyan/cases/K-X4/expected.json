@@ -1,0 +1,21 @@
+{
+  "score": 1,
+  "expected_outcome": "graded",
+  "case_type": "ordinary",
+  "source_case_id": "X4",
+  "source": {
+    "workbook": "raw/Тесты бота-проверяющего.xlsx",
+    "sheet": "Тестовый набор",
+    "cells": {
+      "id": "A16",
+      "task_number": "B16",
+      "type": "C16",
+      "description": "D16",
+      "expected_solution_score": "E16",
+      "expected_presentation_score": "F16",
+      "reference_answer": "G16",
+      "photos": "H16"
+    }
+  },
+  "verdict": "Деление на (t − 2)² — потеряна точка x = 4. «Ответ отличается исключением точек» → 1"
+}

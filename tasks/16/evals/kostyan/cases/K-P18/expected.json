@@ -1,0 +1,21 @@
+{
+  "score": 2,
+  "expected_outcome": "graded",
+  "case_type": "ordinary",
+  "source_case_id": "P18",
+  "source": {
+    "workbook": "raw/Тесты бота-проверяющего.xlsx",
+    "sheet": "Тестовый набор",
+    "cells": {
+      "id": "A24",
+      "task_number": "B24",
+      "type": "C24",
+      "description": "D24",
+      "expected_solution_score": "E24",
+      "expected_presentation_score": "F24",
+      "reference_answer": "G24",
+      "photos": "H24"
+    }
+  },
+  "verdict": "t = 2^(−x) > 0, t²(t² − 5)/(t² − 16) ≥ 0"
+}

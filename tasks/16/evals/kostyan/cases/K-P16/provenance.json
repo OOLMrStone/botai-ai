@@ -1,0 +1,18 @@
+{
+  "source_case_id": "P16",
+  "photo_variant": null,
+  "solution_inputs": [
+    {
+      "original": "raw/16.1.jpg",
+      "prepared_from": "raw/16.1.jpg",
+      "sha256": "a4053e82910e1d61f281715a596d1d8aedeef7d01f2417532812b4eceab2c3dd"
+    },
+    {
+      "original": "raw/16.2.jpg",
+      "prepared_from": "assets/crops/16.2-first.jpg",
+      "sha256": "d02c68cee8637014bf2d3b9396d90f2ca1bb28b7a70b41687f4dacc932b71c3f"
+    }
+  ],
+  "reference_id": "P16",
+  "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+}

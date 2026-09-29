@@ -1,0 +1,21 @@
+{
+  "score": 2,
+  "expected_outcome": "graded",
+  "case_type": "ordinary",
+  "source_case_id": "P20",
+  "source": {
+    "workbook": "raw/Тесты бота-проверяющего.xlsx",
+    "sheet": "Тестовый набор",
+    "cells": {
+      "id": "A26",
+      "task_number": "B26",
+      "type": "C26",
+      "description": "D26",
+      "expected_solution_score": "E26",
+      "expected_presentation_score": "F26",
+      "reference_answer": "G26",
+      "photos": "H26"
+    }
+  },
+  "verdict": "Начало на 19.2.jpg (после №16), конец на 20.2.jpg; громоздкое приведение к (t − 3)/((t − 1)(t − 9))"
+}

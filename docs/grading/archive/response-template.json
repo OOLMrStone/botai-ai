@@ -1,0 +1,55 @@
+{
+  "task": {
+    "id": "",
+    "task_number": 0,
+    "max_score": 0,
+    "statement": "",
+    "reference_answer": "",
+    "reference_solution": ""
+  },
+  "solution_image_ids": [
+    ""
+  ],
+  "is_graded": true,
+  "rejection_reason": "",
+  "ocr": "",
+  "analysis": {
+    "summary": "",
+    "checks": {
+      "domain": {
+        "is_correct": false,
+        "reason": ""
+      },
+      "transformations": {
+        "is_correct": false,
+        "reason": ""
+      },
+      "completeness": {
+        "is_complete": false,
+        "reason": ""
+      }
+    },
+    "student_answer": {
+      "text": "",
+      "is_correct": false
+    },
+    "errors": [
+      {
+        "id": "",
+        "code": "",
+        "description": "",
+        "where": "",
+        "correct_version": "",
+        "advice": ""
+      }
+    ],
+    "strengths": [
+      ""
+    ]
+  },
+  "grading": {
+    "score": 0,
+    "criterion": "",
+    "explanation": ""
+  }
+}

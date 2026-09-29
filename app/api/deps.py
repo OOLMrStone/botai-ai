@@ -9,7 +9,7 @@ from fastapi import Depends, Header
 
 from app.config import Settings, get_settings
 from app.core.errors import DebugAuthError, DebugDisabledError
-from app.grading import GradingService, get_grading_service
+from app.legacy_grading import GradingService, get_grading_service
 from app.llm import LLMClient, get_llm_client
 from app.llm.recorder import TraceRecorder, get_recorder
 

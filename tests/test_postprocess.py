@@ -6,7 +6,7 @@ import pytest
 
 from app.domain.schemas import LLMVerdict
 from app.domain.tasks import get_task_spec
-from app.grading.postprocess import consensus, normalise, normalise_grades
+from app.legacy_grading.postprocess import consensus, normalise, normalise_grades
 
 SPEC_13 = get_task_spec(13)  # max 2, criteria at 0 / 1 / 2
 

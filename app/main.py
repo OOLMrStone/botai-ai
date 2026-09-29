@@ -9,6 +9,7 @@ routes in its OpenAPI schema.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import time
 from collections.abc import Awaitable, Callable
@@ -21,8 +22,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
+from app.api import routes_grading
+from app.grading.service import GradingService
+from app.grading.reports import ReportStore
 from app import __version__
-from app.api import routes_debug, routes_grading, routes_health, routes_photo
+from app.api import routes_debug, routes_legacy_grading, routes_health, routes_photo
 from app.config import Settings, get_settings
 from app.core.context import get_request_id, new_id, set_request_id
 from app.core.errors import ServiceError
@@ -62,9 +66,23 @@ async def lifespan(_app: FastAPI):
     if settings.llm.provider == "mock":
         logger.warning("LLM_PROVIDER=mock — grades are synthetic, no model is being called.")
 
+    async def cleanup_reports():
+        store = ReportStore(settings.photo.reports_dir)
+        while True:
+            try:
+                await asyncio.to_thread(store.cleanup)
+            except OSError:
+                logger.error("Suspicious submission retention cleanup failed")
+            await asyncio.sleep(3600)
+
+    _app.state.photo_identity_secret = await asyncio.to_thread(
+        ReportStore(settings.photo.reports_dir).identity_secret)
+    cleanup = asyncio.create_task(cleanup_reports())
     try:
         yield
     finally:
+        cleanup.cancel()
+        await asyncio.gather(cleanup, return_exceptions=True)
         # Only close what was actually built. A process whose provider never
         # constructed (no API key) must still shut down cleanly.
         for client in peek_llm_clients():
@@ -87,6 +105,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         openapi_url=None if settings.app.is_prod else "/openapi.json",
     )
     _app.state.settings = settings
+    _app.state.photo_active = 0
+    _app.state.photo_service_factory = GradingService
+    _app.add_middleware(routes_grading.UploadLimitMiddleware)
 
     _app.add_middleware(
         CORSMiddleware,
@@ -158,8 +179,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             },
         )
 
-    _app.include_router(routes_health.router)
     _app.include_router(routes_grading.router)
+    _app.include_router(routes_health.router)
+    _app.include_router(routes_legacy_grading.router)
     _app.include_router(routes_photo.router)
     if settings.debug.enabled:
         _app.include_router(routes_debug.router)

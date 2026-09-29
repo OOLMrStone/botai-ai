@@ -1,0 +1,660 @@
+{
+  "created_at": "2026-09-27T16:48:14.906555+00:00",
+  "identity": {
+    "endpoint": "http://127.0.0.1:8766/api/v1/photo-check",
+    "manifest_sha256": "ae695617745b41bfb463c76b32b5a5df2d9eda351bda2e0045f788e40e97242e",
+    "cases": [
+      {
+        "id": "K-B-2",
+        "inputs": {
+          "task_image": {
+            "path": "problems/B/task.png",
+            "sha256": "6d7fe2e4bc0cd92e69ac82f950a8991dc4432f10f989ad44c5e79e5f105af21c"
+          },
+          "solution_images": [
+            {
+              "path": "cases/K-B-2/solution-01.jpg",
+              "sha256": "6dc91d313618051210d00760f801cd7ac6ffb216264b623e2c9645c3d0a090ac"
+            }
+          ],
+          "expected_sha256": "051194249a84b241a2e15760fcca31b120a947077f9363372b8e3940b55e2f13",
+          "provenance": {
+            "source_case_id": "Б",
+            "photo_variant": "2",
+            "solution_inputs": [
+              {
+                "original": "raw/2.jpg",
+                "prepared_from": "raw/2.jpg",
+                "sha256": "6dc91d313618051210d00760f801cd7ac6ffb216264b623e2c9645c3d0a090ac"
+              }
+            ],
+            "reference_id": "Б",
+            "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+          }
+        }
+      },
+      {
+        "id": "K-B-3",
+        "inputs": {
+          "task_image": {
+            "path": "problems/B/task.png",
+            "sha256": "6d7fe2e4bc0cd92e69ac82f950a8991dc4432f10f989ad44c5e79e5f105af21c"
+          },
+          "solution_images": [
+            {
+              "path": "cases/K-B-3/solution-01.jpg",
+              "sha256": "0ff3008e9c8af61e983efebc8ee3e28b61b33f3ba80a0e4b9f72567067ff879b"
+            }
+          ],
+          "expected_sha256": "051194249a84b241a2e15760fcca31b120a947077f9363372b8e3940b55e2f13",
+          "provenance": {
+            "source_case_id": "Б",
+            "photo_variant": "3",
+            "solution_inputs": [
+              {
+                "original": "raw/3.jpg",
+                "prepared_from": "raw/3.jpg",
+                "sha256": "0ff3008e9c8af61e983efebc8ee3e28b61b33f3ba80a0e4b9f72567067ff879b"
+              }
+            ],
+            "reference_id": "Б",
+            "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+          }
+        }
+      },
+      {
+        "id": "K-B-4",
+        "inputs": {
+          "task_image": {
+            "path": "problems/B/task.png",
+            "sha256": "6d7fe2e4bc0cd92e69ac82f950a8991dc4432f10f989ad44c5e79e5f105af21c"
+          },
+          "solution_images": [
+            {
+              "path": "cases/K-B-4/solution-01.jpg",
+              "sha256": "dc903c967eaba5700b61458fc50bf2e5244f66ab28dea516967eafdb56ca8e42"
+            },
+            {
+              "path": "cases/K-B-4/solution-02.jpg",
+              "sha256": "67f7a9b5ccad13ea92ad79b47f05fbab258cc357755b6a9f568480aaf39f8acc"
+            }
+          ],
+          "expected_sha256": "051194249a84b241a2e15760fcca31b120a947077f9363372b8e3940b55e2f13",
+          "provenance": {
+            "source_case_id": "Б",
+            "photo_variant": "4",
+            "solution_inputs": [
+              {
+                "original": "raw/4.1.jpg",
+                "prepared_from": "raw/4.1.jpg",
+                "sha256": "dc903c967eaba5700b61458fc50bf2e5244f66ab28dea516967eafdb56ca8e42"
+              },
+              {
+                "original": "raw/4.2.jpg",
+                "prepared_from": "raw/4.2.jpg",
+                "sha256": "67f7a9b5ccad13ea92ad79b47f05fbab258cc357755b6a9f568480aaf39f8acc"
+              }
+            ],
+            "reference_id": "Б",
+            "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+          }
+        }
+      },
+      {
+        "id": "K-D-11",
+        "inputs": {
+          "task_image": {
+            "path": "problems/D/task.png",
+            "sha256": "e12b45158140673c38c5394a58d52a4564560e39e3b8e0631eb40fd44a11e1cb"
+          },
+          "solution_images": [
+            {
+              "path": "cases/K-D-11/solution-01.jpg",
+              "sha256": "a07ca4f33594cf95e1e8b24a6f9f5ed125d716d276cad4b427ae05c998e74b9c"
+            }
+          ],
+          "expected_sha256": "0a68b22337d9e964ff845cdda8612cc31239b294b3eb8004b7a58f1b065d685c",
+          "provenance": {
+            "source_case_id": "Д",
+            "photo_variant": "11",
+            "solution_inputs": [
+              {
+                "original": "raw/11.jpg",
+                "prepared_from": "raw/11.jpg",
+                "sha256": "a07ca4f33594cf95e1e8b24a6f9f5ed125d716d276cad4b427ae05c998e74b9c"
+              }
+            ],
+            "reference_id": "Д",
+            "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+          }
+        }
+      },
+      {
+        "id": "K-D-12",
+        "inputs": {
+          "task_image": {
+            "path": "problems/D/task.png",
+            "sha256": "e12b45158140673c38c5394a58d52a4564560e39e3b8e0631eb40fd44a11e1cb"
+          },
+          "solution_images": [
+            {
+              "path": "cases/K-D-12/solution-01.jpg",
+              "sha256": "66f8edfc15ec8257ca624414b0428c09e46181f9a653f6bed15b71fea22c98ac"
+            }
+          ],
+          "expected_sha256": "0a68b22337d9e964ff845cdda8612cc31239b294b3eb8004b7a58f1b065d685c",
+          "provenance": {
+            "source_case_id": "Д",
+            "photo_variant": "12",
+            "solution_inputs": [
+              {
+                "original": "raw/12.jpg",
+                "prepared_from": "raw/12.jpg",
+                "sha256": "66f8edfc15ec8257ca624414b0428c09e46181f9a653f6bed15b71fea22c98ac"
+              }
+            ],
+            "reference_id": "Д",
+            "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+          }
+        }
+      },
+      {
+        "id": "K-D-13",
+        "inputs": {
+          "task_image": {
+            "path": "problems/D/task.png",
+            "sha256": "e12b45158140673c38c5394a58d52a4564560e39e3b8e0631eb40fd44a11e1cb"
+          },
+          "solution_images": [
+            {
+              "path": "cases/K-D-13/solution-01.jpg",
+              "sha256": "8034aa02eda1e3e6ace61d0a746566ffced00e95a65033135a445e4b4675492c"
+            }
+          ],
+          "expected_sha256": "0a68b22337d9e964ff845cdda8612cc31239b294b3eb8004b7a58f1b065d685c",
+          "provenance": {
+            "source_case_id": "Д",
+            "photo_variant": "13",
+            "solution_inputs": [
+              {
+                "original": "raw/13.jpg",
+                "prepared_from": "raw/13.jpg",
+                "sha256": "8034aa02eda1e3e6ace61d0a746566ffced00e95a65033135a445e4b4675492c"
+              }
+            ],
+            "reference_id": "Д",
+            "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+          }
+        }
+      },
+      {
+        "id": "K-I",
+        "inputs": {
+          "task_image": {
+            "path": "problems/I/task.png",
+            "sha256": "88a44eaf2bccaa55aee5136681636fb5aebace19577339eaa341327c8765c4d2"
+          },
+          "solution_images": [
+            {
+              "path": "cases/K-I/solution-01.png",
+              "sha256": "d61c95b1030354eac601464af9e89be5dedbd26b77313ac3a93bb764bfbc8f78"
+            }
+          ],
+          "expected_sha256": "bc9956aba27e25c6e9303670d83c9385cd3b0ca23c95dcf50fafed5719fea6b6",
+          "provenance": {
+            "source_case_id": "И",
+            "photo_variant": null,
+            "solution_inputs": [
+              {
+                "type": "literal_text_render",
+                "source": {
+                  "file": "Тестовый набор — тексты для бота.txt",
+                  "header_line": 131,
+                  "statement": "Решите неравенство (log₂(32x) − 1)/(log₂²x − log₂x⁵) ≥ −1.",
+                  "solution": "Преобразуем неравенство:\n\n(log₂(32x) − 1)/(log₂²x − log₂x⁵) ≥ −1 ⇔ (5 + log₂x − 1)/(log₂²x − 5log₂x) ≥ −1.\n\nПусть t = log₂x, тогда\n\n(4 + t)/(t² − 5t) ≥ −1 ⇔ (t² − 4t + 4)/(t² − 5t) ≥ 0 ⇔ (t − 2)²/(t(t − 5)) ≥ 0 ⇔\n\n[ t < 0\n[ t = 2\n[ t > 5\n\n(метод интервалов на оси t: точки 0 и 5 выколоты, точка 2 закрашена; знаки слева направо: +, −, −, +; заштрихованы промежутки t < 0 и t > 5)\n\nВернёмся к исходной переменной:\n\n[ log₂x < 0            [ 0 < x < 1\n[ log₂x = 2      ⇔     [ x = 4\n[ log₂x > 5            [ x > 32\n\nОтвет: (0; 1) ∪ {4} ∪ (32; +∞)."
+                },
+                "text_sha256": "b6f564c4835209f861f08df7b68fddef9369d8aeb981962d0956ab4178d67687"
+              }
+            ],
+            "reference_id": "И",
+            "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+          }
+        }
+      },
+      {
+        "id": "K-K",
+        "inputs": {
+          "task_image": {
+            "path": "problems/K/task.png",
+            "sha256": "396615dc415e7bd4c1e98daf840124556a92048b228b3605ae731b9acd0e3b83"
+          },
+          "solution_images": [
+            {
+              "path": "cases/K-K/solution-01.png",
+              "sha256": "15e78e2b81576eb99362310052e7bf18c4482ec984e36d09d9ca262e6ae03ccd"
+            }
+          ],
+          "expected_sha256": "dd5d863ddeb6d39140b64232e561cbcf12d56ca8a337f2ac7b690d7ea5c4bff6",
+          "provenance": {
+            "source_case_id": "К",
+            "photo_variant": null,
+            "solution_inputs": [
+              {
+                "type": "literal_text_render",
+                "source": {
+                  "file": "Тестовый набор — тексты для бота.txt",
+                  "header_line": 163,
+                  "statement": "Решите неравенство 5^(log₅²x) + x^(log₅x) ≥ 2·⁴√5.",
+                  "solution": "Приведём второе слагаемое к основанию 5:\n\nx^(log₅x) = (5^(log₅x))^(log₅x) = 5^(log₅²x).\n\nНеравенство принимает вид:\n\n2·5^(log₅²x) ≥ 2·⁴√5 ⇔ 5^(log₅²x) ≥ 5^0,25 ⇔ |log₅x| ≥ 1/2 ⇔\n\n[ 0 < x ≤ 1/√5\n[ x ≥ √5\n\nРешение неравенства: (0; 1/√5] ∪ [√5; +∞).\n\nОтвет: (0; 1/√5] ∪ [√5; +∞)."
+                },
+                "text_sha256": "1d717e9664814fd46763594d3e901c90ee99fda51b140aa884d1774367c70def"
+              }
+            ],
+            "reference_id": "К",
+            "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+          }
+        }
+      },
+      {
+        "id": "K-L",
+        "inputs": {
+          "task_image": {
+            "path": "problems/L/task.png",
+            "sha256": "06b8ea583050cccd99e6eaeabee857b225eb35c7f9231a41394b033be267c1a8"
+          },
+          "solution_images": [
+            {
+              "path": "cases/K-L/solution-01.png",
+              "sha256": "97b7e096721c1c8f1a14daa683a214e71c150c9b3b01064f8d005cf3a2700587"
+            }
+          ],
+          "expected_sha256": "d340cd7d763a8b797cf9abfc00378366253b3777a892e6331c98835ecfc09ade",
+          "provenance": {
+            "source_case_id": "Л",
+            "photo_variant": null,
+            "solution_inputs": [
+              {
+                "type": "literal_text_render",
+                "source": {
+                  "file": "Тестовый набор — тексты для бота.txt",
+                  "header_line": 188,
+                  "statement": "Решите неравенство ((x − 1)² + 4(x + 1)²)/2 ≤ (3x + 1)²/4.",
+                  "solution": "Решим неравенство:\n\n((x − 1)² + 4(x + 1)²)/2 ≤ (3x + 1)²/4 ⇔ 2(x − 1)² + 8(x + 1)² ≤ (3x + 1)² ⇔\n\n⇔ 2x² − 4x + 2 + 8x² + 16x + 8 ≤ 9x² + 6x + 1 ⇔\n\n⇔ x² + 6x + 9 ≤ 0 ⇔ (x + 3)² ≤ 0 ⇔ x = −3.\n\nОтвет: {−3}."
+                },
+                "text_sha256": "234378cb1382e8ad8ca7f1ebff9a11d462ebd91cd27b72e73278c05fbeb10de8"
+              }
+            ],
+            "reference_id": "Л",
+            "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+          }
+        }
+      },
+      {
+        "id": "K-X4",
+        "inputs": {
+          "task_image": {
+            "path": "problems/I/task.png",
+            "sha256": "88a44eaf2bccaa55aee5136681636fb5aebace19577339eaa341327c8765c4d2"
+          },
+          "solution_images": [
+            {
+              "path": "cases/K-X4/solution-01.png",
+              "sha256": "0e8f062b0e1b413c9da99a0377f164e493145e2ca0823471ac104a89197c4747"
+            }
+          ],
+          "expected_sha256": "9199203692f22914004e7228b62973da4ed0c520eadb6edebf1634a05e03d0c5",
+          "provenance": {
+            "source_case_id": "X4",
+            "photo_variant": null,
+            "solution_inputs": [
+              {
+                "type": "literal_text_render",
+                "source": {
+                  "file": "Тестовый набор — тексты для бота.txt",
+                  "header_line": 319,
+                  "statement": "Решите неравенство (log₂(32x) − 1)/(log₂²x − log₂x⁵) ≥ −1.",
+                  "solution": "Преобразуем неравенство:\n\n(log₂(32x) − 1)/(log₂²x − log₂x⁵) ≥ −1 ⇔ (5 + log₂x − 1)/(log₂²x − 5log₂x) ≥ −1.\n\nПусть t = log₂x, тогда\n\n(4 + t)/(t² − 5t) ≥ −1 ⇔ (t² − 4t + 4)/(t² − 5t) ≥ 0 ⇔ (t − 2)²/(t(t − 5)) ≥ 0 ⇔ 1/(t(t − 5)) > 0 ⇔\n\n[ t < 0\n[ t > 5\n\n(метод интервалов на оси t: точки 0 и 5 выколоты; знаки слева направо: +, −, +; заштрихованы промежутки t < 0 и t > 5)\n\nВернёмся к исходной переменной:\n\n[ log₂x < 0      ⇔     [ 0 < x < 1\n[ log₂x > 5            [ x > 32\n\nОтвет: (0; 1) ∪ (32; +∞)."
+                },
+                "text_sha256": "6c04039e97370e17b298d5d7b7dd33abfa43cfea7810ca94c632d5915c44b9de"
+              }
+            ],
+            "reference_id": "И",
+            "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+          }
+        }
+      },
+      {
+        "id": "K-X5",
+        "inputs": {
+          "task_image": {
+            "path": "problems/D/task.png",
+            "sha256": "e12b45158140673c38c5394a58d52a4564560e39e3b8e0631eb40fd44a11e1cb"
+          },
+          "solution_images": [
+            {
+              "path": "cases/K-X5/solution-01.png",
+              "sha256": "6eb393fbc97fb9e8359ea583eb2c8b595cf19c6252a5591d394a5480a269dce6"
+            }
+          ],
+          "expected_sha256": "70864591fa42c4fa8b4a32387fa4b3be1c6feaea6c125300dc249d05f0b0d449",
+          "provenance": {
+            "source_case_id": "X5",
+            "photo_variant": null,
+            "solution_inputs": [
+              {
+                "type": "literal_text_render",
+                "source": {
+                  "file": "Тестовый набор — тексты для бота.txt",
+                  "header_line": 349,
+                  "statement": "Решите неравенство log₃²(25 − x²) − 3·log₃(25 − x²) + 2 ≥ 0.",
+                  "solution": "Пусть log₃(25 − x²) = t, тогда\n\nt² − 3t + 2 ≥ 0 ⇔ (t − 1)(t − 2) ≥ 0 ⇔\n\n[ t ≤ 1\n[ t ≥ 2\n\n[ log₃(25 − x²) ≤ 1      ⇔     [ 25 − x² ≤ 3     ⇔     [ x² ≥ 22\n[ log₃(25 − x²) ≥ 2            [ 25 − x² ≥ 9           [ x² ≤ 16\n\n[ x ≤ −√22 или x ≥ √22\n[ −4 ≤ x ≤ 4\n\nОтвет: (−∞; −√22] ∪ [−4; 4] ∪ [√22; +∞)."
+                },
+                "text_sha256": "1531a4fe32ae6a564f1f5957e39e48b2b278c4b22868d164ed9998dd4b014393"
+              }
+            ],
+            "reference_id": "Д",
+            "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+          }
+        }
+      },
+      {
+        "id": "K-X6",
+        "inputs": {
+          "task_image": {
+            "path": "problems/L/task.png",
+            "sha256": "06b8ea583050cccd99e6eaeabee857b225eb35c7f9231a41394b033be267c1a8"
+          },
+          "solution_images": [
+            {
+              "path": "cases/K-X6/solution-01.png",
+              "sha256": "ced405894995458a6e634960eed9002ee72ac88f514ea56dab6fd596ecf678f2"
+            }
+          ],
+          "expected_sha256": "3798195fe9d3d0d17aed6956967ebb72a3ff033c2f7578ac69440d6952ab7e62",
+          "provenance": {
+            "source_case_id": "X6",
+            "photo_variant": null,
+            "solution_inputs": [
+              {
+                "type": "literal_text_render",
+                "source": {
+                  "file": "Тестовый набор — тексты для бота.txt",
+                  "header_line": 374,
+                  "statement": "Решите неравенство ((x − 1)² + 4(x + 1)²)/2 ≤ (3x + 1)²/4.",
+                  "solution": "Решим неравенство:\n\n((x − 1)² + 4(x + 1)²)/2 ≤ (3x + 1)²/4 ⇔ 2(x − 1)² + 8(x + 1)² ≤ (3x + 1)² ⇔\n\n⇔ 2x² − 4x + 2 + 8x² + 8x + 8 ≤ 9x² + 6x + 1 ⇔\n\n⇔ x² − 2x + 9 ≤ 0.\n\nD = 4 − 36 = −32 < 0, старший коэффициент положителен, поэтому x² − 2x + 9 > 0 при всех x, и неравенство решений не имеет.\n\nОтвет: ∅."
+                },
+                "text_sha256": "4d8eb72791452f6fae73d19f3c24753e5db186cdfb5ed13bb9b0f59c5f317115"
+              }
+            ],
+            "reference_id": "Л",
+            "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+          }
+        }
+      },
+      {
+        "id": "K-P16",
+        "inputs": {
+          "task_image": {
+            "path": "problems/P16/task.png",
+            "sha256": "e5ba7bdb23893a68142394f78ba55a135aa58f1e144c0d6f8fab847a924b46ab"
+          },
+          "solution_images": [
+            {
+              "path": "cases/K-P16/solution-01.jpg",
+              "sha256": "a4053e82910e1d61f281715a596d1d8aedeef7d01f2417532812b4eceab2c3dd"
+            },
+            {
+              "path": "cases/K-P16/solution-02.jpg",
+              "sha256": "d02c68cee8637014bf2d3b9396d90f2ca1bb28b7a70b41687f4dacc932b71c3f"
+            }
+          ],
+          "expected_sha256": "6396c3043da48bf28f2c6f1f9b910e8b2a157507ed49bac0a6f1f8f2f85b2cb6",
+          "provenance": {
+            "source_case_id": "P16",
+            "photo_variant": null,
+            "solution_inputs": [
+              {
+                "original": "raw/16.1.jpg",
+                "prepared_from": "raw/16.1.jpg",
+                "sha256": "a4053e82910e1d61f281715a596d1d8aedeef7d01f2417532812b4eceab2c3dd"
+              },
+              {
+                "original": "raw/16.2.jpg",
+                "prepared_from": "assets/crops/16.2-first.jpg",
+                "sha256": "d02c68cee8637014bf2d3b9396d90f2ca1bb28b7a70b41687f4dacc932b71c3f"
+              }
+            ],
+            "reference_id": "P16",
+            "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+          }
+        }
+      },
+      {
+        "id": "K-P17",
+        "inputs": {
+          "task_image": {
+            "path": "problems/P17/task.png",
+            "sha256": "a260ca9653ca876e14529f7caae21093dda506a660fdf07d2908c0e8f3cb73c1"
+          },
+          "solution_images": [
+            {
+              "path": "cases/K-P17/solution-01.jpg",
+              "sha256": "ed704fd3a467964de878b3db7ce53d897b9f0a9dbeb89372327fa389b05d4293"
+            },
+            {
+              "path": "cases/K-P17/solution-02.jpg",
+              "sha256": "49bc9ac2732e7422732201ad35994aca7474bccba54eac3a5057c60c32dd171f"
+            }
+          ],
+          "expected_sha256": "57a4ba3913d14ef9db5f594e9421cd7d6ff863b9d3c36933b2be44c9d906e8e6",
+          "provenance": {
+            "source_case_id": "P17",
+            "photo_variant": null,
+            "solution_inputs": [
+              {
+                "original": "raw/16.2.jpg",
+                "prepared_from": "assets/crops/16.2-second.jpg",
+                "sha256": "ed704fd3a467964de878b3db7ce53d897b9f0a9dbeb89372327fa389b05d4293"
+              },
+              {
+                "original": "raw/17.jpg",
+                "prepared_from": "raw/17.jpg",
+                "sha256": "49bc9ac2732e7422732201ad35994aca7474bccba54eac3a5057c60c32dd171f"
+              }
+            ],
+            "reference_id": "P17",
+            "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+          }
+        }
+      },
+      {
+        "id": "K-P18",
+        "inputs": {
+          "task_image": {
+            "path": "problems/P18/task.png",
+            "sha256": "4f0f384fbce46b951331e0173a4ca2a23c160b9daa4162d213739d7d1d591d31"
+          },
+          "solution_images": [
+            {
+              "path": "cases/K-P18/solution-01.jpg",
+              "sha256": "90cbce1765d76b7544606be9e59b9b99291c89ad9b16655e36770e7a058937a3"
+            }
+          ],
+          "expected_sha256": "c053ca481a9e0530f2fd81beeaa3d88a22c9e3e1474d60a564b12d1a07992ec2",
+          "provenance": {
+            "source_case_id": "P18",
+            "photo_variant": null,
+            "solution_inputs": [
+              {
+                "original": "raw/18.jpg",
+                "prepared_from": "raw/18.jpg",
+                "sha256": "90cbce1765d76b7544606be9e59b9b99291c89ad9b16655e36770e7a058937a3"
+              }
+            ],
+            "reference_id": "P18",
+            "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+          }
+        }
+      },
+      {
+        "id": "K-P19",
+        "inputs": {
+          "task_image": {
+            "path": "problems/P19/task.png",
+            "sha256": "42c18c43d985e2c6114c1116dbc6eb6a72c25ee6777f1c3ebdbbc0b3780b3ec3"
+          },
+          "solution_images": [
+            {
+              "path": "cases/K-P19/solution-01.jpg",
+              "sha256": "917446bec14e56512de7c1818e593503ed43826f62a4c555dd7a69f40bad3b03"
+            },
+            {
+              "path": "cases/K-P19/solution-02.jpg",
+              "sha256": "2b3b07769e3594aa2c7c2dcf5cc5060444c649db1a9ffbfcde6087ae9abc86d4"
+            }
+          ],
+          "expected_sha256": "cff6b9b1f82b4713dee4b08f3ee0d2ccb292658de28c1841c9e30162ff7e6d3a",
+          "provenance": {
+            "source_case_id": "P19",
+            "photo_variant": null,
+            "solution_inputs": [
+              {
+                "original": "raw/19.1.jpg",
+                "prepared_from": "raw/19.1.jpg",
+                "sha256": "917446bec14e56512de7c1818e593503ed43826f62a4c555dd7a69f40bad3b03"
+              },
+              {
+                "original": "raw/19.2.jpg",
+                "prepared_from": "assets/crops/19.2-first.jpg",
+                "sha256": "2b3b07769e3594aa2c7c2dcf5cc5060444c649db1a9ffbfcde6087ae9abc86d4"
+              }
+            ],
+            "reference_id": "P19",
+            "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+          }
+        }
+      },
+      {
+        "id": "K-P20",
+        "inputs": {
+          "task_image": {
+            "path": "problems/P20/task.png",
+            "sha256": "bceeb231edd112c942b520947f66c559662ac7e9db979fac6e50cf3cc5a5fa23"
+          },
+          "solution_images": [
+            {
+              "path": "cases/K-P20/solution-01.jpg",
+              "sha256": "440625b92e354dcd9a941f906857ff495b1be000855fe903843a737e10d65e66"
+            },
+            {
+              "path": "cases/K-P20/solution-02.jpg",
+              "sha256": "7041c7c3cc2ec2231b192687d4b9143e4c33bcf052e535b7a981d648dab483d7"
+            }
+          ],
+          "expected_sha256": "c125a6571626013dc525aa259e223ffc14d2d9ef78d3717dec5555b9cdf102a5",
+          "provenance": {
+            "source_case_id": "P20",
+            "photo_variant": null,
+            "solution_inputs": [
+              {
+                "original": "raw/19.2.jpg",
+                "prepared_from": "assets/crops/19.2-second.jpg",
+                "sha256": "440625b92e354dcd9a941f906857ff495b1be000855fe903843a737e10d65e66"
+              },
+              {
+                "original": "raw/20.2.jpg",
+                "prepared_from": "raw/20.2.jpg",
+                "sha256": "7041c7c3cc2ec2231b192687d4b9143e4c33bcf052e535b7a981d648dab483d7"
+              }
+            ],
+            "reference_id": "P20",
+            "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+          }
+        }
+      },
+      {
+        "id": "K-P21",
+        "inputs": {
+          "task_image": {
+            "path": "problems/P21/task.png",
+            "sha256": "df8c6fac81d031902a492233bc10ae314ca148284e1e0e16c0963613fe7fb8fa"
+          },
+          "solution_images": [
+            {
+              "path": "cases/K-P21/solution-01.jpg",
+              "sha256": "e70824b257844583cacb8201e05558cae11b33945b06441fb0e54003ae886352"
+            }
+          ],
+          "expected_sha256": "5840b5a3fc952273657cc0221cbd4eddca6c771c2c326c63e969157d82b5f3ba",
+          "provenance": {
+            "source_case_id": "P21",
+            "photo_variant": null,
+            "solution_inputs": [
+              {
+                "original": "raw/21.jpg",
+                "prepared_from": "raw/21.jpg",
+                "sha256": "e70824b257844583cacb8201e05558cae11b33945b06441fb0e54003ae886352"
+              }
+            ],
+            "reference_id": "P21",
+            "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+          }
+        }
+      },
+      {
+        "id": "K-M2",
+        "inputs": {
+          "task_image": {
+            "path": "problems/P18/task.png",
+            "sha256": "4f0f384fbce46b951331e0173a4ca2a23c160b9daa4162d213739d7d1d591d31"
+          },
+          "solution_images": [
+            {
+              "path": "cases/K-M2/solution-01.jpg",
+              "sha256": "6ba1091ffeee403201da50b22396a4c4dca588d92d2d4b1f777b5ba893cafe19"
+            }
+          ],
+          "expected_sha256": "32d2d94dbed3d1cd0507e47d71d14d2334df39dd0f99028f13f6af5cf53e3fd3",
+          "provenance": {
+            "source_case_id": "M2",
+            "photo_variant": null,
+            "solution_inputs": [
+              {
+                "original": "raw/14.jpg",
+                "prepared_from": "raw/14.jpg",
+                "sha256": "6ba1091ffeee403201da50b22396a4c4dca588d92d2d4b1f777b5ba893cafe19"
+              }
+            ],
+            "reference_id": "P18",
+            "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+          }
+        }
+      }
+    ]
+  },
+  "local_source_hashes": {
+    "docs/grading-v2/drafts/task-16/main.md": "c58d5649e213f8d4a41eef54147dcf29288ad5445b735c540bc2e99cdb6aa22f",
+    "docs/grading-v2/drafts/task-16/ocr.md": "2c651bffa98fe6c898e82b9458385c6bdff1868d32a6287b5e7cc861798403b7",
+    "docs/grading-v2/drafts/task-16/analysis.md": "383f884293b705f1a8b47bbd4f3bc3d4ec3bc495a8482c3ffde547ec714d459d",
+    "docs/grading-v2/drafts/task-16/popular_mistakes.md": "97685ecfe4da14a258dd61705e48f01de8d9040cdc8877a1618834da705453d0",
+    "docs/grading-v2/drafts/task-16/grading.md": "976f5f8c04352a5a2fa870afb76063b8ec334e71936f0369339f63d072ef6e5d",
+    "docs/grading-v2/drafts/task-16/criteria.md": "ebfc4e1afc0fc966c3afd03c94221949522346c5bd8824fb09a92087fb0b748a",
+    "docs/grading-v2/drafts/task-16/response-format.md": "44a500871573a5c5bb09186b8b7701abbd46c6d1ce2d82e209b6ef9f98fda7e5",
+    "app/grading_v2/session.py": "39c76886423e656ce6c0dfd4de3f73c42c63f4240c25efcf78e24c441995d777",
+    "app/grading_v2/provider.py": "d004a07d8fb62c0801fb0ec412d23914b318563440142388dc5a8b1f83193ffe",
+    "app/grading_v2/service.py": "5b45ed7b7272fd46b13f631e2bf5ee1ca2c437ba6a10290300439d18281ae714"
+  },
+  "concurrency": 2,
+  "timeout_seconds": 260,
+  "automatic_retries": 0,
+  "snapshot_note": "Local sources; independently verify they match the deployed server.",
+  "scope_change": {
+    "reason": "User requested only task15 files and a single wrong-task scenario.",
+    "excluded_before_request": [
+      "K-N2",
+      "K-M4"
+    ],
+    "kept_negative": "K-M2",
+    "active_cases": 19
+  }
+}

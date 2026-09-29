@@ -1,0 +1,29 @@
+{
+  "updated_at": "2026-09-29T08:33:33.459048+00:00",
+  "total": 1,
+  "completed": 1,
+  "graded": 1,
+  "score_matches": 1,
+  "expected_graded": 1,
+  "expected_rejections": 0,
+  "graded_ordinary": 1,
+  "score_mismatches": 0,
+  "correct_rejections": 0,
+  "graded_instead_of_rejection": 0,
+  "unexpected_rejections": 0,
+  "behavior_matches": 1,
+  "cases": [
+    {
+      "id": "15.1.1",
+      "outcome": "graded",
+      "status_code": 200,
+      "request_id": "req_66e0c54864854629",
+      "elapsed_seconds": 87.333,
+      "expected_score": 2,
+      "actual_score": 2,
+      "score_match": true,
+      "expected_outcome": "graded",
+      "behavior_match": true
+    }
+  ]
+}

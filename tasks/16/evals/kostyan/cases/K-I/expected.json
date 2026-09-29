@@ -1,0 +1,21 @@
+{
+  "score": 2,
+  "expected_outcome": "graded",
+  "case_type": "ordinary",
+  "source_case_id": "И",
+  "source": {
+    "workbook": "raw/Тесты бота-проверяющего.xlsx",
+    "sheet": "Тестовый набор",
+    "cells": {
+      "id": "A10",
+      "task_number": "B10",
+      "type": "C10",
+      "description": "D10",
+      "expected_solution_score": "E10",
+      "expected_presentation_score": "F10",
+      "reference_answer": "G10",
+      "photos": "H10"
+    }
+  },
+  "verdict": "Эталон; ОДЗ не выписана, двойной корень t = 2"
+}

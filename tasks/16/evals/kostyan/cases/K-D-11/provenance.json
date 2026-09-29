@@ -1,0 +1,13 @@
+{
+  "source_case_id": "Д",
+  "photo_variant": "11",
+  "solution_inputs": [
+    {
+      "original": "raw/11.jpg",
+      "prepared_from": "raw/11.jpg",
+      "sha256": "a07ca4f33594cf95e1e8b24a6f9f5ed125d716d276cad4b427ae05c998e74b9c"
+    }
+  ],
+  "reference_id": "Д",
+  "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+}

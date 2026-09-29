@@ -1,0 +1,21 @@
+{
+  "score": 0,
+  "expected_outcome": "graded",
+  "case_type": "ordinary",
+  "source_case_id": "X5",
+  "source": {
+    "workbook": "raw/Тесты бота-проверяющего.xlsx",
+    "sheet": "Тестовый набор",
+    "cells": {
+      "id": "A17",
+      "task_number": "B17",
+      "type": "C17",
+      "description": "D17",
+      "expected_solution_score": "E17",
+      "expected_presentation_score": "F17",
+      "reference_answer": "G17",
+      "photos": "H17"
+    }
+  },
+  "verdict": "ОДЗ 25 − x² > 0 не учтена — в ответ попали лишние промежутки (не отдельные точки) → 0"
+}

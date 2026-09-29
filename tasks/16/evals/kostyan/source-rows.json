@@ -1,0 +1,1100 @@
+{
+  "workbook": "Тесты бота-проверяющего.xlsx (оригинал в публичной папке; локально сохранена только выборка строк в этом JSON)",
+  "authority": "Тестовый набор E/F: expected human labels, not old bot outcomes; scores are sourced, not independently regraded.",
+  "task15_count": 15,
+  "ordinary_count": 14,
+  "negative_count": 1,
+  "items": [
+    {
+      "case_id": "Б",
+      "source_task_number": 15,
+      "source_sheet": "Тестовый набор",
+      "source_row": 3,
+      "source_cells": {
+        "id": "A3",
+        "task_number": "B3",
+        "type": "C3",
+        "description": "D3",
+        "expected_solution_score": "E3",
+        "expected_presentation_score": "F3",
+        "reference_answer": "G3",
+        "photos": "H3"
+      },
+      "type": "верное",
+      "description": "Работа ученика: неравенство с 3^x, метод интервалов",
+      "tutor_expected_solution_score": 2,
+      "tutor_expected_presentation_score": 2,
+      "reference_answer": "[−1; 2]",
+      "source_photo_text": "2.jpg, 3.jpg, 4.1.jpg, 4.2.jpg",
+      "photo_variants": [
+        [
+          "2.jpg"
+        ],
+        [
+          "3.jpg"
+        ],
+        [
+          "4.1.jpg",
+          "4.2.jpg"
+        ]
+      ],
+      "text_source": null,
+      "prior_run_asset_references": [
+        {
+          "row": 4,
+          "mode": "фото",
+          "photos": "2.jpg",
+          "photo_cell": "F4"
+        },
+        {
+          "row": 5,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F5"
+        },
+        {
+          "row": 6,
+          "mode": "фото",
+          "photos": "3.jpg",
+          "photo_cell": "F6"
+        },
+        {
+          "row": 7,
+          "mode": "фото",
+          "photos": "4.1.jpg + 4.2.jpg",
+          "photo_cell": "F7"
+        },
+        {
+          "row": 114,
+          "mode": "фото",
+          "photos": "4.1.jpg + 4.2.jpg",
+          "photo_cell": "F114"
+        }
+      ],
+      "current_contract_expectation": {
+        "is_graded": true,
+        "score": 2
+      },
+      "flags": [],
+      "statement_source": {
+        "sheet": "Прогоны",
+        "cell": "E4",
+        "text": "Решите неравенство 50(3^x − 2 + 3^(−x))/(3^x + 2 + 3^(−x)) − (20·3^x + 20)/(3^x + 1) ≤ (5·3^(x+1) − 15)/(3^x + 1)"
+      },
+      "statement": "Решите неравенство 50(3^x − 2 + 3^(−x))/(3^x + 2 + 3^(−x)) − (20·3^x + 20)/(3^x + 1) ≤ (5·3^(x+1) − 15)/(3^x + 1)",
+      "student_text": null,
+      "photo_groups": [
+        [
+          "2.jpg"
+        ],
+        [
+          "3.jpg"
+        ],
+        [
+          "4.1.jpg",
+          "4.2.jpg"
+        ]
+      ],
+      "casekind": "ordinary",
+      "expected_score": 2,
+      "expected_outcome": "graded"
+    },
+    {
+      "case_id": "Д",
+      "source_task_number": 15,
+      "source_sheet": "Тестовый набор",
+      "source_row": 6,
+      "source_cells": {
+        "id": "A6",
+        "task_number": "B6",
+        "type": "C6",
+        "description": "D6",
+        "expected_solution_score": "E6",
+        "expected_presentation_score": "F6",
+        "reference_answer": "G6",
+        "photos": "H6"
+      },
+      "type": "верное",
+      "description": "Работа ученика: log₃²(25 − x²), исправленная цифра 22",
+      "tutor_expected_solution_score": 2,
+      "tutor_expected_presentation_score": 2,
+      "reference_answer": "(−5; −√22] ∪ [−4; 4] ∪ [√22; 5)",
+      "source_photo_text": "11.jpg, 12.jpg, 13.jpg",
+      "photo_variants": [
+        [
+          "11.jpg"
+        ],
+        [
+          "12.jpg"
+        ],
+        [
+          "13.jpg"
+        ]
+      ],
+      "text_source": null,
+      "prior_run_asset_references": [
+        {
+          "row": 15,
+          "mode": "фото",
+          "photos": "11.jpg",
+          "photo_cell": "F15"
+        },
+        {
+          "row": 16,
+          "mode": "фото",
+          "photos": "12.jpg",
+          "photo_cell": "F16"
+        },
+        {
+          "row": 17,
+          "mode": "фото",
+          "photos": "13.jpg",
+          "photo_cell": "F17"
+        },
+        {
+          "row": 107,
+          "mode": "фото",
+          "photos": "11.jpg",
+          "photo_cell": "F107"
+        },
+        {
+          "row": 110,
+          "mode": "фото",
+          "photos": "12.jpg",
+          "photo_cell": "F110"
+        }
+      ],
+      "current_contract_expectation": {
+        "is_graded": true,
+        "score": 2
+      },
+      "flags": [],
+      "statement_source": {
+        "sheet": "Прогоны",
+        "cell": "E15",
+        "text": "Решите неравенство log₃²(25 − x²) − 3·log₃(25 − x²) + 2 ≥ 0"
+      },
+      "statement": "Решите неравенство log₃²(25 − x²) − 3·log₃(25 − x²) + 2 ≥ 0",
+      "student_text": null,
+      "photo_groups": [
+        [
+          "11.jpg"
+        ],
+        [
+          "12.jpg"
+        ],
+        [
+          "13.jpg"
+        ]
+      ],
+      "casekind": "ordinary",
+      "expected_score": 2,
+      "expected_outcome": "graded"
+    },
+    {
+      "case_id": "И",
+      "source_task_number": 15,
+      "source_sheet": "Тестовый набор",
+      "source_row": 10,
+      "source_cells": {
+        "id": "A10",
+        "task_number": "B10",
+        "type": "C10",
+        "description": "D10",
+        "expected_solution_score": "E10",
+        "expected_presentation_score": "F10",
+        "reference_answer": "G10",
+        "photos": "H10"
+      },
+      "type": "верное (эталон «Решу ЕГЭ» 627990)",
+      "description": "Эталон; ОДЗ не выписана, двойной корень t = 2",
+      "tutor_expected_solution_score": 2,
+      "tutor_expected_presentation_score": 2,
+      "reference_answer": "(0; 1) ∪ {4} ∪ (32; +∞)",
+      "source_photo_text": null,
+      "photo_variants": [],
+      "text_source": {
+        "file": "Тестовый набор — тексты для бота.txt",
+        "header_line": 131,
+        "statement": "Решите неравенство (log₂(32x) − 1)/(log₂²x − log₂x⁵) ≥ −1.",
+        "solution": "Преобразуем неравенство:\n\n(log₂(32x) − 1)/(log₂²x − log₂x⁵) ≥ −1 ⇔ (5 + log₂x − 1)/(log₂²x − 5log₂x) ≥ −1.\n\nПусть t = log₂x, тогда\n\n(4 + t)/(t² − 5t) ≥ −1 ⇔ (t² − 4t + 4)/(t² − 5t) ≥ 0 ⇔ (t − 2)²/(t(t − 5)) ≥ 0 ⇔\n\n[ t < 0\n[ t = 2\n[ t > 5\n\n(метод интервалов на оси t: точки 0 и 5 выколоты, точка 2 закрашена; знаки слева направо: +, −, −, +; заштрихованы промежутки t < 0 и t > 5)\n\nВернёмся к исходной переменной:\n\n[ log₂x < 0            [ 0 < x < 1\n[ log₂x = 2      ⇔     [ x = 4\n[ log₂x > 5            [ x > 32\n\nОтвет: (0; 1) ∪ {4} ∪ (32; +∞)."
+      },
+      "prior_run_asset_references": [
+        {
+          "row": 21,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F21"
+        },
+        {
+          "row": 34,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F34"
+        },
+        {
+          "row": 47,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F47"
+        },
+        {
+          "row": 60,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F60"
+        },
+        {
+          "row": 74,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F74"
+        },
+        {
+          "row": 88,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F88"
+        }
+      ],
+      "current_contract_expectation": {
+        "is_graded": true,
+        "score": 2
+      },
+      "flags": [],
+      "statement": "Решите неравенство (log₂(32x) − 1)/(log₂²x − log₂x⁵) ≥ −1.",
+      "student_text": "Преобразуем неравенство:\n\n(log₂(32x) − 1)/(log₂²x − log₂x⁵) ≥ −1 ⇔ (5 + log₂x − 1)/(log₂²x − 5log₂x) ≥ −1.\n\nПусть t = log₂x, тогда\n\n(4 + t)/(t² − 5t) ≥ −1 ⇔ (t² − 4t + 4)/(t² − 5t) ≥ 0 ⇔ (t − 2)²/(t(t − 5)) ≥ 0 ⇔\n\n[ t < 0\n[ t = 2\n[ t > 5\n\n(метод интервалов на оси t: точки 0 и 5 выколоты, точка 2 закрашена; знаки слева направо: +, −, −, +; заштрихованы промежутки t < 0 и t > 5)\n\nВернёмся к исходной переменной:\n\n[ log₂x < 0            [ 0 < x < 1\n[ log₂x = 2      ⇔     [ x = 4\n[ log₂x > 5            [ x > 32\n\nОтвет: (0; 1) ∪ {4} ∪ (32; +∞).",
+      "photo_groups": [],
+      "casekind": "ordinary",
+      "expected_score": 2,
+      "expected_outcome": "graded"
+    },
+    {
+      "case_id": "К",
+      "source_task_number": 15,
+      "source_sheet": "Тестовый набор",
+      "source_row": 11,
+      "source_cells": {
+        "id": "A11",
+        "task_number": "B11",
+        "type": "C11",
+        "description": "D11",
+        "expected_solution_score": "E11",
+        "expected_presentation_score": "F11",
+        "reference_answer": "G11",
+        "photos": "H11"
+      },
+      "type": "верное (эталон «Решу ЕГЭ» 508471)",
+      "description": "Эталон; ОДЗ не выписана",
+      "tutor_expected_solution_score": 2,
+      "tutor_expected_presentation_score": 2,
+      "reference_answer": "(0; 1/√5] ∪ [√5; +∞)",
+      "source_photo_text": null,
+      "photo_variants": [],
+      "text_source": {
+        "file": "Тестовый набор — тексты для бота.txt",
+        "header_line": 163,
+        "statement": "Решите неравенство 5^(log₅²x) + x^(log₅x) ≥ 2·⁴√5.",
+        "solution": "Приведём второе слагаемое к основанию 5:\n\nx^(log₅x) = (5^(log₅x))^(log₅x) = 5^(log₅²x).\n\nНеравенство принимает вид:\n\n2·5^(log₅²x) ≥ 2·⁴√5 ⇔ 5^(log₅²x) ≥ 5^0,25 ⇔ |log₅x| ≥ 1/2 ⇔\n\n[ 0 < x ≤ 1/√5\n[ x ≥ √5\n\nРешение неравенства: (0; 1/√5] ∪ [√5; +∞).\n\nОтвет: (0; 1/√5] ∪ [√5; +∞)."
+      },
+      "prior_run_asset_references": [
+        {
+          "row": 22,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F22"
+        },
+        {
+          "row": 35,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F35"
+        },
+        {
+          "row": 48,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F48"
+        },
+        {
+          "row": 61,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F61"
+        },
+        {
+          "row": 75,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F75"
+        },
+        {
+          "row": 89,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F89"
+        }
+      ],
+      "current_contract_expectation": {
+        "is_graded": true,
+        "score": 2
+      },
+      "flags": [],
+      "statement": "Решите неравенство 5^(log₅²x) + x^(log₅x) ≥ 2·⁴√5.",
+      "student_text": "Приведём второе слагаемое к основанию 5:\n\nx^(log₅x) = (5^(log₅x))^(log₅x) = 5^(log₅²x).\n\nНеравенство принимает вид:\n\n2·5^(log₅²x) ≥ 2·⁴√5 ⇔ 5^(log₅²x) ≥ 5^0,25 ⇔ |log₅x| ≥ 1/2 ⇔\n\n[ 0 < x ≤ 1/√5\n[ x ≥ √5\n\nРешение неравенства: (0; 1/√5] ∪ [√5; +∞).\n\nОтвет: (0; 1/√5] ∪ [√5; +∞).",
+      "photo_groups": [],
+      "casekind": "ordinary",
+      "expected_score": 2,
+      "expected_outcome": "graded"
+    },
+    {
+      "case_id": "Л",
+      "source_task_number": 15,
+      "source_sheet": "Тестовый набор",
+      "source_row": 12,
+      "source_cells": {
+        "id": "A12",
+        "task_number": "B12",
+        "type": "C12",
+        "description": "D12",
+        "expected_solution_score": "E12",
+        "expected_presentation_score": "F12",
+        "reference_answer": "G12",
+        "photos": "H12"
+      },
+      "type": "верное (эталон «Решу ЕГЭ» 508364)",
+      "description": "Эталон; задача без ОДЗ и отбора",
+      "tutor_expected_solution_score": 2,
+      "tutor_expected_presentation_score": 2,
+      "reference_answer": "{−3}",
+      "source_photo_text": null,
+      "photo_variants": [],
+      "text_source": {
+        "file": "Тестовый набор — тексты для бота.txt",
+        "header_line": 188,
+        "statement": "Решите неравенство ((x − 1)² + 4(x + 1)²)/2 ≤ (3x + 1)²/4.",
+        "solution": "Решим неравенство:\n\n((x − 1)² + 4(x + 1)²)/2 ≤ (3x + 1)²/4 ⇔ 2(x − 1)² + 8(x + 1)² ≤ (3x + 1)² ⇔\n\n⇔ 2x² − 4x + 2 + 8x² + 16x + 8 ≤ 9x² + 6x + 1 ⇔\n\n⇔ x² + 6x + 9 ≤ 0 ⇔ (x + 3)² ≤ 0 ⇔ x = −3.\n\nОтвет: {−3}."
+      },
+      "prior_run_asset_references": [
+        {
+          "row": 23,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F23"
+        },
+        {
+          "row": 36,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F36"
+        },
+        {
+          "row": 49,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F49"
+        },
+        {
+          "row": 62,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F62"
+        },
+        {
+          "row": 76,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F76"
+        },
+        {
+          "row": 90,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F90"
+        }
+      ],
+      "current_contract_expectation": {
+        "is_graded": true,
+        "score": 2
+      },
+      "flags": [],
+      "statement": "Решите неравенство ((x − 1)² + 4(x + 1)²)/2 ≤ (3x + 1)²/4.",
+      "student_text": "Решим неравенство:\n\n((x − 1)² + 4(x + 1)²)/2 ≤ (3x + 1)²/4 ⇔ 2(x − 1)² + 8(x + 1)² ≤ (3x + 1)² ⇔\n\n⇔ 2x² − 4x + 2 + 8x² + 16x + 8 ≤ 9x² + 6x + 1 ⇔\n\n⇔ x² + 6x + 9 ≤ 0 ⇔ (x + 3)² ≤ 0 ⇔ x = −3.\n\nОтвет: {−3}.",
+      "photo_groups": [],
+      "casekind": "ordinary",
+      "expected_score": 2,
+      "expected_outcome": "graded"
+    },
+    {
+      "case_id": "X4",
+      "source_task_number": 15,
+      "source_sheet": "Тестовый набор",
+      "source_row": 16,
+      "source_cells": {
+        "id": "A16",
+        "task_number": "B16",
+        "type": "C16",
+        "description": "D16",
+        "expected_solution_score": "E16",
+        "expected_presentation_score": "F16",
+        "reference_answer": "G16",
+        "photos": "H16"
+      },
+      "type": "ИСПОРЧЕНО: потеряна точка",
+      "description": "Деление на (t − 2)² — потеряна точка x = 4. «Ответ отличается исключением точек» → 1",
+      "tutor_expected_solution_score": 1,
+      "tutor_expected_presentation_score": 1,
+      "reference_answer": "(0; 1) ∪ {4} ∪ (32; +∞)",
+      "source_photo_text": null,
+      "photo_variants": [],
+      "text_source": {
+        "file": "Тестовый набор — тексты для бота.txt",
+        "header_line": 319,
+        "statement": "Решите неравенство (log₂(32x) − 1)/(log₂²x − log₂x⁵) ≥ −1.",
+        "solution": "Преобразуем неравенство:\n\n(log₂(32x) − 1)/(log₂²x − log₂x⁵) ≥ −1 ⇔ (5 + log₂x − 1)/(log₂²x − 5log₂x) ≥ −1.\n\nПусть t = log₂x, тогда\n\n(4 + t)/(t² − 5t) ≥ −1 ⇔ (t² − 4t + 4)/(t² − 5t) ≥ 0 ⇔ (t − 2)²/(t(t − 5)) ≥ 0 ⇔ 1/(t(t − 5)) > 0 ⇔\n\n[ t < 0\n[ t > 5\n\n(метод интервалов на оси t: точки 0 и 5 выколоты; знаки слева направо: +, −, +; заштрихованы промежутки t < 0 и t > 5)\n\nВернёмся к исходной переменной:\n\n[ log₂x < 0      ⇔     [ 0 < x < 1\n[ log₂x > 5            [ x > 32\n\nОтвет: (0; 1) ∪ (32; +∞)."
+      },
+      "prior_run_asset_references": [
+        {
+          "row": 27,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F27"
+        },
+        {
+          "row": 40,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F40"
+        },
+        {
+          "row": 53,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F53"
+        },
+        {
+          "row": 66,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F66"
+        },
+        {
+          "row": 80,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F80"
+        },
+        {
+          "row": 96,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F96"
+        },
+        {
+          "row": 103,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F103"
+        },
+        {
+          "row": 109,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F109"
+        }
+      ],
+      "current_contract_expectation": {
+        "is_graded": true,
+        "score": 1
+      },
+      "flags": [],
+      "statement": "Решите неравенство (log₂(32x) − 1)/(log₂²x − log₂x⁵) ≥ −1.",
+      "student_text": "Преобразуем неравенство:\n\n(log₂(32x) − 1)/(log₂²x − log₂x⁵) ≥ −1 ⇔ (5 + log₂x − 1)/(log₂²x − 5log₂x) ≥ −1.\n\nПусть t = log₂x, тогда\n\n(4 + t)/(t² − 5t) ≥ −1 ⇔ (t² − 4t + 4)/(t² − 5t) ≥ 0 ⇔ (t − 2)²/(t(t − 5)) ≥ 0 ⇔ 1/(t(t − 5)) > 0 ⇔\n\n[ t < 0\n[ t > 5\n\n(метод интервалов на оси t: точки 0 и 5 выколоты; знаки слева направо: +, −, +; заштрихованы промежутки t < 0 и t > 5)\n\nВернёмся к исходной переменной:\n\n[ log₂x < 0      ⇔     [ 0 < x < 1\n[ log₂x > 5            [ x > 32\n\nОтвет: (0; 1) ∪ (32; +∞).",
+      "photo_groups": [],
+      "casekind": "ordinary",
+      "expected_score": 1,
+      "expected_outcome": "graded"
+    },
+    {
+      "case_id": "X5",
+      "source_task_number": 15,
+      "source_sheet": "Тестовый набор",
+      "source_row": 17,
+      "source_cells": {
+        "id": "A17",
+        "task_number": "B17",
+        "type": "C17",
+        "description": "D17",
+        "expected_solution_score": "E17",
+        "expected_presentation_score": "F17",
+        "reference_answer": "G17",
+        "photos": "H17"
+      },
+      "type": "ИСПОРЧЕНО: не учтена ОДЗ",
+      "description": "ОДЗ 25 − x² > 0 не учтена — в ответ попали лишние промежутки (не отдельные точки) → 0",
+      "tutor_expected_solution_score": 0,
+      "tutor_expected_presentation_score": 0,
+      "reference_answer": "(−5; −√22] ∪ [−4; 4] ∪ [√22; 5)",
+      "source_photo_text": null,
+      "photo_variants": [],
+      "text_source": {
+        "file": "Тестовый набор — тексты для бота.txt",
+        "header_line": 349,
+        "statement": "Решите неравенство log₃²(25 − x²) − 3·log₃(25 − x²) + 2 ≥ 0.",
+        "solution": "Пусть log₃(25 − x²) = t, тогда\n\nt² − 3t + 2 ≥ 0 ⇔ (t − 1)(t − 2) ≥ 0 ⇔\n\n[ t ≤ 1\n[ t ≥ 2\n\n[ log₃(25 − x²) ≤ 1      ⇔     [ 25 − x² ≤ 3     ⇔     [ x² ≥ 22\n[ log₃(25 − x²) ≥ 2            [ 25 − x² ≥ 9           [ x² ≤ 16\n\n[ x ≤ −√22 или x ≥ √22\n[ −4 ≤ x ≤ 4\n\nОтвет: (−∞; −√22] ∪ [−4; 4] ∪ [√22; +∞)."
+      },
+      "prior_run_asset_references": [
+        {
+          "row": 28,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F28"
+        },
+        {
+          "row": 41,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F41"
+        },
+        {
+          "row": 54,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F54"
+        },
+        {
+          "row": 67,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F67"
+        },
+        {
+          "row": 81,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F81"
+        },
+        {
+          "row": 97,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F97"
+        }
+      ],
+      "current_contract_expectation": {
+        "is_graded": true,
+        "score": 0
+      },
+      "flags": [],
+      "statement": "Решите неравенство log₃²(25 − x²) − 3·log₃(25 − x²) + 2 ≥ 0.",
+      "student_text": "Пусть log₃(25 − x²) = t, тогда\n\nt² − 3t + 2 ≥ 0 ⇔ (t − 1)(t − 2) ≥ 0 ⇔\n\n[ t ≤ 1\n[ t ≥ 2\n\n[ log₃(25 − x²) ≤ 1      ⇔     [ 25 − x² ≤ 3     ⇔     [ x² ≥ 22\n[ log₃(25 − x²) ≥ 2            [ 25 − x² ≥ 9           [ x² ≤ 16\n\n[ x ≤ −√22 или x ≥ √22\n[ −4 ≤ x ≤ 4\n\nОтвет: (−∞; −√22] ∪ [−4; 4] ∪ [√22; +∞).",
+      "photo_groups": [],
+      "casekind": "ordinary",
+      "expected_score": 0,
+      "expected_outcome": "graded"
+    },
+    {
+      "case_id": "X6",
+      "source_task_number": 15,
+      "source_sheet": "Тестовый набор",
+      "source_row": 18,
+      "source_cells": {
+        "id": "A18",
+        "task_number": "B18",
+        "type": "C18",
+        "description": "D18",
+        "expected_solution_score": "E18",
+        "expected_presentation_score": "F18",
+        "reference_answer": "G18",
+        "photos": "H18"
+      },
+      "type": "ИСПОРЧЕНО: вычислительная ошибка",
+      "description": "8(x + 1)² раскрыто как 8x² + 8x + 8 → ответ ∅. Верная последовательность шагов → 1",
+      "tutor_expected_solution_score": 1,
+      "tutor_expected_presentation_score": 1,
+      "reference_answer": "{−3}",
+      "source_photo_text": null,
+      "photo_variants": [],
+      "text_source": {
+        "file": "Тестовый набор — тексты для бота.txt",
+        "header_line": 374,
+        "statement": "Решите неравенство ((x − 1)² + 4(x + 1)²)/2 ≤ (3x + 1)²/4.",
+        "solution": "Решим неравенство:\n\n((x − 1)² + 4(x + 1)²)/2 ≤ (3x + 1)²/4 ⇔ 2(x − 1)² + 8(x + 1)² ≤ (3x + 1)² ⇔\n\n⇔ 2x² − 4x + 2 + 8x² + 8x + 8 ≤ 9x² + 6x + 1 ⇔\n\n⇔ x² − 2x + 9 ≤ 0.\n\nD = 4 − 36 = −32 < 0, старший коэффициент положителен, поэтому x² − 2x + 9 > 0 при всех x, и неравенство решений не имеет.\n\nОтвет: ∅."
+      },
+      "prior_run_asset_references": [
+        {
+          "row": 29,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F29"
+        },
+        {
+          "row": 42,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F42"
+        },
+        {
+          "row": 55,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F55"
+        },
+        {
+          "row": 68,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F68"
+        },
+        {
+          "row": 82,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F82"
+        },
+        {
+          "row": 99,
+          "mode": "текст",
+          "photos": "—",
+          "photo_cell": "F99"
+        }
+      ],
+      "current_contract_expectation": {
+        "is_graded": true,
+        "score": 1
+      },
+      "flags": [],
+      "statement": "Решите неравенство ((x − 1)² + 4(x + 1)²)/2 ≤ (3x + 1)²/4.",
+      "student_text": "Решим неравенство:\n\n((x − 1)² + 4(x + 1)²)/2 ≤ (3x + 1)²/4 ⇔ 2(x − 1)² + 8(x + 1)² ≤ (3x + 1)² ⇔\n\n⇔ 2x² − 4x + 2 + 8x² + 8x + 8 ≤ 9x² + 6x + 1 ⇔\n\n⇔ x² − 2x + 9 ≤ 0.\n\nD = 4 − 36 = −32 < 0, старший коэффициент положителен, поэтому x² − 2x + 9 > 0 при всех x, и неравенство решений не имеет.\n\nОтвет: ∅.",
+      "photo_groups": [],
+      "casekind": "ordinary",
+      "expected_score": 1,
+      "expected_outcome": "graded"
+    },
+    {
+      "case_id": "P16",
+      "source_task_number": 15,
+      "source_sheet": "Тестовый набор",
+      "source_row": 22,
+      "source_cells": {
+        "id": "A22",
+        "task_number": "B22",
+        "type": "C22",
+        "description": "D22",
+        "expected_solution_score": "E22",
+        "expected_presentation_score": "F22",
+        "reference_answer": "G22",
+        "photos": "H22"
+      },
+      "type": "фото экрана: верное",
+      "description": "Две страницы; разложение (t − 1)²(t² + 7t + 1); ответ «0»",
+      "tutor_expected_solution_score": 2,
+      "tutor_expected_presentation_score": 2,
+      "reference_answer": "{0}",
+      "source_photo_text": "16.1.jpg",
+      "photo_variants": [
+        [
+          "16.1.jpg",
+          "16.2.jpg"
+        ]
+      ],
+      "text_source": null,
+      "prior_run_asset_references": [
+        {
+          "row": 91,
+          "mode": "фото",
+          "photos": "16.1.jpg + 16.2.jpg",
+          "photo_cell": "F91"
+        }
+      ],
+      "current_contract_expectation": {
+        "is_graded": true,
+        "score": 2
+      },
+      "flags": [
+        "Photo column omits continuation; use paired images documented by old run asset references and inspect/crop boundaries.",
+        "Shared page contains adjacent task; require image-boundary review/crop before inputs."
+      ],
+      "statement": "Решите неравенство 5^(2x) + 5^(x+1) + 5^(1−x) + 1/5^(2x) ≤ 12.",
+      "student_text": null,
+      "photo_groups": [
+        [
+          "16.1.jpg",
+          "16.2.jpg"
+        ]
+      ],
+      "casekind": "ordinary",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "statement_source": {
+        "image": "raw/16.1.jpg",
+        "method": "Визуальная транскрипция первой строки задачи, независимо от оценки ученика."
+      }
+    },
+    {
+      "case_id": "P17",
+      "source_task_number": 15,
+      "source_sheet": "Тестовый набор",
+      "source_row": 23,
+      "source_cells": {
+        "id": "A23",
+        "task_number": "B23",
+        "type": "C23",
+        "description": "D23",
+        "expected_solution_score": "E23",
+        "expected_presentation_score": "F23",
+        "reference_answer": "G23",
+        "photos": "H23"
+      },
+      "type": "фото экрана: верное",
+      "description": "Начало на 16.2.jpg (после ДЗ №1), конец на 17.jpg",
+      "tutor_expected_solution_score": 2,
+      "tutor_expected_presentation_score": 2,
+      "reference_answer": "[2log₃2; log₃82)",
+      "source_photo_text": "16.2.jpg, 17.jpg",
+      "photo_variants": [
+        [
+          "16.2.jpg",
+          "17.jpg"
+        ]
+      ],
+      "text_source": null,
+      "prior_run_asset_references": [
+        {
+          "row": 94,
+          "mode": "фото",
+          "photos": "16.2.jpg + 17.jpg",
+          "photo_cell": "F94"
+        }
+      ],
+      "current_contract_expectation": {
+        "is_graded": true,
+        "score": 2
+      },
+      "flags": [
+        "Shared page contains adjacent task; require image-boundary review/crop before inputs."
+      ],
+      "statement": "Решите неравенство (3^(2x) − 3^x − 90)/(3^x − 82) ≤ 1.",
+      "student_text": null,
+      "photo_groups": [
+        [
+          "16.2.jpg",
+          "17.jpg"
+        ]
+      ],
+      "casekind": "ordinary",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "statement_source": {
+        "image": "raw/16.2.jpg, нижняя задача",
+        "method": "Визуальная транскрипция первой строки задачи, независимо от оценки ученика."
+      }
+    },
+    {
+      "case_id": "P18",
+      "source_task_number": 15,
+      "source_sheet": "Тестовый набор",
+      "source_row": 24,
+      "source_cells": {
+        "id": "A24",
+        "task_number": "B24",
+        "type": "C24",
+        "description": "D24",
+        "expected_solution_score": "E24",
+        "expected_presentation_score": "F24",
+        "reference_answer": "G24",
+        "photos": "H24"
+      },
+      "type": "фото экрана: верное",
+      "description": "t = 2^(−x) > 0, t²(t² − 5)/(t² − 16) ≥ 0",
+      "tutor_expected_solution_score": 2,
+      "tutor_expected_presentation_score": 2,
+      "reference_answer": "(−∞; −2) ∪ [−log₂√5; +∞)",
+      "source_photo_text": "18.jpg",
+      "photo_variants": [
+        [
+          "18.jpg"
+        ]
+      ],
+      "text_source": null,
+      "prior_run_asset_references": [
+        {
+          "row": 98,
+          "mode": "фото",
+          "photos": "18.jpg",
+          "photo_cell": "F98"
+        }
+      ],
+      "current_contract_expectation": {
+        "is_graded": true,
+        "score": 2
+      },
+      "flags": [],
+      "statement": "Решите неравенство (8^(−x) − 5·0,5^x)/(2^(−x) − 2^(x+4)) ≥ 0.",
+      "student_text": null,
+      "photo_groups": [
+        [
+          "18.jpg"
+        ]
+      ],
+      "casekind": "ordinary",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "statement_source": {
+        "image": "raw/18.jpg и TXT секция M2",
+        "method": "Визуальная транскрипция первой строки задачи, независимо от оценки ученика."
+      }
+    },
+    {
+      "case_id": "P19",
+      "source_task_number": 15,
+      "source_sheet": "Тестовый набор",
+      "source_row": 25,
+      "source_cells": {
+        "id": "A25",
+        "task_number": "B25",
+        "type": "C25",
+        "description": "D25",
+        "expected_solution_score": "E25",
+        "expected_presentation_score": "F25",
+        "reference_answer": "G25",
+        "photos": "H25"
+      },
+      "type": "фото экрана: ОШИБКА ученика — лишняя точка",
+      "description": "t ≠ 1 оговорено, но x = 0 не исключён из ответа. По ФИПИ (1 балл только за ИСКЛЮЧЕНИЕ точек) — 0; по критериям бота («исключение или включение») — 1",
+      "tutor_expected_solution_score": 0,
+      "tutor_expected_presentation_score": 0,
+      "reference_answer": "(−∞; 0) ∪ (0; 2) ∪ (log₂6; 3]",
+      "source_photo_text": "19.1.jpg",
+      "photo_variants": [
+        [
+          "19.1.jpg",
+          "19.2.jpg"
+        ]
+      ],
+      "text_source": null,
+      "prior_run_asset_references": [
+        {
+          "row": 101,
+          "mode": "фото",
+          "photos": "19.1.jpg + 19.2.jpg",
+          "photo_cell": "F101"
+        }
+      ],
+      "current_contract_expectation": {
+        "is_graded": true,
+        "score": 0
+      },
+      "flags": [
+        "Photo column omits continuation; use paired images documented by old run asset references and inspect/crop boundaries.",
+        "Shared page contains adjacent task; require image-boundary review/crop before inputs."
+      ],
+      "statement": "Решите неравенство (4^x − 2^(x+3) + 7)/(4^x − 5·2^x + 4) ≤ (2^x − 9)/(2^x − 4) + 1/(2^x − 6).",
+      "student_text": null,
+      "photo_groups": [
+        [
+          "19.1.jpg",
+          "19.2.jpg"
+        ]
+      ],
+      "casekind": "ordinary",
+      "expected_score": 0,
+      "expected_outcome": "graded",
+      "statement_source": {
+        "image": "raw/19.1.jpg",
+        "method": "Визуальная транскрипция первой строки задачи, независимо от оценки ученика."
+      }
+    },
+    {
+      "case_id": "P20",
+      "source_task_number": 15,
+      "source_sheet": "Тестовый набор",
+      "source_row": 26,
+      "source_cells": {
+        "id": "A26",
+        "task_number": "B26",
+        "type": "C26",
+        "description": "D26",
+        "expected_solution_score": "E26",
+        "expected_presentation_score": "F26",
+        "reference_answer": "G26",
+        "photos": "H26"
+      },
+      "type": "фото экрана: верное",
+      "description": "Начало на 19.2.jpg (после №16), конец на 20.2.jpg; громоздкое приведение к (t − 3)/((t − 1)(t − 9))",
+      "tutor_expected_solution_score": 2,
+      "tutor_expected_presentation_score": 2,
+      "reference_answer": "(0; 1] ∪ (2; +∞)",
+      "source_photo_text": "19.2.jpg, 20.2.jpg",
+      "photo_variants": [
+        [
+          "19.2.jpg",
+          "20.2.jpg"
+        ]
+      ],
+      "text_source": null,
+      "prior_run_asset_references": [
+        {
+          "row": 104,
+          "mode": "фото",
+          "photos": "19.2.jpg + 20.2.jpg",
+          "photo_cell": "F104"
+        }
+      ],
+      "current_contract_expectation": {
+        "is_graded": true,
+        "score": 2
+      },
+      "flags": [
+        "Shared page contains adjacent task; require image-boundary review/crop before inputs."
+      ],
+      "statement": "Решите неравенство 1/(3^x − 1) + (9^(x+1/2) − 3^(x+3) + 3)/(3^x − 9) ≥ 3^(x+1).",
+      "student_text": null,
+      "photo_groups": [
+        [
+          "19.2.jpg",
+          "20.2.jpg"
+        ]
+      ],
+      "casekind": "ordinary",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "statement_source": {
+        "image": "raw/19.2.jpg, нижняя задача",
+        "method": "Визуальная транскрипция первой строки задачи, независимо от оценки ученика."
+      }
+    },
+    {
+      "case_id": "P21",
+      "source_task_number": 15,
+      "source_sheet": "Тестовый набор",
+      "source_row": 27,
+      "source_cells": {
+        "id": "A27",
+        "task_number": "B27",
+        "type": "C27",
+        "description": "D27",
+        "expected_solution_score": "E27",
+        "expected_presentation_score": "F27",
+        "reference_answer": "G27",
+        "photos": "H27"
+      },
+      "type": "фото экрана: ОШИБКА ученика — потерян конец промежутка",
+      "description": "В промежуточной строке x ≥ −1 − log₂5, в ответе круглая скобка → ответ отличается исключением точки → 1",
+      "tutor_expected_solution_score": 1,
+      "tutor_expected_presentation_score": 1,
+      "reference_answer": "(−∞; −7) ∪ [−1 − log₂5; +∞)",
+      "source_photo_text": "21.jpg",
+      "photo_variants": [
+        [
+          "21.jpg"
+        ]
+      ],
+      "text_source": null,
+      "prior_run_asset_references": [
+        {
+          "row": 86,
+          "mode": "фото",
+          "photos": "21.jpg",
+          "photo_cell": "F86"
+        }
+      ],
+      "current_contract_expectation": {
+        "is_graded": true,
+        "score": 1
+      },
+      "flags": [],
+      "statement": "Решите неравенство (320 − 4^(−x−1))/(128 − 2^(−x)) ≥ 2,5.",
+      "student_text": null,
+      "photo_groups": [
+        [
+          "21.jpg"
+        ]
+      ],
+      "casekind": "ordinary",
+      "expected_score": 1,
+      "expected_outcome": "graded",
+      "statement_source": {
+        "image": "raw/21.jpg",
+        "method": "Визуальная транскрипция первой строки задачи, независимо от оценки ученика."
+      }
+    },
+    {
+      "case_id": "M2",
+      "source_task_number": 15,
+      "source_sheet": "Тестовый набор",
+      "source_row": 31,
+      "source_cells": {
+        "id": "A31",
+        "task_number": "B31",
+        "type": "C31",
+        "description": "D31",
+        "expected_solution_score": "E31",
+        "expected_presentation_score": "F31",
+        "reference_answer": "G31",
+        "photos": "H31"
+      },
+      "type": "НЕГАТИВ: перепутано задание (фото)",
+      "description": "Фото 14.jpg (решение №13) отправлено как №15 с условием P18. Ожидается 0",
+      "tutor_expected_solution_score": 0,
+      "tutor_expected_presentation_score": 0,
+      "reference_answer": "(−∞; −2) ∪ [−log₂√5; +∞)",
+      "source_photo_text": null,
+      "photo_variants": [
+        [
+          "14.jpg"
+        ]
+      ],
+      "text_source": {
+        "file": "Тестовый набор — тексты для бота.txt",
+        "header_line": 466,
+        "statement": "Решите неравенство (8^(−x) − 5·0,5^x)/(2^(−x) − 2^(x+4)) ≥ 0.",
+        "solution": ""
+      },
+      "prior_run_asset_references": [
+        {
+          "row": 119,
+          "mode": "фото",
+          "photos": "14.jpg",
+          "photo_cell": "F119"
+        }
+      ],
+      "current_contract_expectation": {
+        "is_graded": false,
+        "score": null
+      },
+      "flags": [
+        "Historical expected zero belongs to legacy contract; current contract requires ungraded rejection, not numeric comparison."
+      ],
+      "statement": "Решите неравенство (8^(−x) − 5·0,5^x)/(2^(−x) − 2^(x+4)) ≥ 0.",
+      "student_text": null,
+      "photo_groups": [
+        [
+          "14.jpg"
+        ]
+      ],
+      "casekind": "negative",
+      "expected_score": 0,
+      "expected_outcome": "rejected"
+    }
+  ],
+  "docx_role": "ИТОГ.docx is aggregate retrospective; no per-case authoritative label table.",
+  "excluded_task13_ids": [
+    "А",
+    "В",
+    "Г",
+    "Е",
+    "Ж",
+    "З",
+    "X1",
+    "X2",
+    "X3",
+    "X7",
+    "P14",
+    "P15",
+    "N1",
+    "M1",
+    "M3"
+  ],
+  "source_url": "https://disk.360.yandex.ru/d/mN-r2pZegKg2eA"
+}

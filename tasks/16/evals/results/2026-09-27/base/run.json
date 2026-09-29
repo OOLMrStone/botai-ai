@@ -1,0 +1,361 @@
+{
+  "created_at": "2026-09-27T16:05:34.127334+00:00",
+  "identity": {
+    "endpoint": "http://127.0.0.1:8766/api/v1/photo-check",
+    "manifest_sha256": "575ca9b170f30d160df21ceb00222e8246601c7ad7c79aa297d628bb491771ed",
+    "cases": [
+      {
+        "id": "15.1.1",
+        "inputs": {
+          "task_image": {
+            "path": "problems/15.1.png",
+            "sha256": "32274a721205f9c68f3b8eb1e938b9e5384a5b02d8131e335a65daf0142329e1"
+          },
+          "solution_images": [
+            {
+              "path": "15.1.1/solution.png",
+              "sha256": "4053a27eb2fa1165ce2248fbb4116a758b3f2c451c83463ca3797c574a9a4ade"
+            }
+          ],
+          "expected_sha256": "66374b9d86144be68d505c618c400a5951a3736a649db5f6813f122df8c2acf1"
+        }
+      },
+      {
+        "id": "15.1.2",
+        "inputs": {
+          "task_image": {
+            "path": "problems/15.1.png",
+            "sha256": "32274a721205f9c68f3b8eb1e938b9e5384a5b02d8131e335a65daf0142329e1"
+          },
+          "solution_images": [
+            {
+              "path": "15.1.2/solution.png",
+              "sha256": "d942060cfaab5e94c58f678ecc298957e63517c1e8b1aaeca02808beda6e1cf3"
+            }
+          ],
+          "expected_sha256": "66374b9d86144be68d505c618c400a5951a3736a649db5f6813f122df8c2acf1"
+        }
+      },
+      {
+        "id": "15.1.3",
+        "inputs": {
+          "task_image": {
+            "path": "problems/15.1.png",
+            "sha256": "32274a721205f9c68f3b8eb1e938b9e5384a5b02d8131e335a65daf0142329e1"
+          },
+          "solution_images": [
+            {
+              "path": "15.1.3/solution.png",
+              "sha256": "3f003e9c30e7022a161db529d083e0099756deb8bd6cb4ac560a63ee856d5c6b"
+            }
+          ],
+          "expected_sha256": "df4fafe71f99c19ffcee8ff850a341cad49135afeb0d92d211e8e1619ba10b7a"
+        }
+      },
+      {
+        "id": "15.1.4",
+        "inputs": {
+          "task_image": {
+            "path": "problems/15.1.png",
+            "sha256": "32274a721205f9c68f3b8eb1e938b9e5384a5b02d8131e335a65daf0142329e1"
+          },
+          "solution_images": [
+            {
+              "path": "15.1.4/solution.png",
+              "sha256": "bc038eb0680d3956f0f875a29cabb2300113e597e6f75149989ba05f44887dae"
+            }
+          ],
+          "expected_sha256": "2c131d67db58a0c730ed367403a75b42cd83eaba1f85414182291269a6acb5e1"
+        }
+      },
+      {
+        "id": "15.2.1",
+        "inputs": {
+          "task_image": {
+            "path": "problems/15.2.png",
+            "sha256": "21880e2e9b70777cf471f11dd32be2523000dcdd8770b0e634fce452dbe35cd8"
+          },
+          "solution_images": [
+            {
+              "path": "15.2.1/solution.png",
+              "sha256": "a2596e6692bf0985fd09a8667ede0252b5437a05e2148f9b2bae57216e47118b"
+            }
+          ],
+          "expected_sha256": "66374b9d86144be68d505c618c400a5951a3736a649db5f6813f122df8c2acf1"
+        }
+      },
+      {
+        "id": "15.2.2",
+        "inputs": {
+          "task_image": {
+            "path": "problems/15.2.png",
+            "sha256": "21880e2e9b70777cf471f11dd32be2523000dcdd8770b0e634fce452dbe35cd8"
+          },
+          "solution_images": [
+            {
+              "path": "15.2.2/solution.png",
+              "sha256": "c77730ab3f9efe8578a5bd8ec90130570c2adc4eaf681b05c856db74f380d5f6"
+            }
+          ],
+          "expected_sha256": "66374b9d86144be68d505c618c400a5951a3736a649db5f6813f122df8c2acf1"
+        }
+      },
+      {
+        "id": "15.2.3",
+        "inputs": {
+          "task_image": {
+            "path": "problems/15.2.png",
+            "sha256": "21880e2e9b70777cf471f11dd32be2523000dcdd8770b0e634fce452dbe35cd8"
+          },
+          "solution_images": [
+            {
+              "path": "15.2.3/solution.png",
+              "sha256": "8e16ad592d4814f5b31fe7affb55192cdec47eb11cf92a226dcb73ff93ea7b98"
+            }
+          ],
+          "expected_sha256": "6283fd29f6129a41294f94ea415e6cea600ab07655813e6b87863bf451f5fdae"
+        }
+      },
+      {
+        "id": "15.2.4",
+        "inputs": {
+          "task_image": {
+            "path": "problems/15.2.png",
+            "sha256": "21880e2e9b70777cf471f11dd32be2523000dcdd8770b0e634fce452dbe35cd8"
+          },
+          "solution_images": [
+            {
+              "path": "15.2.4/solution.png",
+              "sha256": "ded805175387eff86fe6ad1e4d9f421f9ae8f202ecb01d58e73e1abc87f25b56"
+            }
+          ],
+          "expected_sha256": "b05f55344ef453d3db5a4b9f2900b26cda30218ef1b62cd1b062edd2fb2ee50c"
+        }
+      },
+      {
+        "id": "15.3.1",
+        "inputs": {
+          "task_image": {
+            "path": "problems/15.3.png",
+            "sha256": "983f706e3ef43c0c29782f6654f9067ea47bcb037921d3eb9c7eec884a3badcc"
+          },
+          "solution_images": [
+            {
+              "path": "15.3.1/solution.png",
+              "sha256": "9ab882817a7197191f8b7abd0e6877b4656a41bc932f60601c3e7c9e7ba60c64"
+            }
+          ],
+          "expected_sha256": "66374b9d86144be68d505c618c400a5951a3736a649db5f6813f122df8c2acf1"
+        }
+      },
+      {
+        "id": "15.3.2",
+        "inputs": {
+          "task_image": {
+            "path": "problems/15.3.png",
+            "sha256": "983f706e3ef43c0c29782f6654f9067ea47bcb037921d3eb9c7eec884a3badcc"
+          },
+          "solution_images": [
+            {
+              "path": "15.3.2/solution.png",
+              "sha256": "9a950943575e1ba78ecf65d550448b9a2457ab832ba579ab4e2f212c62f14612"
+            }
+          ],
+          "expected_sha256": "66374b9d86144be68d505c618c400a5951a3736a649db5f6813f122df8c2acf1"
+        }
+      },
+      {
+        "id": "15.3.3",
+        "inputs": {
+          "task_image": {
+            "path": "problems/15.3.png",
+            "sha256": "983f706e3ef43c0c29782f6654f9067ea47bcb037921d3eb9c7eec884a3badcc"
+          },
+          "solution_images": [
+            {
+              "path": "15.3.3/solution.png",
+              "sha256": "384375d8157a59867a15bc1e4af07da432e599d9dc51c916a261ad8623aa68a0"
+            }
+          ],
+          "expected_sha256": "68d59a045c9a2002cee4a553c1d01c2179a5a6198029d12d5061fc9a2e38aac6"
+        }
+      },
+      {
+        "id": "15.3.4",
+        "inputs": {
+          "task_image": {
+            "path": "problems/15.3.png",
+            "sha256": "983f706e3ef43c0c29782f6654f9067ea47bcb037921d3eb9c7eec884a3badcc"
+          },
+          "solution_images": [
+            {
+              "path": "15.3.4/solution.png",
+              "sha256": "d84ae392be1295bc4a3f00617866fcc3ee5df227a65a6754a713dfc19c8bde3e"
+            }
+          ],
+          "expected_sha256": "518305ff3ac1ac4786ff97a1b953740352af54c808047da5f24f7a7ff73fdafb"
+        }
+      },
+      {
+        "id": "15.4.1",
+        "inputs": {
+          "task_image": {
+            "path": "problems/15.4.png",
+            "sha256": "9ffbe88f593012a7ed244dfba2e67c02675b5260d13d4710ba76ea5ad6aa2223"
+          },
+          "solution_images": [
+            {
+              "path": "15.4.1/solution.png",
+              "sha256": "e20c844997ff0be383f3fc48614d7700b42ede8c361241a874a16c4b6702d779"
+            }
+          ],
+          "expected_sha256": "66374b9d86144be68d505c618c400a5951a3736a649db5f6813f122df8c2acf1"
+        }
+      },
+      {
+        "id": "15.4.2",
+        "inputs": {
+          "task_image": {
+            "path": "problems/15.4.png",
+            "sha256": "9ffbe88f593012a7ed244dfba2e67c02675b5260d13d4710ba76ea5ad6aa2223"
+          },
+          "solution_images": [
+            {
+              "path": "15.4.2/solution.png",
+              "sha256": "66780f968b0f76eeacc994b5fde502375028ee8ae2af70cf603b9823b3b3d6c6"
+            }
+          ],
+          "expected_sha256": "66374b9d86144be68d505c618c400a5951a3736a649db5f6813f122df8c2acf1"
+        }
+      },
+      {
+        "id": "15.4.3",
+        "inputs": {
+          "task_image": {
+            "path": "problems/15.4.png",
+            "sha256": "9ffbe88f593012a7ed244dfba2e67c02675b5260d13d4710ba76ea5ad6aa2223"
+          },
+          "solution_images": [
+            {
+              "path": "15.4.3/solution.png",
+              "sha256": "59450dfde40439d20acec467194a191c616ed4fee4f7a9ad0e10ad5a3d8ae8c5"
+            }
+          ],
+          "expected_sha256": "66374b9d86144be68d505c618c400a5951a3736a649db5f6813f122df8c2acf1"
+        }
+      },
+      {
+        "id": "15.4.4",
+        "inputs": {
+          "task_image": {
+            "path": "problems/15.4.png",
+            "sha256": "9ffbe88f593012a7ed244dfba2e67c02675b5260d13d4710ba76ea5ad6aa2223"
+          },
+          "solution_images": [
+            {
+              "path": "15.4.4/solution.png",
+              "sha256": "c7eb7e9d3c97c26455263b8697e92a7839564a61912a8f58b99fcdc130e8dbea"
+            }
+          ],
+          "expected_sha256": "23c5c05161429be10f7e8dabb46343de4e71d71b373b0ef26ee1f4951d4de9d8"
+        }
+      },
+      {
+        "id": "15.5.1",
+        "inputs": {
+          "task_image": {
+            "path": "problems/15.5.png",
+            "sha256": "9154c421d4f5ec5333928cf924a94dc3eb4348ce67f5732e604096564de58a37"
+          },
+          "solution_images": [
+            {
+              "path": "15.5.1/solution.png",
+              "sha256": "f8e4a97081dbbab7740e06751d110019d9ce31f1d7d29f87e7a4a479fe53354e"
+            }
+          ],
+          "expected_sha256": "66374b9d86144be68d505c618c400a5951a3736a649db5f6813f122df8c2acf1"
+        }
+      },
+      {
+        "id": "15.5.2",
+        "inputs": {
+          "task_image": {
+            "path": "problems/15.5.png",
+            "sha256": "9154c421d4f5ec5333928cf924a94dc3eb4348ce67f5732e604096564de58a37"
+          },
+          "solution_images": [
+            {
+              "path": "15.5.2/solution.png",
+              "sha256": "c40f1f191cb56215ebe94c979d3106977cdba8b9156cdbe9e86962d9db494d83"
+            }
+          ],
+          "expected_sha256": "b96cb62acb4e81c7852647e1f06cbf0e1dfb920ffec1c0a0b6f26bf0d3f634f1"
+        }
+      },
+      {
+        "id": "15.5.3",
+        "inputs": {
+          "task_image": {
+            "path": "problems/15.5.png",
+            "sha256": "9154c421d4f5ec5333928cf924a94dc3eb4348ce67f5732e604096564de58a37"
+          },
+          "solution_images": [
+            {
+              "path": "15.5.3/solution.png",
+              "sha256": "9d6109dd43d37b5688851c5bc1fb63675a1013316d0e578a04fe2bbf55bf726c"
+            }
+          ],
+          "expected_sha256": "13c6d5b087712dd2421a816075c840a885c0ba2cde36b7123da998586b7feb91"
+        }
+      },
+      {
+        "id": "15.6.1",
+        "inputs": {
+          "task_image": {
+            "path": "problems/15.6.png",
+            "sha256": "f1fb7935e6ec57c18c51da2df22ab228420308c7bfa67adf8f9a71d25f64a4ba"
+          },
+          "solution_images": [
+            {
+              "path": "15.6.1/solution.png",
+              "sha256": "443fbc4ee2e7990933fbbed4dcaec8e6df19683157621baf324b8363d7efad66"
+            }
+          ],
+          "expected_sha256": "66374b9d86144be68d505c618c400a5951a3736a649db5f6813f122df8c2acf1"
+        }
+      },
+      {
+        "id": "15.6.2",
+        "inputs": {
+          "task_image": {
+            "path": "problems/15.6.png",
+            "sha256": "f1fb7935e6ec57c18c51da2df22ab228420308c7bfa67adf8f9a71d25f64a4ba"
+          },
+          "solution_images": [
+            {
+              "path": "15.6.2/solution.png",
+              "sha256": "88cdaff7be9cf40c4544533de8c85accff4be51287d47226e6bd5125db2520cc"
+            }
+          ],
+          "expected_sha256": "bffe67adf7043d34c2d39494f02c38333bada58b3a3e90be8f939cede62ef357"
+        }
+      }
+    ]
+  },
+  "local_source_hashes": {
+    "docs/grading-v2/drafts/task-16/main.md": "c58d5649e213f8d4a41eef54147dcf29288ad5445b735c540bc2e99cdb6aa22f",
+    "docs/grading-v2/drafts/task-16/ocr.md": "2c651bffa98fe6c898e82b9458385c6bdff1868d32a6287b5e7cc861798403b7",
+    "docs/grading-v2/drafts/task-16/analysis.md": "383f884293b705f1a8b47bbd4f3bc3d4ec3bc495a8482c3ffde547ec714d459d",
+    "docs/grading-v2/drafts/task-16/popular_mistakes.md": "97685ecfe4da14a258dd61705e48f01de8d9040cdc8877a1618834da705453d0",
+    "docs/grading-v2/drafts/task-16/grading.md": "976f5f8c04352a5a2fa870afb76063b8ec334e71936f0369339f63d072ef6e5d",
+    "docs/grading-v2/drafts/task-16/criteria.md": "ebfc4e1afc0fc966c3afd03c94221949522346c5bd8824fb09a92087fb0b748a",
+    "docs/grading-v2/drafts/task-16/response-format.md": "44a500871573a5c5bb09186b8b7701abbd46c6d1ce2d82e209b6ef9f98fda7e5",
+    "app/grading_v2/session.py": "39c76886423e656ce6c0dfd4de3f73c42c63f4240c25efcf78e24c441995d777",
+    "app/grading_v2/provider.py": "d004a07d8fb62c0801fb0ec412d23914b318563440142388dc5a8b1f83193ffe",
+    "app/grading_v2/service.py": "5b45ed7b7272fd46b13f631e2bf5ee1ca2c437ba6a10290300439d18281ae714"
+  },
+  "concurrency": 2,
+  "timeout_seconds": 260,
+  "automatic_retries": 0,
+  "snapshot_note": "Local sources; independently verify they match the deployed server."
+}

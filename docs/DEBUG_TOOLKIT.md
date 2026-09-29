@@ -1,3 +1,5 @@
+> Scope: retained text / legacy photo pipeline documentation. For the current photo service, start with [service.md](grading/service.md). Project task 16 corresponds to ФИПИ-2026 task 15; the legacy rubric registry retains its original numbering.
+
 # Debug toolkit
 
 Test-and-inspect hooks built into the service so grading can be exercised
@@ -280,7 +282,7 @@ with the same header would not. There is a test for exactly that
 
 ### Prompt preview — the one to reach for first
 
-Iterating on `grading/prompts.py` without spending a token:
+Iterating on `app/legacy_grading/prompts.py` without spending a token:
 
 ```bash
 curl -s -X POST localhost:8000/debug/grading/preview-prompt \

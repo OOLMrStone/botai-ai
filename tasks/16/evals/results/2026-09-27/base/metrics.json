@@ -1,0 +1,39 @@
+{
+  "total": 21,
+  "matches": 18,
+  "mismatches": 3,
+  "match_percent": 85.71,
+  "refusals": 0,
+  "technical_errors": 0,
+  "confusion_matrix_expected_rows_predicted_columns": {
+    "0": {
+      "0": 4,
+      "1": 0,
+      "2": 2
+    },
+    "1": {
+      "0": 0,
+      "1": 3,
+      "2": 1
+    },
+    "2": {
+      "0": 0,
+      "1": 0,
+      "2": 11
+    }
+  },
+  "mean_seconds": 72.49,
+  "median_seconds": 68.41,
+  "min_seconds": 37.198,
+  "max_seconds": 114.654,
+  "advice_counts": {
+    "good": 7,
+    "medium": 1,
+    "bad": 0,
+    "empty": 0
+  },
+  "no_advice_counts": {
+    "not_needed": 11,
+    "missed_error": 3
+  }
+}

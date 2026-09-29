@@ -1,0 +1,16 @@
+{
+  "id": "15.1.1",
+  "expected_score": 2,
+  "expected_outcome": "graded",
+  "actual_score": 2,
+  "score_match": true,
+  "request_id": "req_66e0c54864854629",
+  "status_code": 200,
+  "outcome": "graded",
+  "response_sha256": "107deff1b06c7525f52c10bcd2b8f5ad739aea3c6be1e5741e42f667d9d5d6ee",
+  "validation_errors": [],
+  "behavior_match": true,
+  "score_difference": 0,
+  "elapsed_seconds": 87.333,
+  "finished_at": "2026-09-29T08:33:33.455042+00:00"
+}

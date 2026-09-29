@@ -1,0 +1,8 @@
+{
+  "mode": "openai",
+  "model": "deepseek-v4-flash",
+  "deadline_seconds": 240.0,
+  "max_solution_images": 4,
+  "max_image_mb": 8,
+  "test_ids": true
+}

@@ -1,32 +1,197 @@
-# Reference copy of what lives at /etc/caddy/Caddyfile ON THE HOST.
-# Caddy runs as a systemd service, not in this stack — see docs/DEPLOYMENT.md.
-# Edit the file on the server, then: caddy validate --config /etc/caddy/Caddyfile
-#                                    systemctl reload caddy
+# api.botai-ege.ru — one public host, three audiences:
+#
+#   /api/auth/*   the auth service, open to the world (it polices itself)
+#   /api/v1/*     the grading API: a logged-in app user, or a tester password
+#   /internal/*   docs and test UIs, password only — never for regular users
+#
+# Everything else is 404: the services' own roots, /ui, /docs and the redirect
+# to them are not reachable from outside.
+
+# Grading upstream. Runs take minutes and stream progress the whole time, so
+# buffering is off and the timeouts are long; without that the SSE progress bar
+# sits empty and a run can be cut mid-stage.
+(grading_upstream) {
+	reverse_proxy 127.0.0.1:8080 {
+		flush_interval -1
+		transport http {
+			read_timeout 30m
+			write_timeout 30m
+		}
+	}
+}
+
+# One password for everyone who tests. The grading service spends real money
+# per request against a paid API key, so an open URL is an open wallet.
+(tester_password) {
+	basicauth {
+		tester <bcrypt-hash>
+	}
+}
+
 api.botai-ege.ru {
 	encode zstd gzip
 
-	# Unauthenticated liveness probe, so uptime monitoring needs no password.
-	handle /health {
-		respond "ok" 200
+	# A tester's browser keeps sending the password header once it has been
+	# asked for it, which is what lets the test UIs and the docs pages call
+	# the grading API from "Try it out".
+	@grading_as_tester {
+		path /api/v1/*
+		header Authorization *
 	}
+	@grading_as_user path /api/v1/*
+	# The generated docs page fetches its spec from an absolute path.
+	@grading_spec path /openapi.json
+	@grading_debug path /debug/*
+	@internal_root path /internal /internal/
 
-	handle {
-		# One password over the whole app: the service spends real money per
-		# request, and the debug surface testers need exposes prompts and
-		# student work. Hash generated with `caddy hash-password`.
-		basicauth {
-			tester <bcrypt-hash>
+	# route (not bare handles) so these are tried strictly top to bottom:
+	# the tester variant of /api/v1 has to be considered before the user one,
+	# and /internal/grading/docs before the catch-all for that prefix.
+	route {
+		# Unauthenticated liveness probe, so uptime monitoring needs no
+		# password. Answered by Caddy itself — it says nothing about the app.
+		handle /health {
+			respond "ok" 200
 		}
 
-		# flush_interval -1 disables response buffering — without it the SSE
-		# progress bar sits empty for minutes and then dumps at once, which
-		# looks exactly like a hang. Long timeouts stop mid-run cuts.
-		reverse_proxy 127.0.0.1:8080 {
-			flush_interval -1
-			transport http {
-				read_timeout 30m
-				write_timeout 30m
+		# --- Auth service -------------------------------------------------
+		# Public: registration, login, password reset and email confirmation
+		# all have to work before anyone has a session. The service enforces
+		# its own rules (CSRF, code issue rate, email confirmation).
+		handle /api/auth/* {
+			reverse_proxy 127.0.0.1:8082
+		}
+
+		# --- Grading API, tester route ------------------------------------
+		handle @grading_as_tester {
+			import tester_password
+			import grading_upstream
+		}
+
+		# --- Grading API, application route -------------------------------
+		# No password: the caller proves itself with the session cookie the
+		# auth service issued. Caddy asks the auth service about every
+		# request; anything but 2xx (401 anonymous, 403 unconfirmed email)
+		# is passed straight back and the grading service is never touched —
+		# an unauthenticated request cannot spend money.
+		handle @grading_as_user {
+			forward_auth 127.0.0.1:8082 {
+				uri /api/auth/session/verified
 			}
+			import grading_upstream
+		}
+
+		# --- Auth service API documentation -------------------------------
+		# springdoc is configured to serve the spec *and* the Swagger UI
+		# assets under this exact prefix, so nothing has to be rewritten.
+		handle /internal/auth/* {
+			import tester_password
+			reverse_proxy 127.0.0.1:8082
+		}
+
+		# --- Grading API documentation (FastAPI's own Swagger UI) ---------
+		handle /internal/grading/docs {
+			import tester_password
+			rewrite * /docs
+			import grading_upstream
+		}
+
+		# The test form API shares the page's Basic-auth protection space.
+		# Browsers do not reuse its password for the disjoint /api/v1 prefix.
+		handle_path /internal/grading/api/* {
+			import tester_password
+			rewrite * /api/v1{uri}
+			import grading_upstream
+		}
+
+		# --- Grading test UIs ---------------------------------------------
+		#   /internal/grading/              → grading UI      (index.html)
+		#   /internal/grading/console.html  → request console
+		handle_path /internal/grading/* {
+			import tester_password
+			rewrite * /ui{uri}
+			import grading_upstream
+		}
+
+		# The spec and debug tools sit at absolute paths the docs pages and
+		# the consoles fetch directly.
+		handle @grading_spec {
+			import tester_password
+			import grading_upstream
+		}
+		handle @grading_debug {
+			import tester_password
+			import grading_upstream
+		}
+
+		# --- Index of the internal tools ----------------------------------
+		handle @internal_root {
+			import tester_password
+			# respond sends text/plain unless told otherwise, which makes a
+			# browser show the markup as source instead of rendering it.
+			header Content-Type "text/html; charset=utf-8"
+			respond `<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>botai · internal tools</title>
+<style>:root{color-scheme:light dark}
+body{font:16px/1.6 system-ui,sans-serif;max-width:40rem;margin:3rem auto;padding:0 1.5rem;background:#fff;color:#111}
+h1{font-size:1.3rem}a{color:#2563eb}li{margin:.4rem 0}
+code{background:#f3f4f6;padding:.1rem .3rem;border-radius:.2rem}
+@media (prefers-color-scheme:dark){body{background:#0b0e14;color:#e5e7eb}a{color:#7aa2ff}code{background:#1f2430}}</style>
+<h1>botai · internal tools</h1>
+<p>Password-protected. Not linked from the product.</p>
+<ul>
+<li><a href="/internal/auth/swagger-ui.html">Auth API — Swagger UI</a> (<a href="/internal/auth/api-docs">spec</a>)</li>
+<li><a href="/internal/grading/docs">Grading API — Swagger UI</a> (<a href="/openapi.json">spec</a>)</li>
+<li><a href="/internal/grading/">Grading test UI</a></li>
+<li><a href="/internal/grading/console.html">Request console</a></li>
+</ul>
+<p>Public API: <code>/api/auth/*</code> (open) and <code>/api/v1/*</code> (session or this password).</p>
+</html>` 200
+		}
+
+		# Nothing else exists publicly. "error" rather than "respond" so the
+		# shared error page below renders it.
+		handle {
+			error 404
+		}
+	}
+
+	# Caddy answers a failed password check with a completely empty body, so a
+	# browser that suppresses or dismisses the login dialog shows a blank page
+	# and the visitor has no idea what happened. Give both errors a real page.
+	handle_errors {
+		@unauthorized expression {http.error.status_code} == 401
+		handle @unauthorized {
+			# The challenge must be restated: this is a freshly built
+			# response, and without the header no browser offers a login.
+			header WWW-Authenticate `Basic realm="restricted"`
+			header Content-Type "text/html; charset=utf-8"
+			respond `<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>Password required</title>
+<style>:root{color-scheme:light dark}
+body{font:16px/1.6 system-ui,sans-serif;max-width:34rem;margin:4rem auto;padding:0 1.5rem;background:#fff;color:#111}
+h1{font-size:1.3rem}code{background:#f3f4f6;padding:.1rem .3rem;border-radius:.2rem}
+@media (prefers-color-scheme:dark){body{background:#0b0e14;color:#e5e7eb}code{background:#1f2430}}</style>
+<h1>Password required</h1>
+<p>These are internal tools for the botai team — API documentation and the
+grading test consoles. They are not part of the product.</p>
+<p>Your browser should have shown a login box. If it did not, or you dismissed
+it, just reload this page.</p>
+<p>Public endpoints need no password: <code>/api/auth/*</code> and
+<code>/health</code>.</p>
+</html>` 401
+		}
+		handle {
+			header Content-Type "text/html; charset=utf-8"
+			respond `<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>Not found</title>
+<style>:root{color-scheme:light dark}
+body{font:16px/1.6 system-ui,sans-serif;max-width:34rem;margin:4rem auto;padding:0 1.5rem;background:#fff;color:#111}
+h1{font-size:1.3rem}
+@media (prefers-color-scheme:dark){body{background:#0b0e14;color:#e5e7eb}}</style>
+<h1>{http.error.status_code} — nothing here</h1>
+<p>This host serves the botai APIs. Browsable pages live elsewhere.</p>
+</html>` {http.error.status_code}
 		}
 	}
 }

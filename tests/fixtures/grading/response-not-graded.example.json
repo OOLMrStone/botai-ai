@@ -1,0 +1,18 @@
+{
+  "task": {
+    "id": "task-123",
+    "task_number": 16,
+    "max_score": 2,
+    "statement": "Решите неравенство x > 0.",
+    "reference_answer": "(0; +∞)",
+    "reference_solution": null
+  },
+  "solution_image_ids": [
+    "image-123"
+  ],
+  "is_graded": false,
+  "rejection_reason": "На фотографии решение другого задания.",
+  "ocr": null,
+  "analysis": null,
+  "grading": null
+}

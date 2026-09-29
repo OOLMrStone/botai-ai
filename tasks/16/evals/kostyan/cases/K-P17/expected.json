@@ -1,0 +1,21 @@
+{
+  "score": 2,
+  "expected_outcome": "graded",
+  "case_type": "ordinary",
+  "source_case_id": "P17",
+  "source": {
+    "workbook": "raw/Тесты бота-проверяющего.xlsx",
+    "sheet": "Тестовый набор",
+    "cells": {
+      "id": "A23",
+      "task_number": "B23",
+      "type": "C23",
+      "description": "D23",
+      "expected_solution_score": "E23",
+      "expected_presentation_score": "F23",
+      "reference_answer": "G23",
+      "photos": "H23"
+    }
+  },
+  "verdict": "Начало на 16.2.jpg (после ДЗ №1), конец на 17.jpg"
+}

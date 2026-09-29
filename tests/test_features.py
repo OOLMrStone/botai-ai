@@ -367,7 +367,7 @@ def staged_profiles(monkeypatch):
     from fastapi.testclient import TestClient
 
     from app.config import get_settings, reset_settings_cache
-    from app.grading.pipeline import reset_pipeline
+    from app.legacy_grading.pipeline import reset_pipeline
     from app.llm import reset_llm_client
 
     monkeypatch.setitem(os.environ, "LLM_MAX_OUTPUT_TOKENS", "32000")
@@ -384,7 +384,7 @@ def staged_profiles(monkeypatch):
 
 
 def _vision_calls():
-    from app.grading.pipeline import get_pipeline
+    from app.legacy_grading.pipeline import get_pipeline
 
     return get_pipeline().vision.provider.calls
 

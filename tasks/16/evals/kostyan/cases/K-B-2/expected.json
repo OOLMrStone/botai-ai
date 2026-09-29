@@ -1,0 +1,21 @@
+{
+  "score": 2,
+  "expected_outcome": "graded",
+  "case_type": "ordinary",
+  "source_case_id": "Б",
+  "source": {
+    "workbook": "raw/Тесты бота-проверяющего.xlsx",
+    "sheet": "Тестовый набор",
+    "cells": {
+      "id": "A3",
+      "task_number": "B3",
+      "type": "C3",
+      "description": "D3",
+      "expected_solution_score": "E3",
+      "expected_presentation_score": "F3",
+      "reference_answer": "G3",
+      "photos": "H3"
+    }
+  },
+  "verdict": "Работа ученика: неравенство с 3^x, метод интервалов"
+}

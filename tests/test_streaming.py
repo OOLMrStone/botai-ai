@@ -13,7 +13,7 @@ import json
 import pytest
 
 from app.domain.schemas import PhotoGradeRequest
-from app.grading.pipeline import get_pipeline
+from app.legacy_grading.pipeline import get_pipeline
 
 
 def parse_sse(body: str) -> list[tuple[str, dict]]:

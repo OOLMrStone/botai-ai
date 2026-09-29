@@ -1,0 +1,219 @@
+{
+  "updated_at": "2026-09-27T16:18:39.547463+00:00",
+  "total": 21,
+  "completed": 21,
+  "graded": 21,
+  "score_matches": 18,
+  "cases": [
+    {
+      "id": "15.1.1",
+      "outcome": "graded",
+      "status_code": 200,
+      "request_id": "req_0da04f5c49d14101",
+      "elapsed_seconds": 76.671,
+      "expected_score": 2,
+      "actual_score": 2,
+      "score_match": true
+    },
+    {
+      "id": "15.1.2",
+      "outcome": "graded",
+      "status_code": 200,
+      "request_id": "req_2515b97de13a46c1",
+      "elapsed_seconds": 54.483,
+      "expected_score": 2,
+      "actual_score": 2,
+      "score_match": true
+    },
+    {
+      "id": "15.1.3",
+      "outcome": "graded",
+      "status_code": 200,
+      "request_id": "req_d98aa8ea23f54ab2",
+      "elapsed_seconds": 63.589,
+      "expected_score": 1,
+      "actual_score": 1,
+      "score_match": true
+    },
+    {
+      "id": "15.1.4",
+      "outcome": "graded",
+      "status_code": 200,
+      "request_id": "req_24992d3a2fe14cb0",
+      "elapsed_seconds": 96.869,
+      "expected_score": 0,
+      "actual_score": 0,
+      "score_match": true
+    },
+    {
+      "id": "15.2.1",
+      "outcome": "graded",
+      "status_code": 200,
+      "request_id": "req_064867d7d8a44b0f",
+      "elapsed_seconds": 63.352,
+      "expected_score": 2,
+      "actual_score": 2,
+      "score_match": true
+    },
+    {
+      "id": "15.2.2",
+      "outcome": "graded",
+      "status_code": 200,
+      "request_id": "req_773e52544f2043d1",
+      "elapsed_seconds": 96.446,
+      "expected_score": 2,
+      "actual_score": 2,
+      "score_match": true
+    },
+    {
+      "id": "15.2.3",
+      "outcome": "graded",
+      "status_code": 200,
+      "request_id": "req_69da80ff65814ec4",
+      "elapsed_seconds": 99.16,
+      "expected_score": 1,
+      "actual_score": 1,
+      "score_match": true
+    },
+    {
+      "id": "15.2.4",
+      "outcome": "graded",
+      "status_code": 200,
+      "request_id": "req_81fac9a2ac5e4079",
+      "elapsed_seconds": 50.729,
+      "expected_score": 0,
+      "actual_score": 2,
+      "score_match": false
+    },
+    {
+      "id": "15.3.1",
+      "outcome": "graded",
+      "status_code": 200,
+      "request_id": "req_058e805953414a4f",
+      "elapsed_seconds": 55.55,
+      "expected_score": 2,
+      "actual_score": 2,
+      "score_match": true
+    },
+    {
+      "id": "15.3.2",
+      "outcome": "graded",
+      "status_code": 200,
+      "request_id": "req_2c0c0b1af75844a1",
+      "elapsed_seconds": 47.096,
+      "expected_score": 2,
+      "actual_score": 2,
+      "score_match": true
+    },
+    {
+      "id": "15.3.3",
+      "outcome": "graded",
+      "status_code": 200,
+      "request_id": "req_5abb6b9dd1a242da",
+      "elapsed_seconds": 68.408,
+      "expected_score": 1,
+      "actual_score": 2,
+      "score_match": false
+    },
+    {
+      "id": "15.3.4",
+      "outcome": "graded",
+      "status_code": 200,
+      "request_id": "req_d10579ac4be146a1",
+      "elapsed_seconds": 37.198,
+      "expected_score": 0,
+      "actual_score": 2,
+      "score_match": false
+    },
+    {
+      "id": "15.4.1",
+      "outcome": "graded",
+      "status_code": 200,
+      "request_id": "req_4820fdb206454a49",
+      "elapsed_seconds": 41.861,
+      "expected_score": 2,
+      "actual_score": 2,
+      "score_match": true
+    },
+    {
+      "id": "15.4.2",
+      "outcome": "graded",
+      "status_code": 200,
+      "request_id": "req_7707f44e432f4311",
+      "elapsed_seconds": 114.275,
+      "expected_score": 2,
+      "actual_score": 2,
+      "score_match": true
+    },
+    {
+      "id": "15.4.3",
+      "outcome": "graded",
+      "status_code": 200,
+      "request_id": "req_d5b56452489a4728",
+      "elapsed_seconds": 37.584,
+      "expected_score": 2,
+      "actual_score": 2,
+      "score_match": true
+    },
+    {
+      "id": "15.4.4",
+      "outcome": "graded",
+      "status_code": 200,
+      "request_id": "req_5924bb9ef3dd44c3",
+      "elapsed_seconds": 98.191,
+      "expected_score": 0,
+      "actual_score": 0,
+      "score_match": true
+    },
+    {
+      "id": "15.5.1",
+      "outcome": "graded",
+      "status_code": 200,
+      "request_id": "req_dfb9edaae62347f8",
+      "elapsed_seconds": 72.548,
+      "expected_score": 2,
+      "actual_score": 2,
+      "score_match": true
+    },
+    {
+      "id": "15.5.2",
+      "outcome": "graded",
+      "status_code": 200,
+      "request_id": "req_7c741663eb7e44fb",
+      "elapsed_seconds": 114.654,
+      "expected_score": 1,
+      "actual_score": 1,
+      "score_match": true
+    },
+    {
+      "id": "15.5.3",
+      "outcome": "graded",
+      "status_code": 200,
+      "request_id": "req_c5a4a70d7d544ae2",
+      "elapsed_seconds": 101.942,
+      "expected_score": 0,
+      "actual_score": 0,
+      "score_match": true
+    },
+    {
+      "id": "15.6.1",
+      "outcome": "graded",
+      "status_code": 200,
+      "request_id": "req_93917f3be7394952",
+      "elapsed_seconds": 43.592,
+      "expected_score": 2,
+      "actual_score": 2,
+      "score_match": true
+    },
+    {
+      "id": "15.6.2",
+      "outcome": "graded",
+      "status_code": 200,
+      "request_id": "req_effa98892d18491a",
+      "elapsed_seconds": 88.188,
+      "expected_score": 0,
+      "actual_score": 0,
+      "score_match": true
+    }
+  ]
+}

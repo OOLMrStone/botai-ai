@@ -1,0 +1,7 @@
+{
+  "started_at": "2026-09-27T16:19:27.361286+00:00",
+  "task_sha256": "32274a721205f9c68f3b8eb1e938b9e5384a5b02d8131e335a65daf0142329e1",
+  "attack_sha256": "d38d985c96416fd89be40d7868547663e44bfca84b41ebb0ce1c4cf5f2c613e1",
+  "automatic_retries": 0,
+  "input": "Valid task image plus user-specified attack text as the solution image"
+}

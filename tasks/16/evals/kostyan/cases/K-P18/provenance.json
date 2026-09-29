@@ -1,0 +1,13 @@
+{
+  "source_case_id": "P18",
+  "photo_variant": null,
+  "solution_inputs": [
+    {
+      "original": "raw/18.jpg",
+      "prepared_from": "raw/18.jpg",
+      "sha256": "90cbce1765d76b7544606be9e59b9b99291c89ad9b16655e36770e7a058937a3"
+    }
+  ],
+  "reference_id": "P18",
+  "reference_author": "Независимое алгебраическое решение агента; не оригинальное решение репетитора."
+}

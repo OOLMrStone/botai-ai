@@ -1,0 +1,21 @@
+{
+  "score": 0,
+  "expected_outcome": "graded",
+  "case_type": "ordinary",
+  "source_case_id": "P19",
+  "source": {
+    "workbook": "raw/Тесты бота-проверяющего.xlsx",
+    "sheet": "Тестовый набор",
+    "cells": {
+      "id": "A25",
+      "task_number": "B25",
+      "type": "C25",
+      "description": "D25",
+      "expected_solution_score": "E25",
+      "expected_presentation_score": "F25",
+      "reference_answer": "G25",
+      "photos": "H25"
+    }
+  },
+  "verdict": "t ≠ 1 оговорено, но x = 0 не исключён из ответа. По ФИПИ (1 балл только за ИСКЛЮЧЕНИЕ точек) — 0; по критериям бота («исключение или включение») — 1"
+}

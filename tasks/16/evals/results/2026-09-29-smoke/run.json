@@ -1,0 +1,41 @@
+{
+  "created_at": "2026-09-29T08:32:05.727268+00:00",
+  "identity": {
+    "endpoint": "http://127.0.0.1:8876/api/v1/photo-check",
+    "manifest_sha256": "575ca9b170f30d160df21ceb00222e8246601c7ad7c79aa297d628bb491771ed",
+    "cases": [
+      {
+        "id": "15.1.1",
+        "inputs": {
+          "task_image": {
+            "path": "problems/15.1.png",
+            "sha256": "32274a721205f9c68f3b8eb1e938b9e5384a5b02d8131e335a65daf0142329e1"
+          },
+          "solution_images": [
+            {
+              "path": "15.1.1/solution.png",
+              "sha256": "4053a27eb2fa1165ce2248fbb4116a758b3f2c451c83463ca3797c574a9a4ade"
+            }
+          ],
+          "expected_sha256": "66374b9d86144be68d505c618c400a5951a3736a649db5f6813f122df8c2acf1"
+        }
+      }
+    ]
+  },
+  "local_source_hashes": {
+    "tasks/common/prompts/main.md": "44ebf55149d59b368bbf13c7b54940e6306395f06a91003323b491c9f14b6683",
+    "tasks/16/prompts/ocr.md": "2c651bffa98fe6c898e82b9458385c6bdff1868d32a6287b5e7cc861798403b7",
+    "tasks/16/prompts/analysis.md": "383f884293b705f1a8b47bbd4f3bc3d4ec3bc495a8482c3ffde547ec714d459d",
+    "tasks/16/prompts/popular_mistakes.md": "97685ecfe4da14a258dd61705e48f01de8d9040cdc8877a1618834da705453d0",
+    "tasks/common/prompts/grading.md": "976f5f8c04352a5a2fa870afb76063b8ec334e71936f0369339f63d072ef6e5d",
+    "tasks/16/prompts/criteria.md": "ebfc4e1afc0fc966c3afd03c94221949522346c5bd8824fb09a92087fb0b748a",
+    "tasks/common/prompts/response-format.md": "44a500871573a5c5bb09186b8b7701abbd46c6d1ce2d82e209b6ef9f98fda7e5",
+    "app/grading/session.py": "fa983c4519076ed0d6842447540f42f055f5e8d69f822d3caf0e6ba613a5dc66",
+    "app/grading/provider.py": "0eb0df7ef359d5998e4f09213c56384bdb41d92bf2390c15ab1ddf029e455ff4",
+    "app/grading/service.py": "294048b41358f05c2ace783fbe5703e83dce93b3e514c12754e9ca558156bb23"
+  },
+  "concurrency": 1,
+  "timeout_seconds": 260,
+  "automatic_retries": 0,
+  "snapshot_note": "Local sources; independently verify they match the deployed server."
+}
