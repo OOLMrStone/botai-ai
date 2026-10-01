@@ -378,3 +378,22 @@ def test_provider_timeout_obeys_configuration_and_global_ceiling(monkeypatch, co
     Provider(SimpleNamespace(api_key='test-key', base_url='https://provider.invalid', timeout_s=configured))
     assert calls[0]['timeout'] == expected
     assert calls[0]['max_retries'] == 0
+
+
+@pytest.mark.parametrize('number, max_score', [(14, 2), (15, 3), (18, 3)])
+async def test_service_uses_selected_task_package(tmp_path, number, max_score):
+    provider = RecordingMock()
+    result = json.loads(await service(tmp_path, provider).run(
+        SafeImage(b'task'), [SafeImage(b'student')], 'test-user', number))
+    assert result['task']['task_number'] == number and result['task']['max_score'] == max_score
+    reads = [m['content'] for m in provider.inputs[-1] if m['role'] == 'tool']
+    criteria = next(json.loads(r)['content'] for r in reads if f'задания {number}' in r)
+    assert f'задания {number}' in criteria
+
+
+@pytest.mark.parametrize('number', [17, '15', True, None])
+async def test_service_rejects_unsupported_task(tmp_path, number):
+    provider = RecordingMock()
+    with pytest.raises(ValueError):
+        await service(tmp_path, provider).run(SafeImage(b'task'), [SafeImage(b'student')], 'test-user', number)
+    assert provider.inputs == []

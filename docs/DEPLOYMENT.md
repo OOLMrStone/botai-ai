@@ -77,7 +77,7 @@ curl --fail http://127.0.0.1:8080/api/v1/photo-check/config
 
 The public `/health` is a constant response from Caddy. It confirms proxy reachability, not that the application or model works. The container healthcheck calls the application directly and does not call a model. Do not request `/health/ready?probe=true` for deployment verification: it can spend API balance.
 
-The new form sends one `task_image` and up to four `solution_images`, each up to 8 MiB, to `/api/v1/photo-check`. Its 240-second deadline covers preparation and grading together. Failures require a manual retry. `/api/v1/photo-check/config` exposes the effective model label and mode without credentials or a paid call.
+The new form sends `task_number` (14, 15, 16 or 18; default 16), one `task_image` and up to four `solution_images`, each up to 8 MiB, to `/api/v1/photo-check`. Its 240-second deadline covers preparation and grading together. Failures require a manual retry. `/api/v1/photo-check/config` exposes the effective model label and mode without credentials or a paid call.
 
 Inspect application logs locally when troubleshooting; do not publish environment dumps, authentication headers, keys or student images. Preserve the host Caddy configuration and existing authentication while deploying. The application has bounded concurrent photo requests; the shared tester login still does not provide per-person main-application identity.
 

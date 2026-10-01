@@ -27,7 +27,7 @@ import httpx
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from app.grading.validator import ValidationGate
-from app.grading.package import package_paths
+from app.grading.package import DEFAULT_TASK, SUPPORTED_TASKS, package_paths
 
 
 def now():
@@ -125,12 +125,24 @@ def summary(directory, cases):
     return result
 
 
+def manifest_task(manifest, requested):
+    """The task number sent to the server; an explicit flag must agree with the manifest."""
+    stored = json.loads(manifest.read_text()).get('target_task_number')
+    if stored is not None and (type(stored) is not int or stored not in SUPPORTED_TASKS):
+        raise ValueError(f'Unsupported target_task_number in manifest: {stored!r}')
+    if requested is not None and stored is not None and requested != stored:
+        raise ValueError(f'--task-number {requested} differs from manifest target_task_number {stored}')
+    return requested or stored or DEFAULT_TASK
+
+
 async def run(args):
     manifest = args.manifest.resolve()
     cases = load_cases(manifest, set(args.case))
+    task_number = manifest_task(manifest, args.task_number)
     if args.dry_run:
         print(json.dumps({'dry_run': True, 'cases': [c['id'] for c in cases], 'count': len(cases),
-                          'endpoint': args.endpoint, 'paid_requests': 0}, ensure_ascii=False))
+                          'task_number': task_number, 'endpoint': args.endpoint, 'paid_requests': 0},
+                         ensure_ascii=False))
         return
     directory = ROOT / 'output/evals' / args.run_name
     existed = directory.exists()
@@ -143,7 +155,8 @@ async def run(args):
         except BlockingIOError:
             raise ValueError('Another process owns this run') from None
         metadata_path = directory / 'run.json'
-        identity = {'endpoint': args.endpoint, 'manifest_sha256': sha(manifest.read_bytes()),
+        identity = {'endpoint': args.endpoint, 'task_number': task_number,
+                    'manifest_sha256': sha(manifest.read_bytes()),
                     'cases': [{'id': c['id'], 'inputs': c['inputs']} for c in cases]}
         if metadata_path.exists():
             stored = json.loads(metadata_path.read_text())
@@ -153,7 +166,7 @@ async def run(args):
             snapshot = directory / 'snapshot'
             snapshot.mkdir(exist_ok=True)
             hashes = {}
-            for relative in [*(str(p.relative_to(ROOT)) for p in package_paths(root=ROOT).values()),
+            for relative in [*(str(p.relative_to(ROOT)) for p in package_paths(task_number, root=ROOT).values()),
                              'app/grading/session.py', 'app/grading/provider.py', 'app/grading/service.py']:
                 source = ROOT / relative
                 destination = snapshot / relative
@@ -200,7 +213,7 @@ async def run(args):
                               'status_code': None, 'outcome': 'transport_error'}
                     print(f"START {case['id']}", flush=True)
                     try:
-                        # Only these two image fields leave the runner. No expected metadata.
+                        # Only the images and the task number leave the runner. No expected metadata.
                         with ExitStack() as stack:
                             task = stack.enter_context(case['task'].open('rb'))
                             files = [('task_image', ('task' + case['task'].suffix, task,
@@ -209,7 +222,8 @@ async def run(args):
                                 student = stack.enter_context(student_path.open('rb'))
                                 files.append(('solution_images', (f'solution-{index}' + student_path.suffix,
                                               student, mimetypes.guess_type(student_path.name)[0] or 'image/png')))
-                            response = await client.post(args.endpoint, files=files)
+                            response = await client.post(args.endpoint, files=files,
+                                                         data={'task_number': str(task_number)})
                         result.update(status_code=response.status_code, request_id=response.headers.get('x-request-id'))
                         raw = response.content
                         # Preserve exact response bytes even for invalid JSON and HTTP failures.
@@ -255,6 +269,8 @@ def main():
     parser.add_argument('--run-name', required=True)
     parser.add_argument('--endpoint', default='http://127.0.0.1:8766/api/v1/photo-check')
     parser.add_argument('--manifest', type=Path, default=ROOT / 'tasks/16/evals/fipi/manifest.json')
+    parser.add_argument('--task-number', type=int, choices=sorted(SUPPORTED_TASKS),
+                        help='defaults to target_task_number in the manifest, else 16')
     parser.add_argument('--concurrency', type=int, choices=(1, 2), default=1)
     parser.add_argument('--case', action='append', default=[])
     parser.add_argument('--resume', action='store_true')

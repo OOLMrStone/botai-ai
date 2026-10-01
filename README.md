@@ -45,7 +45,7 @@ Paid model calls require a direct user request in the current message. Offline t
 
 | Endpoint | Purpose |
 | --- | --- |
-| `POST /api/v1/photo-check` | Multipart upload: one `task_image`, one to four repeated `solution_images` fields |
+| `POST /api/v1/photo-check` | Multipart upload: one `task_image`, one to four repeated `solution_images` fields, optional `task_number` (14, 15, 16 or 18; default 16) |
 | `GET /api/v1/photo-check/config` | Form configuration and local test identity; no model call |
 | `GET /ui/` | Standalone test form |
 | `GET /health` | Application liveness when called directly on the application |

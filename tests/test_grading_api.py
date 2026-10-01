@@ -180,3 +180,34 @@ def test_prompt_preview_is_gated_and_offline(client):
         'criteria.md', 'popular_mistakes.md', 'response-format.md', 'Statement.md', 'Solution.md'}
     assert data['files']['Statement.md'] == 'x > 0'
     assert len(data['tools']) == 5
+
+
+def test_config_lists_supported_tasks(client):
+    config = client.get('/api/v1/photo-check/config').json()
+    assert config['default_task'] == 16
+    assert [(t['number'], t['max_score']) for t in config['tasks']] == [(14, 2), (15, 3), (16, 2), (18, 3)]
+
+
+@pytest.mark.parametrize('number, max_score', [(None, 2), ('14', 2), ('15', 3), ('16', 2), ('18', 3)])
+def test_task_number_selects_task(client, number, max_score):
+    data = {} if number is None else {'task_number': number}
+    res = client.post('/api/v1/photo-check', files=files(), data=data)
+    assert res.status_code == 200, res.text
+    task = res.json()['task']
+    assert task['task_number'] == (16 if number is None else int(number))
+    assert task['max_score'] == max_score
+
+
+@pytest.mark.parametrize('data', [{'task_number': '17'}, {'task_number': '016'}, {'task_number': 'abc'},
+                                  {'task_number': ''}, {'task_number': ['15', '18']}])
+def test_unsupported_task_number_rejected(client, data):
+    res = client.post('/api/v1/photo-check', files=files(), data=data)
+    assert res.status_code in (400, 422)
+    assert 'grading' not in res.json()
+
+
+def test_task_number_as_file_rejected(client):
+    upload = files() + [('task_number', ('n.txt', b'15', 'text/plain'))]
+    res = client.post('/api/v1/photo-check', files=upload)
+    assert res.status_code in (400, 422)
+    assert 'grading' not in res.json()
