@@ -15,7 +15,7 @@ import re
 import sys
 
 
-from app.grading.package import task_directory
+from app.grading.package import MAX_SCORES, task_directory
 
 DEFAULT_CATALOG = task_directory() / 'popular_mistakes.md'
 
@@ -148,18 +148,20 @@ def validate_response(response: object, *, catalog_path=None) -> list[str]:
     if errors:
         return errors
 
+    task = response["task"]
+    analysis = response["analysis"]
+    grading = response["grading"]
+    max_score = MAX_SCORES.get(task["task_number"])
+    if max_score is None:
+        return [f"$.task.task_number: expected one of {sorted(MAX_SCORES)}"]
+    if catalog_path is None:
+        catalog_path = task_directory(task["task_number"]) / "popular_mistakes.md"
     try:
         error_codes = load_error_codes(catalog_path)
     except ValueError as exc:
         return [str(exc)]
-
-    task = response["task"]
-    analysis = response["analysis"]
-    grading = response["grading"]
-    if task["task_number"] != 16:
-        errors.append("$.task.task_number: expected 16 for this package")
-    if task["max_score"] != 2:
-        errors.append("$.task.max_score: expected 2 for this package")
+    if task["max_score"] != max_score:
+        errors.append(f"$.task.max_score: expected {max_score} for task {task['task_number']}")
     if not response["is_graded"]:
         if not response["rejection_reason"].strip():
             errors.append("$.rejection_reason: expected nonempty reason for rejection")
@@ -174,8 +176,8 @@ def validate_response(response: object, *, catalog_path=None) -> list[str]:
             errors.append(f"$.{key}: required for graded response")
     if errors:
         return errors
-    if grading["score"] not in (0, 1, 2):
-        errors.append("$.grading.score: expected 0, 1 or 2")
+    if not 0 <= grading["score"] <= max_score:
+        errors.append(f"$.grading.score: expected an integer from 0 to {max_score}")
 
     seen = set()
     for index, error in enumerate(analysis["errors"]):
