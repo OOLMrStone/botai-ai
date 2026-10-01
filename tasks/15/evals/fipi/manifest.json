@@ -1,0 +1,209 @@
+{
+  "source": "matematika_mr_ege_2026.pdf",
+  "source_task_number": 14,
+  "target_task_number": 15,
+  "cases": [
+    {
+      "id": "14.1.1",
+      "source_page": 47,
+      "problem_and_reference_answer": "problems/14.1.png",
+      "solution": [
+        "14.1.1/solution-01.png",
+        "14.1.1/solution-02.png"
+      ],
+      "expected": "14.1.1/expected.json"
+    },
+    {
+      "id": "14.1.2",
+      "source_page": 49,
+      "problem_and_reference_answer": "problems/14.1.png",
+      "solution": [
+        "14.1.2/solution-01.png",
+        "14.1.2/solution-02.png"
+      ],
+      "expected": "14.1.2/expected.json"
+    },
+    {
+      "id": "14.1.3",
+      "source_page": 51,
+      "problem_and_reference_answer": "problems/14.1.png",
+      "solution": [
+        "14.1.3/solution-01.png",
+        "14.1.3/solution-02.png",
+        "14.1.3/solution-03.png"
+      ],
+      "expected": "14.1.3/expected.json"
+    },
+    {
+      "id": "14.1.4",
+      "source_page": 53,
+      "problem_and_reference_answer": "problems/14.1.png",
+      "solution": [
+        "14.1.4/solution-01.png",
+        "14.1.4/solution-02.png",
+        "14.1.4/solution-03.png"
+      ],
+      "expected": "14.1.4/expected.json"
+    },
+    {
+      "id": "14.2.1",
+      "source_page": 55,
+      "problem_and_reference_answer": "problems/14.2.png",
+      "solution": [
+        "14.2.1/solution-01.png",
+        "14.2.1/solution-02.png"
+      ],
+      "expected": "14.2.1/expected.json"
+    },
+    {
+      "id": "14.2.2",
+      "source_page": 57,
+      "problem_and_reference_answer": "problems/14.2.png",
+      "solution": [
+        "14.2.2/solution-01.png",
+        "14.2.2/solution-02.png",
+        "14.2.2/solution-03.png"
+      ],
+      "expected": "14.2.2/expected.json"
+    },
+    {
+      "id": "14.2.3",
+      "source_page": 60,
+      "problem_and_reference_answer": "problems/14.2.png",
+      "solution": "14.2.3/solution.png",
+      "expected": "14.2.3/expected.json"
+    },
+    {
+      "id": "14.2.4",
+      "source_page": 61,
+      "problem_and_reference_answer": "problems/14.2.png",
+      "solution": "14.2.4/solution.png",
+      "expected": "14.2.4/expected.json"
+    },
+    {
+      "id": "14.3.1",
+      "source_page": 62,
+      "problem_and_reference_answer": "problems/14.3.png",
+      "solution": [
+        "14.3.1/solution-01.png",
+        "14.3.1/solution-02.png",
+        "14.3.1/solution-03.png",
+        "14.3.1/solution-04.png"
+      ],
+      "expected": "14.3.1/expected.json"
+    },
+    {
+      "id": "14.3.2",
+      "source_page": 64,
+      "problem_and_reference_answer": "problems/14.3.png",
+      "solution": [
+        "14.3.2/solution-01.png",
+        "14.3.2/solution-02.png"
+      ],
+      "expected": "14.3.2/expected.json"
+    },
+    {
+      "id": "14.3.3",
+      "source_page": 65,
+      "problem_and_reference_answer": "problems/14.3.png",
+      "solution": "14.3.3/solution.png",
+      "expected": "14.3.3/expected.json"
+    },
+    {
+      "id": "14.3.4",
+      "source_page": 66,
+      "problem_and_reference_answer": "problems/14.3.png",
+      "solution": "14.3.4/solution.png",
+      "expected": "14.3.4/expected.json"
+    },
+    {
+      "id": "14.4.1",
+      "source_page": 67,
+      "problem_and_reference_answer": "problems/14.4.png",
+      "solution": [
+        "14.4.1/solution-01.png",
+        "14.4.1/solution-02.png",
+        "14.4.1/solution-03.png"
+      ],
+      "expected": "14.4.1/expected.json"
+    },
+    {
+      "id": "14.4.2",
+      "source_page": 69,
+      "problem_and_reference_answer": "problems/14.4.png",
+      "solution": "14.4.2/solution.png",
+      "expected": "14.4.2/expected.json"
+    },
+    {
+      "id": "14.4.3",
+      "source_page": 70,
+      "problem_and_reference_answer": "problems/14.4.png",
+      "solution": [
+        "14.4.3/solution-01.png",
+        "14.4.3/solution-02.png",
+        "14.4.3/solution-03.png"
+      ],
+      "expected": "14.4.3/expected.json"
+    },
+    {
+      "id": "14.4.4",
+      "source_page": 73,
+      "problem_and_reference_answer": "problems/14.4.png",
+      "solution": [
+        "14.4.4/solution-01.png",
+        "14.4.4/solution-02.png",
+        "14.4.4/solution-03.png"
+      ],
+      "expected": "14.4.4/expected.json"
+    },
+    {
+      "id": "14.5.1",
+      "source_page": 76,
+      "problem_and_reference_answer": "problems/14.5.png",
+      "solution": [
+        "14.5.1/solution-01.png",
+        "14.5.1/solution-02.png"
+      ],
+      "expected": "14.5.1/expected.json"
+    },
+    {
+      "id": "14.5.2",
+      "source_page": 77,
+      "problem_and_reference_answer": "problems/14.5.png",
+      "solution": "14.5.2/solution.png",
+      "expected": "14.5.2/expected.json"
+    },
+    {
+      "id": "14.5.3",
+      "source_page": 78,
+      "problem_and_reference_answer": "problems/14.5.png",
+      "solution": [
+        "14.5.3/solution-01.png",
+        "14.5.3/solution-02.png",
+        "14.5.3/solution-03.png"
+      ],
+      "expected": "14.5.3/expected.json"
+    },
+    {
+      "id": "14.6.1",
+      "source_page": 80,
+      "problem_and_reference_answer": "problems/14.6.png",
+      "solution": "14.6.1/solution.png",
+      "expected": "14.6.1/expected.json"
+    },
+    {
+      "id": "14.6.2",
+      "source_page": 81,
+      "problem_and_reference_answer": "problems/14.6.png",
+      "solution": "14.6.2/solution.png",
+      "expected": "14.6.2/expected.json"
+    },
+    {
+      "id": "14.6.3",
+      "source_page": 82,
+      "problem_and_reference_answer": "problems/14.6.png",
+      "solution": "14.6.3/solution.png",
+      "expected": "14.6.3/expected.json"
+    }
+  ]
+}
