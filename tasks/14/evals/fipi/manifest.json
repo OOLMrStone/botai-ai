@@ -160,7 +160,10 @@
       "id": "13.6.3",
       "source_page": 36,
       "problem_and_reference_answer": "problems/13.6.png",
-      "solution": "13.6.3/solution.png",
+      "solution": [
+        "13.6.3/solution-01.png",
+        "13.6.3/solution-02.png"
+      ],
       "expected": "13.6.3/expected.json"
     }
   ]

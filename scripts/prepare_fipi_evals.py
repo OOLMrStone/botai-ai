@@ -22,6 +22,7 @@ import fitz
 from PIL import Image
 
 MIN_IMAGE_PT = 60  # smaller embedded images are typeset symbols such as ℤ
+MIN_STRIP_PT = (200, 20)  # wide low strips continue a scan (e.g. the answer line)
 HEADER = re.compile(r'Пример\s+(\d+\.\d+\.\d+)')
 SCORE = re.compile(r'Оценка эксперта:?\s*(\d)')
 
@@ -34,7 +35,9 @@ def scans(page):
     found = []
     for info in page.get_image_info(xrefs=True):
         rect = fitz.Rect(info['bbox'])
-        if info['xref'] and rect.width >= MIN_IMAGE_PT and rect.height >= MIN_IMAGE_PT:
+        large = rect.width >= MIN_IMAGE_PT and rect.height >= MIN_IMAGE_PT
+        strip = rect.width >= MIN_STRIP_PT[0] and rect.height >= MIN_STRIP_PT[1]
+        if info['xref'] and (large or strip):
             found.append((rect, info['xref']))
     return sorted(found, key=lambda item: item[0].y0)
 

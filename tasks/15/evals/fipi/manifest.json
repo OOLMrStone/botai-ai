@@ -123,7 +123,8 @@
       "solution": [
         "14.4.1/solution-01.png",
         "14.4.1/solution-02.png",
-        "14.4.1/solution-03.png"
+        "14.4.1/solution-03.png",
+        "14.4.1/solution-04.png"
       ],
       "expected": "14.4.1/expected.json"
     },
@@ -131,7 +132,10 @@
       "id": "14.4.2",
       "source_page": 69,
       "problem_and_reference_answer": "problems/14.4.png",
-      "solution": "14.4.2/solution.png",
+      "solution": [
+        "14.4.2/solution-01.png",
+        "14.4.2/solution-02.png"
+      ],
       "expected": "14.4.2/expected.json"
     },
     {

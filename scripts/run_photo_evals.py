@@ -176,7 +176,7 @@ async def run(args):
             shutil.copyfile(manifest, snapshot / 'manifest.json')
             save_json(metadata_path, {'created_at': now(), 'identity': identity,
                                       'local_source_hashes': hashes, 'concurrency': args.concurrency,
-                                      'timeout_seconds': 260, 'automatic_retries': 0,
+                                      'timeout_seconds': 'server deadline_seconds + 20', 'automatic_retries': 0,
                                       'snapshot_note': 'Local sources; independently verify they match the deployed server.'})
         limits = httpx.Limits(max_connections=args.concurrency, max_keepalive_connections=args.concurrency)
         async with httpx.AsyncClient(timeout=httpx.Timeout(260), limits=limits,
@@ -191,6 +191,8 @@ async def run(args):
             if config_path.exists() and json.loads(config_path.read_text()) != safe_config:
                 raise ValueError('Server configuration changed; use a new run name')
             save_json(config_path, safe_config)
+            # Wait a little longer than the server deadline so its own 504 is recorded.
+            request_timeout = float(config.get('deadline_seconds') or 240) + 20
             semaphore = asyncio.Semaphore(args.concurrency)
             async def one(case):
                 async with semaphore:
@@ -223,7 +225,8 @@ async def run(args):
                                 files.append(('solution_images', (f'solution-{index}' + student_path.suffix,
                                               student, mimetypes.guess_type(student_path.name)[0] or 'image/png')))
                             response = await client.post(args.endpoint, files=files,
-                                                         data={'task_number': str(task_number)})
+                                                         data={'task_number': str(task_number)},
+                                                         timeout=request_timeout)
                         result.update(status_code=response.status_code, request_id=response.headers.get('x-request-id'))
                         raw = response.content
                         # Preserve exact response bytes even for invalid JSON and HTTP failures.
