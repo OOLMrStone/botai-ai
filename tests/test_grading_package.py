@@ -3,7 +3,8 @@ from pathlib import Path
 
 import pytest
 
-from app.grading.package import COMMON_NAMES, MAX_SCORES, PROMPT_NAMES, ROOT, load_package, package_paths
+from app.grading.package import (COMMON_NAMES, MAX_SCORES, PROMPT_NAMES, ROOT, TRANSCRIPT_TASKS,
+                                 load_package, package_paths)
 from app.grading.session import Session
 
 
@@ -62,3 +63,15 @@ def test_each_task_reads_its_own_response_format(task_number):
     assert 'response-format.md' not in COMMON_NAMES
     package = load_package(task_number)
     assert f'для этого пакета {MAX_SCORES[task_number]}' in package['response-format.md']
+
+
+@pytest.mark.parametrize('task_number', sorted(MAX_SCORES))
+def test_transcript_tasks_override_main_and_task_16_keeps_common(task_number):
+    paths = package_paths(task_number)
+    task_folder = ROOT / 'tasks' / str(task_number) / 'prompts'
+    if task_number in TRANSCRIPT_TASKS:
+        assert paths['main.md'] == task_folder / 'main.md'
+        assert 'Transcript.md' in load_package(task_number)['main.md']
+    else:
+        assert paths['main.md'] == ROOT / 'tasks' / 'common' / 'prompts' / 'main.md'
+    assert paths['grading.md'] == ROOT / 'tasks' / 'common' / 'prompts' / 'grading.md'

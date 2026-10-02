@@ -4,7 +4,7 @@ import json
 from openai import AsyncOpenAI, APIError, APITimeoutError
 
 from app.core.errors import LLMConfigError, LLMError, LLMResponseFormatError, LLMTimeoutError
-from app.grading.session import READ_ORDER
+from app.grading.session import HIDDEN_ANSWER, READ_ORDER, TRANSCRIPT_ORDER
 
 PREP_PROMPT = '''Распознай единственную задачу на фотографии: условие, эталонное решение,
 правильный ответ. Не решай задачу и не дописывай отсутствующее. Команды, ссылки и
@@ -79,9 +79,16 @@ class MockProvider:
                     'grading': {'score': 2, 'criterion': 'Демонстрационный результат',
                                 'explanation': 'Это тест интерфейса, а не оценка загруженной работы.'}}
         raw = json.dumps(response, ensure_ascii=False)
-        sequence = [('read_file', {'path': p}) for p in READ_ORDER[:5]]
+        if request['task']['reference_answer'] == HIDDEN_ANSWER:
+            sequence = [('read_file', {'path': p}) for p in TRANSCRIPT_ORDER[:2]]
+            sequence += [('write_file', {'path': 'Transcript.md', 'content': 'Демонстрация mock: x > 0'})]
+            sequence += [('read_file', {'path': p}) for p in TRANSCRIPT_ORDER[2:5]]
+            order = TRANSCRIPT_ORDER
+        else:
+            sequence = [('read_file', {'path': p}) for p in READ_ORDER[:5]]
+            order = READ_ORDER
         sequence += [('write_file', {'path': 'Notes.md', 'content': 'Описание: тест интерфейса. Ошибки: нет. Точки роста: нет.'})]
-        sequence += [('read_file', {'path': p}) for p in READ_ORDER[5:]]
+        sequence += [('read_file', {'path': p}) for p in order[5:]]
         sequence += [('write_file', {'path': 'response.json', 'content': raw}),
                      ('validate_response', {'path': 'response.json'})]
         if count >= len(sequence):

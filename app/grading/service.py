@@ -7,7 +7,8 @@ from app.core.errors import LLMResponseFormatError, ValidationError
 from app.grading.package import DEFAULT_TASK, MAX_SCORES, SUPPORTED_TASKS
 from app.grading.provider import PREP_PROMPT, MockProvider, Provider
 from app.grading.reports import ReportStore
-from app.grading.session import ADAPTER, ATTACK_REASON, TOOLS, Session, load_package
+from app.grading.package import TRANSCRIPT_TASKS
+from app.grading.session import ADAPTER, ATTACK_REASON, TRANSCRIPT_ADAPTER, Session, load_package, tools_for
 from app.grading.validator import parse_response
 
 
@@ -62,10 +63,13 @@ class GradingService:
                     'max_score': MAX_SCORES[task_number],
                     'statement': data['statement'], 'reference_answer': data['reference_answer'],
                     'reference_solution': reference}
-            session = Session(task, image_ids, package)
-            payload = json.dumps({'task': task, 'solution_image_ids': image_ids}, ensure_ascii=False)
+            transcript = task_number in TRANSCRIPT_TASKS
+            session = Session(task, image_ids, package, transcript=transcript)
+            tools = tools_for(transcript)
+            payload = json.dumps({'task': session.task, 'solution_image_ids': image_ids}, ensure_ascii=False)
             messages = [
-                {'role': 'system', 'content': package['main.md'] + '\n\n' + ADAPTER},
+                {'role': 'system', 'content': package['main.md'] + '\n\n'
+                 + (TRANSCRIPT_ADAPTER if transcript else ADAPTER)},
                 {'role': 'user', 'content': [{'type': 'text', 'text': payload}] + [im.part() for im in images]},
             ]
             reported = False
@@ -73,7 +77,7 @@ class GradingService:
                 # Bound every message, including correction text and repeated photos.
                 if sum(len(json.dumps(m, ensure_ascii=False)) for m in messages) > 96_000_000:
                     raise LLMResponseFormatError('Проверка превысила допустимый объём. Повтори отправку')
-                message = await provider.chat(messages, TOOLS)
+                message = await provider.chat(messages, tools)
                 if type(message) is not dict:
                     raise LLMResponseFormatError('Модель вернула неверный формат. Повтори проверку')
                 if len(json.dumps(message, ensure_ascii=False)) > 600_000:
