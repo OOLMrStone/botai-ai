@@ -368,7 +368,7 @@ async def test_reasoning_preserved_in_repaired_final_and_all_tool_turns(tmp_path
     assert json.loads(result)['is_graded']
 
 
-@pytest.mark.parametrize('configured,expected', [(120, 120), (360, 240), (40, 40)])
+@pytest.mark.parametrize('configured,expected', [(120, 120), (600, 360), (40, 40)])
 def test_provider_timeout_obeys_configuration_and_global_ceiling(monkeypatch, configured, expected):
     calls = []
     def fake_client(**kwargs):

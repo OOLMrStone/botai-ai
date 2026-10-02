@@ -124,6 +124,6 @@ async def check(request: Request):
         error.status_code, error.code = 413, 'upload_too_large'
         raise error from exc
     except TimeoutError as exc:
-        raise LLMTimeoutError('Проверка не завершилась за 4 минуты. Нажми «Проверить ещё раз»') from exc
+        raise LLMTimeoutError('Проверка не завершилась за 6 минут. Нажми «Проверить ещё раз»') from exc
     finally:
         request.app.state.photo_active -= 1

@@ -195,7 +195,7 @@ class DebugSettings(BaseSettings):
 
 class PhotoSettings(BaseSettings):
     model_config = _BASE_CONFIG | SettingsConfigDict(env_prefix="PHOTO_")
-    deadline_seconds: float = Field(default=240, gt=0, le=240)
+    deadline_seconds: float = Field(default=360, gt=0, le=360)
     max_model_turns: int = Field(default=32, ge=12, le=48)
     concurrency: int = Field(default=2, ge=1, le=8)
     reports_dir: str = "./data/suspicious-submissions"

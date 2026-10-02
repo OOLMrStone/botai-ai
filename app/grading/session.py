@@ -172,7 +172,7 @@ class Session:
                     raise ValueError('Transcript unavailable now')
                 if 'Solution.md' in self.read:
                     raise ValueError('Transcript.md is fixed: it is saved before Solution.md. '
-                                 'Note reading errors in Notes.md and the ocr field instead')
+                                 'Note doubtful places and reading errors in Notes.md; ocr stays equal to Transcript.md')
             elif path == 'Notes.md':
                 if self.rejection or not set(self.order[:5]) <= self.read:
                     raise ValueError('Notes unavailable before analysis or after rejection')
