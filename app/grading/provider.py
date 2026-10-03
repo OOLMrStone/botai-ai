@@ -103,7 +103,7 @@ class MockProvider:
         raw = json.dumps(response, ensure_ascii=False)
         if request['task']['reference_answer'] == HIDDEN_ANSWER:
             sequence = [('read_file', {'path': p}) for p in TRANSCRIPT_ORDER[:2]]
-            if 'подготовил сервер' in messages[0]['content']:
+            if 'его подготовил сервер' in messages[0]['content']:
                 sequence += [('read_file', {'path': 'Transcript.md'})]
             else:
                 sequence += [('write_file', {'path': 'Transcript.md', 'content': 'Демонстрация mock: x > 0'})]
