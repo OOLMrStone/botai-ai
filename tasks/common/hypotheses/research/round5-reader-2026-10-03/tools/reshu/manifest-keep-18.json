@@ -1,0 +1,46 @@
+{
+ "source": "Решу ЕГЭ, Школа экспертов (баллы экспертов сайта)",
+ "target_task_number": 18,
+ "cases": [
+  {
+   "id": "505536.1",
+   "problem_and_reference_answer": "problems/505536.png",
+   "solution": "505536.1/solution.png",
+   "expected": "505536.1/expected.json"
+  },
+  {
+   "id": "505537.1",
+   "problem_and_reference_answer": "problems/505537.png",
+   "solution": "505537.1/solution.png",
+   "expected": "505537.1/expected.json"
+  },
+  {
+   "id": "513103.1",
+   "problem_and_reference_answer": "problems/513103.png",
+   "solution": "513103.1/solution.png",
+   "expected": "513103.1/expected.json"
+  },
+  {
+   "id": "513103.2",
+   "problem_and_reference_answer": "problems/513103.png",
+   "solution": "513103.2/solution.png",
+   "expected": "513103.2/expected.json"
+  },
+  {
+   "id": "513103.3",
+   "problem_and_reference_answer": "problems/513103.png",
+   "solution": "513103.3/solution.png",
+   "expected": "513103.3/expected.json"
+  },
+  {
+   "id": "513105.1",
+   "problem_and_reference_answer": "problems/513105.png",
+   "solution": [
+    "513105.1/solution-01.png",
+    "513105.1/solution-02.png"
+   ],
+   "expected": "513105.1/expected.json"
+  }
+ ],
+ "note": "Только работы, где балл эксперта сайта согласуется с критериями ФИПИ-2026 (verification.md, keep)."
+}

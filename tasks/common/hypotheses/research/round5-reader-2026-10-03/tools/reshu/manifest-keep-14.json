@@ -1,0 +1,85 @@
+{
+ "source": "Решу ЕГЭ, Школа экспертов (баллы экспертов сайта)",
+ "target_task_number": 14,
+ "cases": [
+  {
+   "id": "500131.1",
+   "problem_and_reference_answer": "problems/500131.png",
+   "solution": "500131.1/solution.png",
+   "expected": "500131.1/expected.json"
+  },
+  {
+   "id": "500366.1",
+   "problem_and_reference_answer": "problems/500366.png",
+   "solution": "500366.1/solution.png",
+   "expected": "500366.1/expected.json"
+  },
+  {
+   "id": "500366.2",
+   "problem_and_reference_answer": "problems/500366.png",
+   "solution": "500366.2/solution.png",
+   "expected": "500366.2/expected.json"
+  },
+  {
+   "id": "500366.3",
+   "problem_and_reference_answer": "problems/500366.png",
+   "solution": "500366.3/solution.png",
+   "expected": "500366.3/expected.json"
+  },
+  {
+   "id": "505470.1",
+   "problem_and_reference_answer": "problems/505470.png",
+   "solution": "505470.1/solution.png",
+   "expected": "505470.1/expected.json"
+  },
+  {
+   "id": "513071.1",
+   "problem_and_reference_answer": "problems/513071.png",
+   "solution": "513071.1/solution.png",
+   "expected": "513071.1/expected.json"
+  },
+  {
+   "id": "513092.1",
+   "problem_and_reference_answer": "problems/513092.png",
+   "solution": "513092.1/solution.png",
+   "expected": "513092.1/expected.json"
+  },
+  {
+   "id": "513093.1",
+   "problem_and_reference_answer": "problems/513093.png",
+   "solution": "513093.1/solution.png",
+   "expected": "513093.1/expected.json"
+  },
+  {
+   "id": "515919.1",
+   "problem_and_reference_answer": "problems/515919.png",
+   "solution": "515919.1/solution.png",
+   "expected": "515919.1/expected.json"
+  },
+  {
+   "id": "515919.2",
+   "problem_and_reference_answer": "problems/515919.png",
+   "solution": "515919.2/solution.png",
+   "expected": "515919.2/expected.json"
+  },
+  {
+   "id": "515919.3",
+   "problem_and_reference_answer": "problems/515919.png",
+   "solution": "515919.3/solution.png",
+   "expected": "515919.3/expected.json"
+  },
+  {
+   "id": "559481.1",
+   "problem_and_reference_answer": "problems/559481.png",
+   "solution": "559481.1/solution.png",
+   "expected": "559481.1/expected.json"
+  },
+  {
+   "id": "559481.2",
+   "problem_and_reference_answer": "problems/559481.png",
+   "solution": "559481.2/solution.png",
+   "expected": "559481.2/expected.json"
+  }
+ ],
+ "note": "Только работы, где балл эксперта сайта согласуется с критериями ФИПИ-2026 (verification.md, keep)."
+}
