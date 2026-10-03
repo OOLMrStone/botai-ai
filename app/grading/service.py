@@ -7,7 +7,7 @@ from app.core.errors import LLMResponseFormatError, ValidationError
 from app.grading.package import DEFAULT_TASK, MAX_SCORES, SUPPORTED_TASKS
 from app.grading.provider import PREP_PROMPT, MockProvider, Provider
 from app.grading.reports import ReportStore
-from app.grading.package import TRANSCRIPT_TASKS
+from app.grading.package import READER_TASKS, TRANSCRIPT_TASKS
 from app.grading.reader import read_photos
 from app.grading.session import (ADAPTER, ATTACK_REASON, READER_ADAPTER, TRANSCRIPT_ADAPTER, Session,
                                  load_package, tools_for)
@@ -35,7 +35,7 @@ class GradingService:
         image_ids = ['test-image-' + uuid4().hex for _ in images]
         transcript = task_number in TRANSCRIPT_TASKS
         # The literal reading runs in parallel with task preparation; failure falls back to self-transcription.
-        reading = asyncio.create_task(read_photos(provider, images)) if transcript else None
+        reading = asyncio.create_task(read_photos(provider, images)) if task_number in READER_TASKS else None
         try:
             prepared = await provider.chat([
                 {'role': 'system', 'content': PREP_PROMPT},

@@ -18,6 +18,9 @@ MAX_SCORES = {14: 2, 15: 3, 16: 2, 18: 3}
 SUPPORTED_TASKS = frozenset(MAX_SCORES)
 # Tasks whose photos are transcribed before the reference answer is shown.
 TRANSCRIPT_TASKS = frozenset({14, 15, 18})
+# Transcript tasks whose photos are first read literally by a separate call (reader.py).
+# Planimetry reads its own photos: the literal reader takes a handwritten 7 for 4 (17.3.1).
+READER_TASKS = frozenset({14, 15})
 DEFAULT_TASK = 16
 TASK_TITLES = {14: 'Уравнение', 15: 'Стереометрия', 16: 'Неравенство', 18: 'Планиметрия'}
 

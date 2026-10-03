@@ -477,6 +477,17 @@ async def test_reader_failure_falls_back_to_self_transcription(tmp_path):
     assert 'Transcript.md' in writes
 
 
+async def test_planimetry_transcribes_its_own_photos(tmp_path):
+    provider = RecordingMock()
+    provider.transcribe = AsyncMock()
+    result = json.loads(await service(tmp_path, provider).run(png(), [png()], 'test-user', 18))
+    assert result['is_graded']
+    provider.transcribe.assert_not_called()
+    writes = [json.loads(m['tool_calls'][0]['function']['arguments']).get('path')
+              for m in provider.inputs[-1] if m.get('tool_calls')]
+    assert 'Transcript.md' in writes
+
+
 async def test_server_reading_becomes_transcript_and_cannot_be_rewritten(tmp_path):
     provider = RecordingMock()
     result = json.loads(await service(tmp_path, provider).run(png(), [png()], 'test-user', 15))
