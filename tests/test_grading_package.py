@@ -3,7 +3,8 @@ from pathlib import Path
 
 import pytest
 
-from app.grading.package import COMMON_NAMES, PROMPT_NAMES, load_package, package_paths
+from app.grading.package import (COMMON_NAMES, MAX_SCORES, PROMPT_NAMES, ROOT, TRANSCRIPT_TASKS,
+                                 load_package, package_paths)
 from app.grading.session import Session
 
 
@@ -32,7 +33,7 @@ def test_runtime_package_wins_without_mixing_checkout_files(tmp_path):
         load_package(root=tmp_path)
 
 
-@pytest.mark.parametrize('task_number', [14, 15, 17, 18, 19, 20, '16', True])
+@pytest.mark.parametrize('task_number', [13, 17, 19, 20, '16', True])
 def test_unsupported_task_does_not_fall_back_to_16(tmp_path, task_number):
     populate(tmp_path, 'tasks/16/prompts', 'approved')
     with pytest.raises(ValueError, match='Unsupported grading task'):
@@ -47,3 +48,30 @@ def test_missing_runtime_common_does_not_fall_back_to_checkout(tmp_path):
     (tmp_path / 'prompts/common/main.md').unlink()
     with pytest.raises(FileNotFoundError):
         load_package(root=tmp_path)
+
+
+def test_max_scores_follow_fipi_2026():
+    # Project numbers are FIPI-2026 numbers plus one: 13 and 15 score 2, 14 and 17 score 3.
+    assert MAX_SCORES == {14: 2, 15: 3, 16: 2, 18: 3}
+
+
+@pytest.mark.parametrize('task_number', sorted(MAX_SCORES))
+def test_each_task_reads_its_own_response_format(task_number):
+    paths = package_paths(task_number)
+    task_folder = ROOT / 'tasks' / str(task_number) / 'prompts'
+    assert paths['response-format.md'] == task_folder / 'response-format.md'
+    assert 'response-format.md' not in COMMON_NAMES
+    package = load_package(task_number)
+    assert f'для этого пакета {MAX_SCORES[task_number]}' in package['response-format.md']
+
+
+@pytest.mark.parametrize('task_number', sorted(MAX_SCORES))
+def test_transcript_tasks_override_main_and_task_16_keeps_common(task_number):
+    paths = package_paths(task_number)
+    task_folder = ROOT / 'tasks' / str(task_number) / 'prompts'
+    if task_number in TRANSCRIPT_TASKS:
+        assert paths['main.md'] == task_folder / 'main.md'
+        assert 'Transcript.md' in load_package(task_number)['main.md']
+    else:
+        assert paths['main.md'] == ROOT / 'tasks' / 'common' / 'prompts' / 'main.md'
+    assert paths['grading.md'] == ROOT / 'tasks' / 'common' / 'prompts' / 'grading.md'

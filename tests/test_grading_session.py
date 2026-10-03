@@ -13,7 +13,7 @@ from app.core.errors import LLMError, LLMResponseFormatError, LLMTimeoutError
 from app.grading.images import SafeImage
 from app.grading.provider import MockProvider, Provider
 from app.grading.service import GradingService, TaskPreparationError
-from app.grading.session import ATTACK_REASON, READ_ORDER, Session
+from app.grading.session import ATTACK_REASON, HIDDEN_ANSWER, READ_ORDER, TOOLS, Session, tools_for
 
 TASK = {'id': 'test-task-1', 'task_number': 16, 'max_score': 2,
         'statement': 'x > 0', 'reference_answer': '(0; +∞)', 'reference_solution': None}
@@ -368,7 +368,7 @@ async def test_reasoning_preserved_in_repaired_final_and_all_tool_turns(tmp_path
     assert json.loads(result)['is_graded']
 
 
-@pytest.mark.parametrize('configured,expected', [(120, 120), (360, 240), (40, 40)])
+@pytest.mark.parametrize('configured,expected', [(120, 120), (600, 360), (40, 40)])
 def test_provider_timeout_obeys_configuration_and_global_ceiling(monkeypatch, configured, expected):
     calls = []
     def fake_client(**kwargs):
@@ -378,3 +378,131 @@ def test_provider_timeout_obeys_configuration_and_global_ceiling(monkeypatch, co
     Provider(SimpleNamespace(api_key='test-key', base_url='https://provider.invalid', timeout_s=configured))
     assert calls[0]['timeout'] == expected
     assert calls[0]['max_retries'] == 0
+
+
+@pytest.mark.parametrize('number, max_score', [(14, 2), (15, 3), (18, 3)])
+async def test_service_uses_selected_task_package(tmp_path, number, max_score):
+    provider = RecordingMock()
+    result = json.loads(await service(tmp_path, provider).run(
+        SafeImage(b'task'), [SafeImage(b'student')], 'test-user', number))
+    assert result['task']['task_number'] == number and result['task']['max_score'] == max_score
+    reads = [m['content'] for m in provider.inputs[-1] if m['role'] == 'tool']
+    criteria = next(json.loads(r)['content'] for r in reads if f'задания {number}' in r)
+    assert f'задания {number}' in criteria
+
+
+@pytest.mark.parametrize('number', [17, '15', True, None])
+async def test_service_rejects_unsupported_task(tmp_path, number):
+    provider = RecordingMock()
+    with pytest.raises(ValueError):
+        await service(tmp_path, provider).run(SafeImage(b'task'), [SafeImage(b'student')], 'test-user', number)
+    assert provider.inputs == []
+
+
+TASK15 = {**TASK, 'task_number': 15, 'max_score': 3, 'reference_answer': '4√5/5',
+          'reference_solution': 'эталон'}
+
+
+def test_transcript_is_saved_before_reference_is_visible():
+    s = Session(TASK15, IDS, transcript=True)
+    assert s.task['reference_answer'] == HIDDEN_ANSWER and s.task['reference_solution'] is None
+    s.execute('read_file', {'path': 'Statement.md'})
+    s.execute('read_file', {'path': 'ocr.md'})
+    with pytest.raises(ValueError, match='Transcript'):
+        s.execute('read_file', {'path': 'Solution.md'})
+    s.execute('write_file', {'path': 'Transcript.md', 'content': 'x = π + πn'})
+    solution = s.execute('read_file', {'path': 'Solution.md'})['content']
+    assert '4√5/5' in solution
+    with pytest.raises(ValueError, match='before Solution'):
+        s.execute('write_file', {'path': 'Transcript.md', 'content': 'x = π + 2πn'})
+    assert s.execute('read_file', {'path': 'Transcript.md'})['content'] == 'x = π + πn'
+
+
+def test_transcript_is_unavailable_in_the_regular_workflow():
+    s = session()
+    read_analysis(s)
+    with pytest.raises(ValueError):
+        s.execute('write_file', {'path': 'Transcript.md', 'content': 'text'})
+    assert [t['function']['name'] for t in tools_for(False)] == [t['function']['name'] for t in TOOLS]
+    assert 'Transcript.md' not in json.dumps(TOOLS)
+
+
+async def test_transcript_task_hides_answer_until_validation_and_restores_it(tmp_path):
+    provider = RecordingMock()
+    result = json.loads(await service(tmp_path, provider).run(
+        SafeImage(b'task'), [SafeImage(b'student')], 'test-user', 15))
+    payload = json.loads(provider.inputs[1][1]['content'][0]['text'])
+    assert payload['task']['reference_answer'] == HIDDEN_ANSWER
+    assert payload['task']['reference_solution'] is None
+    assert result['task']['reference_answer'] != HIDDEN_ANSWER
+    assert {k: v for k, v in result['task'].items() if k not in ('reference_answer', 'reference_solution')} == \
+        {k: v for k, v in payload['task'].items() if k not in ('reference_answer', 'reference_solution')}
+    tools = [json.loads(m['tool_calls'][0]['function']['arguments']).get('path')
+             for m in provider.inputs[-1] if m.get('tool_calls')]
+    assert tools.index('Transcript.md') < tools.index('Solution.md')
+
+
+async def test_regular_task_keeps_answer_in_request(tmp_path):
+    provider = RecordingMock()
+    await service(tmp_path, provider).run(SafeImage(b'task'), [SafeImage(b'student')], 'test-user', 16)
+    payload = json.loads(provider.inputs[1][1]['content'][0]['text'])
+    assert payload['task']['reference_answer'] != HIDDEN_ANSWER
+
+
+def png(width=300, height=200):
+    from io import BytesIO
+    from PIL import Image
+    output = BytesIO()
+    Image.new('RGB', (width, height), 'white').save(output, format='PNG')
+    return SafeImage(output.getvalue())
+
+
+def test_reader_strips_enlarge_small_scans_only():
+    from PIL import Image
+    from io import BytesIO
+    from app.grading.reader import strips
+    small = [Image.open(BytesIO(s.data)).size for s in strips(png(400, 300))]
+    large = [Image.open(BytesIO(s.data)).size for s in strips(png(4000, 300))]
+    assert len(small) == 3 and all(w == 800 for w, _ in small)
+    assert all(w == 4000 for w, _ in large)
+
+
+async def test_reader_failure_falls_back_to_self_transcription(tmp_path):
+    provider = RecordingMock()
+    provider.transcribe = AsyncMock(side_effect=LLMError('down'))
+    result = json.loads(await service(tmp_path, provider).run(png(), [png()], 'test-user', 15))
+    assert result['is_graded']
+    writes = [json.loads(m['tool_calls'][0]['function']['arguments']).get('path')
+              for m in provider.inputs[-1] if m.get('tool_calls')]
+    assert 'Transcript.md' in writes
+
+
+async def test_planimetry_transcribes_its_own_photos(tmp_path):
+    provider = RecordingMock()
+    provider.transcribe = AsyncMock()
+    result = json.loads(await service(tmp_path, provider).run(png(), [png()], 'test-user', 18))
+    assert result['is_graded']
+    provider.transcribe.assert_not_called()
+    writes = [json.loads(m['tool_calls'][0]['function']['arguments']).get('path')
+              for m in provider.inputs[-1] if m.get('tool_calls')]
+    assert 'Transcript.md' in writes
+
+
+async def test_server_reading_becomes_transcript_and_cannot_be_rewritten(tmp_path):
+    provider = RecordingMock()
+    result = json.loads(await service(tmp_path, provider).run(png(), [png()], 'test-user', 15))
+    assert result['is_graded']
+    reads = [json.loads(m['content']) for m in provider.inputs[-1] if m['role'] == 'tool']
+    transcript = next(r['content'] for r in reads if r.get('content', '').startswith('## Фото 1, полоса 1'))
+    assert 'полоса 3 из 3' in transcript
+    s = Session(TASK15, IDS, reading='## Фото 1\nx = π + πn')
+    s.execute('read_file', {'path': 'Statement.md'})
+    s.execute('read_file', {'path': 'ocr.md'})
+    with pytest.raises(ValueError, match='Read Transcript.md'):
+        s.execute('read_file', {'path': 'Solution.md'})
+    with pytest.raises(ValueError, match='prepared by the server'):
+        s.execute('write_file', {'path': 'Transcript.md', 'content': 'x = π + 2πn'})
+    assert s.execute('read_file', {'path': 'Transcript.md'})['content'].endswith('πn')
+    s.execute('read_file', {'path': 'Solution.md'})
+    write_enum = tools_for(True, prepared=True)[1]['function']['parameters']['properties']['path']['enum']
+    assert 'Transcript.md' not in write_enum

@@ -4,9 +4,13 @@ import json
 from uuid import uuid4
 
 from app.core.errors import LLMResponseFormatError, ValidationError
+from app.grading.package import DEFAULT_TASK, MAX_SCORES, SUPPORTED_TASKS
 from app.grading.provider import PREP_PROMPT, MockProvider, Provider
 from app.grading.reports import ReportStore
-from app.grading.session import ADAPTER, ATTACK_REASON, TOOLS, Session, load_package
+from app.grading.package import READER_TASKS, TRANSCRIPT_TASKS
+from app.grading.reader import read_photos
+from app.grading.session import (ADAPTER, ATTACK_REASON, READER_ADAPTER, TRANSCRIPT_ADAPTER, Session,
+                                 load_package, tools_for)
 from app.grading.validator import parse_response
 
 
@@ -19,12 +23,19 @@ class GradingService:
         self.settings = settings
         self.provider = provider
         self.store = ReportStore(settings.photo.reports_dir)
-        self.package = load_package()
+        # Load every package up front so a missing prompt fails before any paid call.
+        self.packages = {number: load_package(number) for number in sorted(SUPPORTED_TASKS)}
 
-    async def run(self, task_image, images, user_id):
+    async def run(self, task_image, images, user_id, task_number=DEFAULT_TASK):
+        if type(task_number) is not int or task_number not in SUPPORTED_TASKS:
+            raise ValueError(f'Unsupported grading task: {task_number!r}')
+        package = self.packages[task_number]
         provider = self.provider or (MockProvider() if self.settings.llm.provider == 'mock'
                                      else Provider(self.settings.llm))
         image_ids = ['test-image-' + uuid4().hex for _ in images]
+        transcript = task_number in TRANSCRIPT_TASKS
+        # The literal reading runs in parallel with task preparation; failure falls back to self-transcription.
+        reading = asyncio.create_task(read_photos(provider, images)) if task_number in READER_TASKS else None
         try:
             prepared = await provider.chat([
                 {'role': 'system', 'content': PREP_PROMPT},
@@ -53,13 +64,17 @@ class GradingService:
                     raise ValueError('Invalid reference solution')
             except (ValueError, TypeError, RecursionError) as exc:
                 raise LLMResponseFormatError('Не удалось подготовить задачу: модель вернула неверный формат. Повтори проверку') from exc
-            task = {'id': 'test-task-' + uuid4().hex, 'task_number': 16, 'max_score': 2,
+            task = {'id': 'test-task-' + uuid4().hex, 'task_number': task_number,
+                    'max_score': MAX_SCORES[task_number],
                     'statement': data['statement'], 'reference_answer': data['reference_answer'],
                     'reference_solution': reference}
-            session = Session(task, image_ids, self.package)
-            payload = json.dumps({'task': task, 'solution_image_ids': image_ids}, ensure_ascii=False)
+            text = await reading if reading else None
+            session = Session(task, image_ids, package, transcript=transcript, reading=text)
+            tools = tools_for(transcript, prepared=session.prepared)
+            adapter = READER_ADAPTER if session.prepared else TRANSCRIPT_ADAPTER if transcript else ADAPTER
+            payload = json.dumps({'task': session.task, 'solution_image_ids': image_ids}, ensure_ascii=False)
             messages = [
-                {'role': 'system', 'content': self.package['main.md'] + '\n\n' + ADAPTER},
+                {'role': 'system', 'content': package['main.md'] + '\n\n' + adapter},
                 {'role': 'user', 'content': [{'type': 'text', 'text': payload}] + [im.part() for im in images]},
             ]
             reported = False
@@ -67,7 +82,7 @@ class GradingService:
                 # Bound every message, including correction text and repeated photos.
                 if sum(len(json.dumps(m, ensure_ascii=False)) for m in messages) > 96_000_000:
                     raise LLMResponseFormatError('Проверка превысила допустимый объём. Повтори отправку')
-                message = await provider.chat(messages, TOOLS)
+                message = await provider.chat(messages, tools)
                 if type(message) is not dict:
                     raise LLMResponseFormatError('Модель вернула неверный формат. Повтори проверку')
                 if len(json.dumps(message, ensure_ascii=False)) > 600_000:
@@ -122,4 +137,6 @@ class GradingService:
                     raise LLMResponseFormatError('Проверка превысила допустимый объём. Повтори отправку')
             raise LLMResponseFormatError('Модель не подготовила проверенный ответ за отведённое число шагов. Повтори проверку')
         finally:
+            if reading and not reading.done():
+                reading.cancel()
             await provider.close()

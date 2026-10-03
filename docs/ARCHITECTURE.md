@@ -8,7 +8,7 @@
 | `app/grading/` | Фото-проверка: service, session, provider, images, reports, validator |
 | `app/legacy_grading/` | Сохранённые старые текстовый и двухоценочный конвейеры |
 | `app/llm/`, `app/core/`, `app/config.py` | Общие модели доступа к LLM, ошибки, журналирование и настройки |
-| `tasks/common/prompts/` | Общие main, grading, response-format |
+| `tasks/common/prompts/` | Общие main, grading (response-format — свой в каждом `tasks/<номер>/prompts/`) |
 | `tasks/14..20/prompts/` | Предметные промпты; реализован пакет 16 |
 | `tasks/N/hypotheses/` | Идеи и наблюдения конкретного задания, только для разработки |
 | `tasks/16/evals/` | Входы, скрытые эталоны и сохранённые результаты |
