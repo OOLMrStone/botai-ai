@@ -8,7 +8,9 @@ from app.grading.package import DEFAULT_TASK, MAX_SCORES, SUPPORTED_TASKS
 from app.grading.provider import PREP_PROMPT, MockProvider, Provider
 from app.grading.reports import ReportStore
 from app.grading.package import TRANSCRIPT_TASKS
-from app.grading.session import ADAPTER, ATTACK_REASON, TRANSCRIPT_ADAPTER, Session, load_package, tools_for
+from app.grading.reader import read_photos
+from app.grading.session import (ADAPTER, ATTACK_REASON, READER_ADAPTER, TRANSCRIPT_ADAPTER, Session,
+                                 load_package, tools_for)
 from app.grading.validator import parse_response
 
 
@@ -31,6 +33,9 @@ class GradingService:
         provider = self.provider or (MockProvider() if self.settings.llm.provider == 'mock'
                                      else Provider(self.settings.llm))
         image_ids = ['test-image-' + uuid4().hex for _ in images]
+        transcript = task_number in TRANSCRIPT_TASKS
+        # The literal reading runs in parallel with task preparation; failure falls back to self-transcription.
+        reading = asyncio.create_task(read_photos(provider, images)) if transcript else None
         try:
             prepared = await provider.chat([
                 {'role': 'system', 'content': PREP_PROMPT},
@@ -63,13 +68,13 @@ class GradingService:
                     'max_score': MAX_SCORES[task_number],
                     'statement': data['statement'], 'reference_answer': data['reference_answer'],
                     'reference_solution': reference}
-            transcript = task_number in TRANSCRIPT_TASKS
-            session = Session(task, image_ids, package, transcript=transcript)
-            tools = tools_for(transcript)
+            text = await reading if reading else None
+            session = Session(task, image_ids, package, transcript=transcript, reading=text)
+            tools = tools_for(transcript, prepared=session.prepared)
+            adapter = READER_ADAPTER if session.prepared else TRANSCRIPT_ADAPTER if transcript else ADAPTER
             payload = json.dumps({'task': session.task, 'solution_image_ids': image_ids}, ensure_ascii=False)
             messages = [
-                {'role': 'system', 'content': package['main.md'] + '\n\n'
-                 + (TRANSCRIPT_ADAPTER if transcript else ADAPTER)},
+                {'role': 'system', 'content': package['main.md'] + '\n\n' + adapter},
                 {'role': 'user', 'content': [{'type': 'text', 'text': payload}] + [im.part() for im in images]},
             ]
             reported = False
@@ -132,4 +137,6 @@ class GradingService:
                     raise LLMResponseFormatError('Проверка превысила допустимый объём. Повтори отправку')
             raise LLMResponseFormatError('Модель не подготовила проверенный ответ за отведённое число шагов. Повтори проверку')
         finally:
+            if reading and not reading.done():
+                reading.cancel()
             await provider.close()

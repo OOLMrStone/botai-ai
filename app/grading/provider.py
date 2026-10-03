@@ -55,11 +55,33 @@ class Provider:
             raise LLMResponseFormatError('Модель не завершила ответ. Повтори проверку')
         return completion.choices[0].message.model_dump(exclude_none=True)
 
+    async def transcribe(self, prompt, image_part):
+        """One literal reading of an image strip: no task text, no tools, reasoning off."""
+        token_param = getattr(self.settings, 'token_param', 'auto')
+        if token_param == 'auto':
+            token_param = 'max_tokens'
+        kwargs = dict(model=self.settings.model,
+                      messages=[{'role': 'user', 'content': [{'type': 'text', 'text': prompt}, image_part]}])
+        kwargs[token_param] = 8000
+        kwargs['extra_body'] = {**(self.settings.extra_body or {}), 'thinking': {'type': 'disabled'}}
+        try:
+            completion = await self.client.chat.completions.create(**kwargs)
+        except APITimeoutError as exc:
+            raise LLMTimeoutError('Модель не ответила вовремя. Повтори проверку', retryable=False) from exc
+        except APIError as exc:
+            raise LLMError('Модель не ответила. Попробуй проверить ещё раз', retryable=False) from exc
+        if not completion.choices or completion.choices[0].finish_reason == 'length':
+            raise LLMResponseFormatError('Модель не завершила расшифровку')
+        return completion.choices[0].message.content or ''
+
 
 class MockProvider:
     """A deterministic demonstration, never claims to recognize the supplied images."""
     async def close(self):
         pass
+
+    async def transcribe(self, prompt, image_part):
+        return 'Демонстрация mock: изображения не распознавались.\nx > 0'
 
     async def chat(self, messages, tools=None):
         if not tools:
@@ -81,7 +103,10 @@ class MockProvider:
         raw = json.dumps(response, ensure_ascii=False)
         if request['task']['reference_answer'] == HIDDEN_ANSWER:
             sequence = [('read_file', {'path': p}) for p in TRANSCRIPT_ORDER[:2]]
-            sequence += [('write_file', {'path': 'Transcript.md', 'content': 'Демонстрация mock: x > 0'})]
+            if 'подготовил сервер' in messages[0]['content']:
+                sequence += [('read_file', {'path': 'Transcript.md'})]
+            else:
+                sequence += [('write_file', {'path': 'Transcript.md', 'content': 'Демонстрация mock: x > 0'})]
             sequence += [('read_file', {'path': p}) for p in TRANSCRIPT_ORDER[2:5]]
             order = TRANSCRIPT_ORDER
         else:

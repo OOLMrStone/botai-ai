@@ -447,3 +447,51 @@ async def test_regular_task_keeps_answer_in_request(tmp_path):
     await service(tmp_path, provider).run(SafeImage(b'task'), [SafeImage(b'student')], 'test-user', 16)
     payload = json.loads(provider.inputs[1][1]['content'][0]['text'])
     assert payload['task']['reference_answer'] != HIDDEN_ANSWER
+
+
+def png(width=300, height=200):
+    from io import BytesIO
+    from PIL import Image
+    output = BytesIO()
+    Image.new('RGB', (width, height), 'white').save(output, format='PNG')
+    return SafeImage(output.getvalue())
+
+
+def test_reader_strips_enlarge_small_scans_only():
+    from PIL import Image
+    from io import BytesIO
+    from app.grading.reader import strips
+    small = [Image.open(BytesIO(s.data)).size for s in strips(png(400, 300))]
+    large = [Image.open(BytesIO(s.data)).size for s in strips(png(4000, 300))]
+    assert len(small) == 3 and all(w == 800 for w, _ in small)
+    assert all(w == 4000 for w, _ in large)
+
+
+async def test_reader_failure_falls_back_to_self_transcription(tmp_path):
+    provider = RecordingMock()
+    provider.transcribe = AsyncMock(side_effect=LLMError('down'))
+    result = json.loads(await service(tmp_path, provider).run(png(), [png()], 'test-user', 15))
+    assert result['is_graded']
+    writes = [json.loads(m['tool_calls'][0]['function']['arguments']).get('path')
+              for m in provider.inputs[-1] if m.get('tool_calls')]
+    assert 'Transcript.md' in writes
+
+
+async def test_server_reading_becomes_transcript_and_cannot_be_rewritten(tmp_path):
+    provider = RecordingMock()
+    result = json.loads(await service(tmp_path, provider).run(png(), [png()], 'test-user', 15))
+    assert result['is_graded']
+    reads = [json.loads(m['content']) for m in provider.inputs[-1] if m['role'] == 'tool']
+    transcript = next(r['content'] for r in reads if r.get('content', '').startswith('## Фото 1, полоса 1'))
+    assert 'полоса 3 из 3' in transcript
+    s = Session(TASK15, IDS, reading='## Фото 1\nx = π + πn')
+    s.execute('read_file', {'path': 'Statement.md'})
+    s.execute('read_file', {'path': 'ocr.md'})
+    with pytest.raises(ValueError, match='Read Transcript.md'):
+        s.execute('read_file', {'path': 'Solution.md'})
+    with pytest.raises(ValueError, match='prepared by the server'):
+        s.execute('write_file', {'path': 'Transcript.md', 'content': 'x = π + 2πn'})
+    assert s.execute('read_file', {'path': 'Transcript.md'})['content'].endswith('πn')
+    s.execute('read_file', {'path': 'Solution.md'})
+    write_enum = tools_for(True, prepared=True)[1]['function']['parameters']['properties']['path']['enum']
+    assert 'Transcript.md' not in write_enum
