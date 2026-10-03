@@ -44,17 +44,29 @@ def strips(image: SafeImage) -> list[SafeImage]:
         return parts
 
 
-async def read_photos(provider, images: list[SafeImage]) -> str | None:
-    """Transcript of all photos, or None when any strip cannot be read."""
+async def read_photos(provider, images: list[SafeImage], retry_delay: float = 3.0) -> str | None:
+    """Transcript of all photos, or None when a strip still fails after one retry.
+
+    Strips are read one at a time: the gateway answers 429 to parallel calls, and
+    this reading already runs alongside task preparation.
+    """
     try:
-        pieces = [(photo, strip) for photo, image in enumerate(images, 1) for strip in strips(image)]
+        pieces = [(photo, number, strip) for photo, image in enumerate(images, 1)
+                  for number, strip in enumerate(strips(image), 1)]
     except (OSError, ValueError):
         return None
-    texts = await asyncio.gather(*(provider.transcribe(READER_PROMPT, strip.part()) for _, strip in pieces),
-                                 return_exceptions=True)
-    if any(isinstance(text, BaseException) or type(text) is not str or not text.strip() for text in texts):
-        return None
     sections = []
-    for (photo, _), number, text in zip(pieces, [k % STRIPS + 1 for k in range(len(pieces))], texts):
+    for photo, number, strip in pieces:
+        for attempt in range(2):
+            try:
+                text = await provider.transcribe(READER_PROMPT, strip.part())
+            except Exception:  # provider errors are already sanitized; fall back after the retry
+                text = None
+            if type(text) is str and text.strip():
+                break
+            if attempt == 0:
+                await asyncio.sleep(retry_delay)
+        else:
+            return None
         sections.append(f'## Фото {photo}, полоса {number} из {STRIPS}\n{text.strip()}')
     return '\n\n'.join(sections)
