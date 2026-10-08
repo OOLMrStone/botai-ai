@@ -12,6 +12,7 @@ Start an agent in this repository (`botai-ai`) and ask it to read this file firs
 | Prompt editing and user preferences | [docs/grading/editor-guidelines.md](docs/grading/editor-guidelines.md) |
 | Task 16 quality, hypotheses and evals | [tasks/16/README.md](tasks/16/README.md) |
 | Server and deployment | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) |
+| Developer server, gateway and access isolation | [docs/DEVELOPMENT_SERVER.md](docs/DEVELOPMENT_SERVER.md) |
 | Remaining work | [docs/ROADMAP.md](docs/ROADMAP.md) |
 | Legacy model wrapper / debug tools / rubrics | [LLM_LAYER](docs/LLM_LAYER.md), [DEBUG_TOOLKIT](docs/DEBUG_TOOLKIT.md), [DOMAIN_EGE](docs/DOMAIN_EGE.md) |
 

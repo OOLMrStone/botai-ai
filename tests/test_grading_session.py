@@ -368,7 +368,7 @@ async def test_reasoning_preserved_in_repaired_final_and_all_tool_turns(tmp_path
     assert json.loads(result)['is_graded']
 
 
-@pytest.mark.parametrize('configured,expected', [(120, 120), (360, 240), (40, 40)])
+@pytest.mark.parametrize('configured,expected', [(120, 120), (360, 360), (480, 360), (600, 360), (40, 40)])
 def test_provider_timeout_obeys_configuration_and_global_ceiling(monkeypatch, configured, expected):
     calls = []
     def fake_client(**kwargs):
@@ -378,3 +378,11 @@ def test_provider_timeout_obeys_configuration_and_global_ceiling(monkeypatch, co
     Provider(SimpleNamespace(api_key='test-key', base_url='https://provider.invalid', timeout_s=configured))
     assert calls[0]['timeout'] == expected
     assert calls[0]['max_retries'] == 0
+
+
+def test_photo_deadline_allows_six_minutes_but_not_more():
+    from app.config import PhotoSettings
+    from pydantic import ValidationError
+    assert PhotoSettings(_env_file=None, deadline_seconds=360).deadline_seconds == 360
+    with pytest.raises(ValidationError):
+        PhotoSettings(_env_file=None, deadline_seconds=361)

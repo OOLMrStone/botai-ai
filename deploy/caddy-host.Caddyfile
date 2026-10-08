@@ -1,3 +1,11 @@
+# Sanitized reference only; never deploy with placeholder password hashes.
+{
+	# UDP/443 закрыт на VPS: не предлагаем клиентам недоступный HTTP/3.
+	servers {
+		protocols h1 h2
+	}
+}
+
 # api.botai-ege.ru — one public host, three audiences:
 #
 #   /api/auth/*   the auth service, open to the world (it polices itself)
@@ -28,12 +36,19 @@
 	}
 }
 
+
+
 api.botai-ege.ru {
 	encode zstd gzip
 
 	# A tester's browser keeps sending the password header once it has been
 	# asked for it, which is what lets the test UIs and the docs pages call
 	# the grading API from "Try it out".
+    @untrusted_grading_origin {
+        path /api/* /internal/* /debug/*
+        header Origin *
+        not header_regexp Origin ^https://(api[.]|www[.])?botai-ege[.]ru$
+    }
 	@grading_as_tester {
 		path /api/v1/*
 		header Authorization *
@@ -48,6 +63,22 @@ api.botai-ege.ru {
 	# the tester variant of /api/v1 has to be considered before the user one,
 	# and /internal/grading/docs before the catch-all for that prefix.
 	route {
+        handle @untrusted_grading_origin {
+            respond "Origin not allowed" 403
+        }
+
+        handle / {
+            header Content-Security-Policy "default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'"
+            header X-Content-Type-Options nosniff
+            header Referrer-Policy no-referrer
+            root * /var/www/botai-api
+            rewrite * /index.html
+            file_server
+        }
+        handle /internal/grading-dev* {
+            redir * /#develop 303
+        }
+
 		# Unauthenticated liveness probe, so uptime monitoring needs no
 		# password. Answered by Caddy itself — it says nothing about the app.
 		handle /health {
@@ -194,4 +225,73 @@ h1{font-size:1.3rem}
 </html>` {http.error.status_code}
 		}
 	}
+}
+botai-ege.ru {
+	header Alt-Svc clear
+	redir https://www.botai-ege.ru{uri} permanent
+}
+
+www.botai-ege.ru {
+    @foreign_frontend_origin {
+        path /api/*
+        header Origin *
+        not header_regexp Origin ^https://(api[.]|www[.])?botai-ege[.]ru$
+    }
+    handle @foreign_frontend_origin {
+        respond "Origin not allowed" 403
+    }
+
+	header Alt-Svc clear
+	encode zstd gzip
+	handle_path /_next/static/* {
+		root * /opt/botai-front/static
+		@assetExists file {path}
+		header @assetExists Cache-Control "public, max-age=31536000, immutable"
+		file_server
+	}
+	handle {
+		reverse_proxy 127.0.0.1:3000
+	}
+}
+
+# DEVELOP is an independent origin; never proxy it beneath the production API.
+develop.botai-ege.ru {
+    basicauth {
+        develop <bcrypt-hash>
+    }
+    header {
+        defer
+        Origin-Agent-Cluster "?1"
+        Cache-Control "no-store"
+        X-Content-Type-Options nosniff
+        Referrer-Policy no-referrer
+        Permissions-Policy "document-domain=()"
+        Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'"
+    }
+    @foreign_origin {
+        header Origin *
+        not header Origin https://develop.botai-ege.ru
+    }
+    route {
+        handle @foreign_origin {
+            respond "Origin not allowed" 403
+        }
+        handle / {
+            redir * /ui/ 302
+        }
+        @allowed path /ui/* /api/v1/photo-check /api/v1/photo-check/config
+        handle @allowed {
+            reverse_proxy 127.0.0.1:18080 {
+                header_up -Authorization
+                header_up -Cookie
+                header_down -Set-Cookie
+                header_down -Access-Control-Allow-Origin
+                header_down -Access-Control-Allow-Credentials
+                header_down -Location
+            }
+        }
+        handle {
+            respond "Not found" 404
+        }
+    }
 }

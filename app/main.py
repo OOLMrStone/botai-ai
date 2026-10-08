@@ -22,7 +22,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
-from app.api import routes_grading
+from app.api import routes_grading, routes_internal_grading
+from app.grading.capabilities import build_registry
 from app.grading.service import GradingService
 from app.grading.reports import ReportStore
 from app import __version__
@@ -93,6 +94,7 @@ async def lifespan(_app: FastAPI):
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or get_settings()
+    settings.internal_grading.check_enabled()
     configure_logging(settings.app.log_level, settings.app.log_format)
 
     _app = FastAPI(
@@ -179,6 +181,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             },
         )
 
+    if settings.internal_grading.enabled:
+        _app.state.grading_capabilities = build_registry()
+        _app.add_middleware(routes_internal_grading.InternalGradingMiddleware, settings=settings)
+        _app.include_router(routes_internal_grading.router)
     _app.include_router(routes_grading.router)
     _app.include_router(routes_health.router)
     _app.include_router(routes_legacy_grading.router)

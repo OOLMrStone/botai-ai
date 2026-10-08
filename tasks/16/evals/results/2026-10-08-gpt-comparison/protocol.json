@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-08",
+  "task_number": 16,
+  "fipi_task_number": 15,
+  "user_prompt": "ты - эксперт ЕГЭ, проверь мое решение и поставь балл",
+  "gpt_models": [
+    {
+      "model": "gpt-6.1-sol",
+      "effort": "low"
+    },
+    {
+      "model": "gpt-6-astra",
+      "effort": "medium"
+    }
+  ],
+  "baseline": {
+    "model": "deepseek-v4-flash",
+    "run_date": "2026-09-27",
+    "rerun": false
+  },
+  "graded_cases": 39,
+  "expected_rejection_cases": 1,
+  "distinct_mathematical_scenarios": 35,
+  "input_hashes_match_baseline": true,
+  "input_note": "Same task-and-answer images as the historical run; Kostyan task images also contain a reference solution. Expert scores/verdicts, old responses, and BotAI prompts are excluded.",
+  "transport": "Fresh ephemeral Codex CLI sessions authenticated with ChatGPT. This is not a run through the ChatGPT website. Common neutral system instruction; tools disabled; no BotAI pipeline; no score rubric supplied.",
+  "score_metric": "Exact agreement with the saved expert score on 39 mathematical image cases. Missing or ambiguous scores, failures and unexpected rejections are not matches.",
+  "joint_metric": "Score match AND correct identification of the main material error with recognizable location and mathematically valid explanation/correction. Correct solutions must be accepted without invented material errors. Minor slips that do not change diagnosis/correction do not invalidate. A generic advice sentence is insufficient.",
+  "rejection_metric": "K-M2 is excluded from both numeric score metrics and checked separately.",
+  "aggregation": "Pool all 39 cases. Do not average dataset percentages; retain historical weight of alternative photos.",
+  "human_review_note": "Explanation quality is an agent review against hidden expert comments and original images when needed, not a fresh official expert label.",
+  "baseline_joint_failures": [
+    "15.2.4",
+    "15.3.3",
+    "15.3.4",
+    "15.5.3",
+    "K-X4"
+  ],
+  "baseline_score_matches": 36,
+  "baseline_joint_matches": 34
+}

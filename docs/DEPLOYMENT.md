@@ -2,7 +2,7 @@
 
 Updated and deployed 27 September 2026. The service is on Selectel at `135.106.182.11`, with sources and its private environment file under `/srv/ege/app`. The updated `ege-grading-api` container is healthy on loopback port 8080. Existing authentication and database services were preserved; the `.env` hash is unchanged.
 
-The user-facing form is [https://api.botai-ege.ru/internal/grading/](https://api.botai-ege.ru/internal/grading/). The domain root intentionally returns 404. The existing host Caddy maps the form to the application's `/ui/` and protects access. `/api/v1/*` accepts the existing tester Basic authentication or application session authentication. The form calls `/internal/grading/api/photo-check` (including `/config`), which Caddy protects with the same tester login and rewrites to `/api/v1/photo-check`. Keep this handler before the generic UI handler: browser Basic credentials are scoped to the page directory and are not reliably reused for the disjoint `/api/v1/` path. The sanitized host reference is `deploy/caddy-host.Caddyfile`.
+The user-facing form is [https://api.botai-ege.ru/internal/grading/](https://api.botai-ege.ru/internal/grading/). Since 1 October 2026 the domain root serves a generic usage guide without credentials or internal addresses. The existing host Caddy maps the form to the application's `/ui/` and protects access. `/api/v1/*` accepts the existing tester Basic authentication or application session authentication. The form calls `/internal/grading/api/photo-check` (including `/config`), which Caddy protects with the same tester login and rewrites to `/api/v1/photo-check`. Keep this handler before the generic UI handler: browser Basic credentials are scoped to the page directory and are not reliably reused for the disjoint `/api/v1/` path. The sanitized host reference is `deploy/caddy-host.Caddyfile`.
 
 ```text
 HTTPS → host Caddy → 127.0.0.1:8080 → ege-grading-api:8000
@@ -77,7 +77,7 @@ curl --fail http://127.0.0.1:8080/api/v1/photo-check/config
 
 The public `/health` is a constant response from Caddy. It confirms proxy reachability, not that the application or model works. The container healthcheck calls the application directly and does not call a model. Do not request `/health/ready?probe=true` for deployment verification: it can spend API balance.
 
-The new form sends one `task_image` and up to four `solution_images`, each up to 8 MiB, to `/api/v1/photo-check`. Its 240-second deadline covers preparation and grading together. Failures require a manual retry. `/api/v1/photo-check/config` exposes the effective model label and mode without credentials or a paid call.
+The new form sends one `task_image` and up to four `solution_images`, each up to 8 MiB, to `/api/v1/photo-check`. Its 360-second deadline covers preparation and grading together. Failures require a manual retry. `/api/v1/photo-check/config` exposes the effective model label and mode without credentials or a paid call.
 
 Inspect application logs locally when troubleshooting; do not publish environment dumps, authentication headers, keys or student images. Preserve the host Caddy configuration and existing authentication while deploying. The application has bounded concurrent photo requests; the shared tester login still does not provide per-person main-application identity.
 
@@ -123,3 +123,32 @@ To roll back this release, restore the saved source tree to `/srv/ege/app`, reta
 ## Live smoke check before GitHub push — 29 September 2026
 
 After the offline migration checks, the user explicitly authorized one real grading request. FIPI case `15.1.1` returned HTTP 200, a validated graded response and **2/2**, matching the hidden expected score, in **87.333 seconds**. No retry or further grading request was made. [Saved evidence](../tasks/16/evals/results/2026-09-29-smoke/README.md) records the model and request ID. The earlier “no paid model calls” statements describe the preceding migration phase, not this later authorized check.
+
+## Isolated developer access — 1 October 2026
+
+The main `/srv/ege/app` payload and configuration are preserved. An independent
+rootless DEVELOP and a private credential-holding gateway have been installed.
+Current access, safeguards, snapshots, validation and the documented Docker
+installation side effect are canonical in [DEVELOPMENT_SERVER.md](DEVELOPMENT_SERVER.md).
+
+## Photo deadline — 1 October 2026
+
+At the owner's request, preparation and grading now share an **eight-minute
+(480-second)** deadline in both main and DEVELOP. The provider adapter ceiling,
+runtime `LLM_TIMEOUT_S`, gateway upstream timeout, form wording and browser fallback
+were aligned. The gateway inbound timeout remains 20 seconds. Only targeted timeout
+replacements were applied to DEVELOP; its independent changes were preserved.
+Main and developer containers were rebuilt from their existing images and recreated;
+provider keys and prompts were unchanged. Private rollback files are under
+`/root/backups/botai-timeout-480-20261001`; prior images have the `before-timeout480`
+tag. Offline suite: 395 passed, 3 skipped. Both isolated mock candidate configuration
+checks report 480 seconds; no paid model requests were made.
+
+## Photo deadline — six minutes, 1 October 2026
+
+The owner subsequently reduced the total deadline to **360 seconds** in main,
+DEVELOP and the gateway. Defaults, provider ceiling, runtime environment, error
+message, form and public instructions are aligned. Targeted byte replacements
+preserve DEVELOP changes. Containers are rebuilt from current images and recreated;
+private rollback: `/root/backups/botai-timeout-360-20261001`, image tags
+`before-timeout360`. Earlier 480-second incident records remain historical.

@@ -1,0 +1,1407 @@
+{
+  "date": "2026-10-08",
+  "metrics": {
+    "botai": {
+      "fipi": {
+        "n": 21,
+        "score_matches": 18,
+        "score_percent": 85.71428571428571,
+        "joint_matches": 17,
+        "joint_percent": 80.95238095238095
+      },
+      "kostyan": {
+        "n": 18,
+        "score_matches": 18,
+        "score_percent": 100.0,
+        "joint_matches": 17,
+        "joint_percent": 94.44444444444444
+      },
+      "total": {
+        "n": 39,
+        "score_matches": 36,
+        "score_percent": 92.3076923076923,
+        "joint_matches": 34,
+        "joint_percent": 87.17948717948718
+      }
+    },
+    "sol": {
+      "fipi": {
+        "n": 21,
+        "score_matches": 16,
+        "score_percent": 76.19047619047619,
+        "joint_matches": 15,
+        "joint_percent": 71.42857142857143
+      },
+      "kostyan": {
+        "n": 18,
+        "score_matches": 15,
+        "score_percent": 83.33333333333333,
+        "joint_matches": 15,
+        "joint_percent": 83.33333333333333
+      },
+      "total": {
+        "n": 39,
+        "score_matches": 31,
+        "score_percent": 79.48717948717949,
+        "joint_matches": 30,
+        "joint_percent": 76.92307692307692
+      }
+    },
+    "astra": {
+      "fipi": {
+        "n": 21,
+        "score_matches": 15,
+        "score_percent": 71.42857142857143,
+        "joint_matches": 15,
+        "joint_percent": 71.42857142857143
+      },
+      "kostyan": {
+        "n": 18,
+        "score_matches": 15,
+        "score_percent": 83.33333333333333,
+        "joint_matches": 15,
+        "joint_percent": 83.33333333333333
+      },
+      "total": {
+        "n": 39,
+        "score_matches": 30,
+        "score_percent": 76.92307692307692,
+        "joint_matches": 30,
+        "joint_percent": 76.92307692307692
+      }
+    }
+  },
+  "cases": [
+    {
+      "id": "15.1.1",
+      "dataset": "fipi",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "15.1.1",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Эксперт и модель ставят 2. Модель верно принимает знакосохраняющую рационализацию знаменателя без требования совпадения выражений; сохраняет изолированный нуль −1 и исключает ±√2. Это соответствует рукописи.",
+        "evidence_run": "20260927-live-all"
+      },
+      "sol": {
+        "id": "15.1.1",
+        "actual_score": 1,
+        "score_match": false,
+        "joint_match": false,
+        "rejection_match": null,
+        "rationale": "Назван 1/2 вместо экспертных 2; допустимая замена на выражение того же знака ошибочно признана неправильным тождественным разложением. Условные 2/2 относятся к исправленному решению.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "15.1.1",
+        "actual_score": 1,
+        "score_match": false,
+        "joint_match": false,
+        "rejection_match": null,
+        "rationale": "Текущей работе поставлен 1/2 вместо 2; знакосохраняющая рационализация ошибочно названа недопустимым разложением. Заключительные 2/2 относятся лишь к предлагаемому исправлению.",
+        "needs_image_review": false,
+        "evidence_quote": "При строгой проверке — 1 из 2 баллов"
+      }
+    },
+    {
+      "id": "15.1.2",
+      "dataset": "fipi",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "15.1.2",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Эксперт: 2, обоснованно получен верный ответ. Модель: 2; правильно установлены положительность знаменателя вне ±√2, разложение числителя, изолированный нуль −1 и исключение запрещённых точек. Исходная рукопись подтверждает этот ход.",
+        "evidence_run": "20260927-live-all"
+      },
+      "sol": {
+        "id": "15.1.2",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верное решение принято; перечислены ОДЗ, разложение, изолированный корень и ответ.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "15.1.2",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты положительный знаменатель на ОДЗ, изолированный нуль −1 и итоговый ответ. Оговорка записи ограничения не объявлена существенной ошибкой.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "15.1.3",
+      "dataset": "fipi",
+      "expected_score": 1,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "15.1.3",
+        "actual_score": 1,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Эксперт: 1 за исключение −1 и 1. Модель распознаёт > вместо ≥ во всех строках, правильно связывает обе потерянные точки с единственной ошибкой строгости (E34) и ставит 1.",
+        "evidence_run": "20260927-live-all"
+      },
+      "sol": {
+        "id": "15.1.3",
+        "actual_score": 1,
+        "score_match": true,
+        "joint_match": false,
+        "rejection_match": null,
+        "rationale": "Верно найдены потерянные −1 и 1, но дополнительно объявлена ошибкой допустимая замена знаменателя на выражение того же знака. На фото нет утверждения их равенства; есть равносильные неравенства.",
+        "image_reviewed": true
+      },
+      "astra": {
+        "id": "15.1.3",
+        "actual_score": 1,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Точно найдена замена ≥ на > и потеря −1 и 1; объяснены допустимость и нулевой числитель. Дополнительное замечание о нетождественности замены признаёт сохранение знаков и не меняет основной диагноз.",
+        "needs_image_review": false,
+        "image_reviewed": true
+      }
+    },
+    {
+      "id": "15.1.4",
+      "dataset": "fipi",
+      "expected_score": 0,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "15.1.4",
+        "actual_score": 0,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Эксперт: 0 за нарушение равносильности второго неравенства. Модель: 0, E05 за замену полного квадрата знаменателя на (x−√2)(x+√2), меняющую знаки промежутков. Исходное фото подтверждает отсутствие квадратов.",
+        "evidence_run": "20260927-live-all"
+      },
+      "sol": {
+        "id": "15.1.4",
+        "actual_score": 0,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно указана потеря квадрата знаменателя, изменяющая знак дроби; исправление и ответ корректны.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "15.1.4",
+        "actual_score": 0,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Найден конкретный неверный переход: квадрат знаменателя заменён выражением со сменой знака; исправление и вывод корректны.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "15.2.1",
+      "dataset": "fipi",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "15.2.1",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Эксперт и модель: 2. В рукописи есть замена t=3^x, t>0, дробь с (t−3)^2, ось, возврат t=3 или t>9 к x=1 или x>2. Модель правильно объясняет это решение.",
+        "evidence_run": "20260927-live-all"
+      },
+      "sol": {
+        "id": "15.2.1",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Решение и ответ приняты верно; положительный множитель 2 и ОДЗ описаны без выдуманного существенного дефекта.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "15.2.1",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Правильные замена, двойной нуль t=3, запрет t=9 и обратный переход приняты; отдельная запись ОДЗ предложена только как оформление.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "15.2.2",
+      "dataset": "fipi",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "15.2.2",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Эксперт и модель: 2. Правильная замена, свёртка числителя, двойной нуль t=3, выколотая t=9 и итог {1}∪(2;+∞) подтверждаются исходной рукописью.",
+        "evidence_run": "20260927-live-all"
+      },
+      "sol": {
+        "id": "15.2.2",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Решение и изолированный корень приняты. Осторожное замечание о почерке знака не названо основанием снижения.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "15.2.2",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно принят ответ с изолированной точкой; замечание о неясном промежуточном знаке не изменяет оценку и правильно учитывает итоговый отбор.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "15.2.3",
+      "dataset": "fipi",
+      "expected_score": 1,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "15.2.3",
+        "actual_score": 1,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Эксперт: 1 за потерю x=1. Модель: 1, E34; правильно замечает закрашенную t=3 на оси и потерю этой изолированной точки при записи t>9/возврате к x.",
+        "evidence_run": "20260927-live-all"
+      },
+      "sol": {
+        "id": "15.2.3",
+        "actual_score": 1,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Точно указана потеря закрашенной точки t=3 при переходе от прямой к t>9; исправлены t=3 и x=1.",
+        "image_reviewed": true
+      },
+      "astra": {
+        "id": "15.2.3",
+        "actual_score": 1,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Локализована потеря закрашенной точки t=3 при записи ответа, верно объяснено включение x=1.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "15.2.4",
+      "dataset": "fipi",
+      "expected_score": 0,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "15.2.4",
+        "actual_score": 2,
+        "score_match": false,
+        "joint_match": false,
+        "rejection_match": null,
+        "rationale": "Эксперт: 0 за знак «+» в петле при t=3, означающий ошибочное утверждение о положительном значении дроби в её нуле. Модель: 2. На исходном изображении плюс в петле виден; в OCR он отсутствует, вместо него дано корректное описание «нуль t=3 отмечен». Анализ объявляет метод интервалов и учёт двойного корня правильными.",
+        "evidence_run": "20260927-live-all"
+      },
+      "sol": {
+        "id": "15.2.4",
+        "actual_score": 2,
+        "score_match": false,
+        "joint_match": false,
+        "rejection_match": null,
+        "rationale": "Пропущен знак «+» в петле над t=3; текущая работа ошибочно принята на 2 вместо 0.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "15.2.4",
+        "actual_score": 2,
+        "score_match": false,
+        "joint_match": false,
+        "rejection_match": null,
+        "rationale": "Дано 2 вместо 0: ошибочный плюс в петле над t=3 не обнаружен; метод интервалов объявлен правильным.",
+        "needs_image_review": false,
+        "evidence_quote": "Оценка: 2 из 2 баллов."
+      }
+    },
+    {
+      "id": "15.3.1",
+      "dataset": "fipi",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "15.3.1",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Эксперт и модель: 2. OCR передаёт отдельное решение обеих частей ОДЗ, смену основания, дробное неравенство и пересечение с x>1. Рукопись подтверждает правильный ответ (1;31].",
+        "evidence_run": "20260927-live-all"
+      },
+      "sol": {
+        "id": "15.3.1",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верное решение и ОДЗ приняты, существенных ошибок не придумано.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "15.3.1",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты ОДЗ x>1, преобразования и пересечение с x≤31; дополнительный короткий способ математически верен.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "15.3.2",
+      "dataset": "fipi",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "15.3.2",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Эксперт и модель: 2. Ученик получает (x−1)(31−x)≥0 и пересекает с верной ОДЗ x>1. Модель верно восстанавливает существенный ход и ответ.",
+        "evidence_run": "20260927-live-all"
+      },
+      "sol": {
+        "id": "15.3.2",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты преобразования логарифмов, ОДЗ и ответ.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "15.3.2",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты ОДЗ, смена основания, рационализация и итоговые границы (1;31].",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "15.3.3",
+      "dataset": "fipi",
+      "expected_score": 1,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "15.3.3",
+        "actual_score": 2,
+        "score_match": false,
+        "joint_match": false,
+        "rejection_match": null,
+        "rationale": "Эксперт: 1 за исключённую точку31. На исходном изображении в итоговом ответе после31 круглая скобка, а на оси31 выколота. Модель пишет в OCR «31 закрашена» и ответ (1;31], затем ставит2 за полностью верное решение.",
+        "evidence_run": "20260927-live-all"
+      },
+      "sol": {
+        "id": "15.3.3",
+        "actual_score": 1,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Явный текущий балл 1; правильно найдена открытая правая граница 31. Последующее условное 2 относится к гипотетически другой записи.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "15.3.3",
+        "actual_score": 1,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Правильно прочитаны исключённая точка 31 и круглая скобка; объяснено включение допустимого нуля при нестрогом неравенстве.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "15.3.4",
+      "dataset": "fipi",
+      "expected_score": 0,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "15.3.4",
+        "actual_score": 2,
+        "score_match": false,
+        "joint_match": false,
+        "rejection_match": null,
+        "rationale": "Эксперт:0 за неверно решённую систему ОДЗ. В правом завершающем блоке ОДЗ исходной рукописи записана система x>1 и x<−1. OCR модели оставляет только «итог {x>1}», с общей оговоркой о зачёркнутых записях; анализ затем объявляет ОДЗ верной и ставит2.",
+        "evidence_run": "20260927-live-all"
+      },
+      "sol": {
+        "id": "15.3.4",
+        "actual_score": 2,
+        "score_match": false,
+        "joint_match": false,
+        "rejection_match": null,
+        "rationale": "Дано 2 вместо 0: неверно решённая система ОДЗ сведена к небольшой неточности записи.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "15.3.4",
+        "actual_score": 2,
+        "score_match": false,
+        "joint_match": false,
+        "rejection_match": null,
+        "rationale": "Несовпадение: неверную несовместную систему ОДЗ модель обнаружила, но необоснованно объявила неточностью записи и дала 2 вместо 0.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "15.4.1",
+      "dataset": "fipi",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "15.4.1",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Эксперт и модель:2. Модель сохраняет промежуточные нестрогие границы t≤9, t≥27, но учитывает явное последующее исключение x=2,3 перед ответом. Исходная рукопись подтверждает этот отбор.",
+        "evidence_run": "20260927-live-all"
+      },
+      "sol": {
+        "id": "15.4.1",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Правильный ход, ОДЗ и ответ приняты. Замечание о знаке на (9;27) относится к неоднозначному тёмному исправлению в рукописи; математически правильный знак и ответ указаны, балл не снижен. Считается локальной оговоркой.",
+        "image_reviewed": true
+      },
+      "astra": {
+        "id": "15.4.1",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Правильный итоговый учёт ОДЗ принят. Фото просмотрено: замечание к знаку между 9 и 27 относится к локальной записи, а не выдуманной существенной ошибке; корректный отбор и итог не оспариваются.",
+        "needs_image_review": false,
+        "image_reviewed": true
+      }
+    },
+    {
+      "id": "15.4.2",
+      "dataset": "fipi",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "15.4.2",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Эксперт и модель:2. Правильно установлены перенос в одну часть, числитель3t−9, деление на положительную3, возврат к значениям x=1,2,3 и выбор [1;2)∪(3;+∞).",
+        "evidence_run": "20260927-live-all"
+      },
+      "sol": {
+        "id": "15.4.2",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Решение и корректный ответ приняты; рекомендации о порядке записи не объявлены ошибками.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "15.4.2",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты ОДЗ, рациональная дробь, знаки и итог; явное t>0 предложено только как оформление.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "15.4.3",
+      "dataset": "fipi",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "15.4.3",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Эксперт и модель:2. На фото явно присутствуют x≠3,2, t>0, рациональная дробь, отбор3≤t<9 и t>27, правильная обратная замена и ответ. Модель передаёт эти этапы.",
+        "evidence_run": "20260927-live-all"
+      },
+      "sol": {
+        "id": "15.4.3",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верный ход, ОДЗ и ответ приняты; замечание о заметности закрашенной точки не меняет диагноз.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "15.4.3",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты ограничения, преобразования, метод интервалов и ответ.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "15.4.4",
+      "dataset": "fipi",
+      "expected_score": 0,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "15.4.4",
+        "actual_score": 0,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Эксперт:0 за неверное решение дробного неравенства. Модель:0, E05 за отбрасывание знаменателя при переходе к3t−9≥0; исходная рукопись содержит этот переход и лишний промежуток(2;3).",
+        "evidence_run": "20260927-live-all"
+      },
+      "sol": {
+        "id": "15.4.4",
+        "actual_score": 0,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Правильно локализован переход к 3t−9≥0 с отбрасыванием знакопеременного знаменателя; объяснение и исправление корректны.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "15.4.4",
+        "actual_score": 1,
+        "score_match": false,
+        "joint_match": false,
+        "rejection_match": null,
+        "rationale": "Основной неверный переход к числителю найден и исправлен, но поставлен 1 вместо 0: ошибочно обещан балл за одно лишь сведение к рациональному неравенству.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "15.5.1",
+      "dataset": "fipi",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "15.5.1",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Эксперт и модель:2. Модель правильно прослеживает замену, общий знаменатель, факторизацию(t−4)(t−1)(t−8), исключение сокращаемого t=4 и обратный переход. Всё это присутствует в исходной работе.",
+        "evidence_run": "20260927-live-all"
+      },
+      "sol": {
+        "id": "15.5.1",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верное решение принято, исключённая точка t=4 после сокращения сохранена.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "15.5.1",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты ограничения, сокращение с сохранением запрета t=4, знаки и окончательный ответ.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "15.5.2",
+      "dataset": "fipi",
+      "expected_score": 1,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "15.5.2",
+        "actual_score": 1,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Эксперт:1 за исключение3, с оговоркой о неоднозначной записи ОДЗ. Модель:1, E34 за круглую скобку после3 при правильном остальном ходе. Фото подтверждает итоговую круглую скобку и сохранённые запрещённые значения.",
+        "evidence_run": "20260927-live-all"
+      },
+      "sol": {
+        "id": "15.5.2",
+        "actual_score": 1,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно локализована потеря допустимой границы x=3 в последнем интервале; объяснено включение нуля при нестрогом знаке.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "15.5.2",
+        "actual_score": 1,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Текущая оценка явно 1/2: верно прочитана круглая скобка у 3 и объяснено её включение. Условные 2/2 относятся к иному прочтению скобки. Фото просмотрено: скобка круглая.",
+        "needs_image_review": false,
+        "image_reviewed": true,
+        "evidence_quote": "Оценка: 1 из 2 баллов."
+      }
+    },
+    {
+      "id": "15.5.3",
+      "dataset": "fipi",
+      "expected_score": 0,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "15.5.3",
+        "actual_score": 0,
+        "score_match": true,
+        "joint_match": false,
+        "rejection_match": null,
+        "rationale": "Балл совпал, но неверно локализована первопричина: отбрасывание знаменателя названо корректным преобразованием; исправляются последствия.",
+        "evidence_run": "20260927-live-all"
+      },
+      "sol": {
+        "id": "15.5.3",
+        "actual_score": 1,
+        "score_match": false,
+        "joint_match": false,
+        "rejection_match": null,
+        "rationale": "Ошибка отбрасывания знаменателя точно найдена и исправлена, но назначен 1 вместо экспертных 0.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "15.5.3",
+        "actual_score": 1,
+        "score_match": false,
+        "joint_match": false,
+        "rejection_match": null,
+        "rationale": "Первопричина обнаружена точно: при переходе к многочлену исчез знаменатель. Однако дан 1 вместо 0 за промежуточное сведение; критерий балла применён неверно.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "15.6.1",
+      "dataset": "fipi",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "15.6.1",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Эксперт и модель:2. Составлены три правильных условия ОДЗ, верно преобразована разность логарифмов, раскрыты скобки и получена дробь(x+3)(x−1)/(x+4)≤0; итог[−3;1) соответствует исходной работе.",
+        "evidence_run": "20260927-live-all"
+      },
+      "sol": {
+        "id": "15.6.1",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Корректны ОДЗ, преобразования и итог; верное решение принято.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "15.6.1",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты ОДЗ, объединение логарифмов, дальнейшие преобразования и итоговый отбор. Замечания только к оформлению.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "15.6.2",
+      "dataset": "fipi",
+      "expected_score": 0,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "15.6.2",
+        "actual_score": 0,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Эксперт:0, в частности за неверное решение системы ОДЗ. Модель:0, E02; OCR сохраняет ошибочное(−4;1)∪(2;+∞), анализ правильно указывает лишний луч x>2 и отрицательный аргумент5−5x. Ответ ученика совпал с правильным, но модель не скрыла ошибку ОДЗ.",
+        "evidence_run": "20260927-live-all"
+      },
+      "sol": {
+        "id": "15.6.2",
+        "actual_score": 2,
+        "score_match": false,
+        "joint_match": false,
+        "rejection_match": null,
+        "rationale": "Неверная система ОДЗ замечена, но ошибочно объявлена допустимой для полного балла при правильном ответе: 2 вместо 0.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "15.6.2",
+        "actual_score": 1,
+        "score_match": false,
+        "joint_match": false,
+        "rejection_match": null,
+        "rationale": "Точно найдена логическая ошибка пересечения условий ОДЗ и лишний луч, но оценка 1 вместо 0. Условное исправленное решение на 2/2 не является текущим баллом.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "K-B-2",
+      "dataset": "kostyan",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "K-B-2",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Исправленные незачёркнутые вычисления дают 3t²−28t+9≤0, t∈[1/3;9] и x∈[−1;2]. Модель проверила именно итоговое решение, а не зачёркнутый черновик.",
+        "evidence_run": "20260927-kostyan-all"
+      },
+      "sol": {
+        "id": "K-B-2",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты замена, рациональная дробь, корни и ответ; положительный множитель 3 не влияет на знак.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "K-B-2",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты исправленная квадратная форма, корни 1/3 и 9 и обратный переход; зачёркнутый черновик не штрафуется.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "K-B-3",
+      "dataset": "kostyan",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "K-B-3",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Другой ракурс той же работы: верно прочитаны исправленные коэффициенты, корни 1/3 и 9, интервалы и ответ [−1;2]. Зачёркнутые вычисления упомянуты в OCR, но не использованы для снижения.",
+        "evidence_run": "20260927-kostyan-all"
+      },
+      "sol": {
+        "id": "K-B-3",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верное решение принято; рекомендация явно ограничить замену t>0 математически корректна.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "K-B-3",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно прочитаны итоговый числитель, корни и отбор [-1;2]; зачёркивания не штрафуются, учтена положительность новой переменной.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "K-B-4",
+      "dataset": "kostyan",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "K-B-4",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Обе страницы одного решения учтены совместно: правильная факторизация, знак знаменателя и возврат от 3^x к x дают [−1;2].",
+        "evidence_run": "20260927-kostyan-all"
+      },
+      "sol": {
+        "id": "K-B-4",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верное решение принято; зачёркнутые исправления не считаются ошибками.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "K-B-4",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты обе страницы: исправленное квадратное неравенство, корни, интервалы и возврат к [-1;2]; черновик не штрафуется.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "K-D-11",
+      "dataset": "kostyan",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "K-D-11",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно прочитано исправление бесконечных концов на −5 и 5, учтено ОДЗ (−5;5); обе ветви и объединение промежутков корректны.",
+        "evidence_run": "20260927-kostyan-all"
+      },
+      "sol": {
+        "id": "K-D-11",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты ОДЗ, обе ветви и исправленная цифра 22; ответ корректен.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "K-D-11",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты исправленные крайние границы ±5, обе ветви замены и итоговое объединение с ОДЗ.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "K-D-12",
+      "dataset": "kostyan",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "K-D-12",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Повернутый снимок той же работы распознан с правильными исправленными концами ±5. ОДЗ и обе логарифмические ветви обоснованно дают правильный ответ.",
+        "evidence_run": "20260927-kostyan-all"
+      },
+      "sol": {
+        "id": "K-D-12",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты ОДЗ, обе ветви, цифра 22 и итоговый ответ.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "K-D-12",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно распознаны исправления, ОДЗ и обе ветви; конечное объединение промежутков правильное.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "K-D-13",
+      "dataset": "kostyan",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "K-D-13",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Перевёрнутое фото прочитано в правильном порядке; исправления в окончательном ответе сохранены, ОДЗ и объединение трёх промежутков верны.",
+        "evidence_run": "20260927-kostyan-all"
+      },
+      "sol": {
+        "id": "K-D-13",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты замена, обе ветви и учёт ОДЗ; ошибки не придуманы.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "K-D-13",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты обе ветви и исправленные конечные границы; совет переписать ответ не превращён в штраф.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "K-I",
+      "dataset": "kostyan",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "K-I",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "В тексте есть изолированный нуль t=2, выколотые полюсы 0 и 5 и правильный обратный переход. Модель проверила именно эти существенные шаги.",
+        "evidence_run": "20260927-kostyan-all"
+      },
+      "sol": {
+        "id": "K-I",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно учтены запрещённые t=0,5 и изолированный t=2; отсутствие отдельной строки ОДЗ не ведёт к штрафу.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "K-I",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты рационализация, изолированный нуль t=2 и возврат к x; фактический учёт ОДЗ признан достаточным.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "K-K",
+      "dataset": "kostyan",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "K-K",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Свойство x^(log₅x)=5^((log₅x)²) и неравенство (log₅x)²≥1/4 применены верно; обе ветви и положительность x учтены.",
+        "evidence_run": "20260927-kostyan-all"
+      },
+      "sol": {
+        "id": "K-K",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты смена основания, модуль и обе ветви; ОДЗ фактически учтена.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "K-K",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты тождество степеней, неравенство для модуля логарифма и границы; отдельная ОДЗ не требуется для балла.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "K-L",
+      "dataset": "kostyan",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "K-L",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Правильное раскрытие скобок даёт (x+3)²≤0 и единственный ответ −3; существенные шаги сохранены в распознавании и проверке.",
+        "evidence_run": "20260927-kostyan-all"
+      },
+      "sol": {
+        "id": "K-L",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верное сведение к квадрату ≤0 и единственный корень приняты.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "K-L",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты преобразования к квадрату ≤0 и единственный ответ −3.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "K-X4",
+      "dataset": "kostyan",
+      "expected_score": 1,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "K-X4",
+        "actual_score": 1,
+        "score_match": true,
+        "joint_match": false,
+        "rejection_match": null,
+        "rationale": "Балл совпал и потеря x=4 найдена, но совет ошибочно утверждает нулевой числитель исходной дроби при x=4. На самом деле она равна 6/(−6)=−1; ноль возникает после переноса правой части.",
+        "evidence_run": "20260927-kostyan-all"
+      },
+      "sol": {
+        "id": "K-X4",
+        "actual_score": 1,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Точно локализовано деление на (t−2)² с потерей t=2; возвращены t=2 и x=4, объяснение корректно.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "K-X4",
+        "actual_score": 1,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Точно указан переход с делением на (t−2)², потеря t=2 и исправление x=4. Фраза «исходная дробь равна нулю» относится к показанной дроби перед сокращением, а не к начальной дроби от x; объяснение математически корректно.",
+        "needs_image_review": false,
+        "evidence_quote": "Сокращать на \\((t-2)^2\\) без отдельного рассмотрения этого случая нельзя."
+      }
+    },
+    {
+      "id": "K-X5",
+      "dataset": "kostyan",
+      "expected_score": 0,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "K-X5",
+        "actual_score": 0,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Распознано отсутствие ограничения |x|<5 и бесконечные лучи в ответе. Значения вне ОДЗ действительно включены, поэтому 0 по E01 обоснован.",
+        "evidence_run": "20260927-kostyan-all"
+      },
+      "sol": {
+        "id": "K-X5",
+        "actual_score": 1,
+        "score_match": false,
+        "joint_match": false,
+        "rejection_match": null,
+        "rationale": "Пропуск ОДЗ и лишние интервалы правильно найдены, но дан 1 вместо экспертных 0.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "K-X5",
+        "actual_score": 1,
+        "score_match": false,
+        "joint_match": false,
+        "rejection_match": null,
+        "rationale": "Верно локализовано отсутствие ОДЗ логарифма и лишние лучи; дано 1 вместо 0 при существенной логической ошибке.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "K-X6",
+      "dataset": "kostyan",
+      "expected_score": 1,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "K-X6",
+        "actual_score": 1,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Найдена ровно одна ошибка коэффициента: 8(x+1)² записано с 8x вместо 16x. Остальная цепочка верна для ошибочного выражения; 1 по E35 обоснован.",
+        "evidence_run": "20260927-kostyan-all"
+      },
+      "sol": {
+        "id": "K-X6",
+        "actual_score": 0,
+        "score_match": false,
+        "joint_match": false,
+        "rejection_match": null,
+        "rationale": "Вычислительная ошибка раскрытия 8(x+1)² точно найдена и исправлена, но назначен 0 вместо экспертного 1.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "K-X6",
+        "actual_score": 0,
+        "score_match": false,
+        "joint_match": false,
+        "rejection_match": null,
+        "rationale": "Верно найдена одна арифметическая ошибка раскрытия 8(x+1)², но дано 0 вместо 1 за ошибку при правильной последовательности действий.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "K-P16",
+      "dataset": "kostyan",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "K-P16",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Факторизация (t−1)²(t²+7t+1), знаки и обратная замена подтверждаются обеими страницами; отрицательная ветвь отброшена, x=0. Вспомогательный черновой блок сравнений не меняет правильный порядок корней и основной вывод.",
+        "evidence_run": "20260927-kostyan-all"
+      },
+      "sol": {
+        "id": "K-P16",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верные разложение, отбор t>0 и x=0 приняты. Замечание о внешней скобке относится к оформлению/почерку, не выдумывает существенный дефект.",
+        "image_reviewed": true
+      },
+      "astra": {
+        "id": "K-P16",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты факторизация, положительная новая переменная и исключение отрицательной ветви; дополнительный короткий способ корректен.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "K-P17",
+      "dataset": "kostyan",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "K-P17",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Обе страницы содержат правильный перенос единицы, (t−4)(t+2)/(t−82), отбрасывание отрицательной ветви и ответ [log₃4;log₃82). Смысл оценки 2 подтверждён.",
+        "evidence_run": "20260927-kostyan-all"
+      },
+      "sol": {
+        "id": "K-P17",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верное решение принято; объяснение отдельной невозможной ветви 3^x≤−2 корректно. Замечание о скобке считается локальным оформлением.",
+        "image_reviewed": true
+      },
+      "astra": {
+        "id": "K-P17",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты обе страницы, ограничения, интервалы и исключение невозможной отрицательной ветви; 2log₃2=log₃4.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "K-P18",
+      "dataset": "kostyan",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "K-P18",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Замена t=2^(−x)>0, факторизация и возврат с изменением знака при умножении на −1 выполнены верно. Итоговый ответ правильный. В прозе модели есть неточность «деление ... на t»: фактически дробь умножается на t/t; она не влияет на математически правильные формулы и оценку.",
+        "evidence_run": "20260927-kostyan-all"
+      },
+      "sol": {
+        "id": "K-P18",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верные интервалы и обратная замена приняты. На фото действительно подписано 2 вместо −2 на оси при верных вычислениях и ответе.",
+        "image_reviewed": true
+      },
+      "astra": {
+        "id": "K-P18",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты преобразования и обратный переход. Фото просмотрено: на нижней оси действительно подпись 2 вместо −2, при правильных вычислениях и ответе; замечание не выдумано.",
+        "needs_image_review": false,
+        "image_reviewed": true
+      }
+    },
+    {
+      "id": "K-P19",
+      "dataset": "kostyan",
+      "expected_score": 0,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "K-P19",
+        "actual_score": 0,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "На фото запрет t≠1 найден, но уже промежуточное множество t его не учитывает, а окончательный ответ содержит x=0. Модель правильно назначила0 по E01. Это не только перенос верно полученного множества в ответ по E36.",
+        "evidence_run": "20260927-kostyan-all"
+      },
+      "sol": {
+        "id": "K-P19",
+        "actual_score": 1,
+        "score_match": false,
+        "joint_match": false,
+        "rejection_match": null,
+        "rationale": "Запрещённый x=0 и потеря ранее записанного ограничения найдены верно, но поставлен 1 вместо экспертных 0.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "K-P19",
+        "actual_score": 1,
+        "score_match": false,
+        "joint_match": false,
+        "rejection_match": null,
+        "rationale": "Правильно найдена включённая запрещённая точка x=0 и объяснён нуль знаменателя, но поставлен 1 вместо эталонного 0.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "K-P20",
+      "dataset": "kostyan",
+      "expected_score": 2,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "K-P20",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "По двум страницам подтверждаются раскрытие скобок до4t−12, правильные интервалы1<t≤3 илиt>9 и возврат к(0;1]∪(2;+∞). Модель верно учла полюсы и включённый нуль.",
+        "evidence_run": "20260927-kostyan-all"
+      },
+      "sol": {
+        "id": "K-P20",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Правильные знаки, ограничения и обратная замена приняты; ответ верный.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "K-P20",
+        "actual_score": 2,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Верно приняты обе страницы, метод интервалов, запрещённые точки 1 и 9, включённый нуль 3 и обратный переход.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "K-P21",
+      "dataset": "kostyan",
+      "expected_score": 1,
+      "expected_outcome": "graded",
+      "botai": {
+        "id": "K-P21",
+        "actual_score": 1,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Фото и OCR согласованы: t=1/10 включено в промежуточное множество, обратная замена содержит x≥−1−log₂5, но в окончательном ответе стоит круглая скобка. Модель сохранила эту ошибку и обоснованно дала1 за исключение допустимой граничной точки.",
+        "evidence_run": "20260927-kostyan-all"
+      },
+      "sol": {
+        "id": "K-P21",
+        "actual_score": 1,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Точно найдена потеря допустимой левой границы −1−log₂5 при переписывании ответа, исправление корректно.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "K-P21",
+        "actual_score": 1,
+        "score_match": true,
+        "joint_match": true,
+        "rejection_match": null,
+        "rationale": "Точно локализована потеря допустимой границы в итоговой скобке при ранее правильном ≥; дан корректный ответ с квадратной скобкой.",
+        "needs_image_review": false
+      }
+    },
+    {
+      "id": "K-M2",
+      "dataset": "kostyan",
+      "expected_score": null,
+      "expected_outcome": "rejected",
+      "botai": {
+        "id": "K-M2",
+        "actual_score": null,
+        "score_match": null,
+        "joint_match": null,
+        "rejection_match": true,
+        "rationale": "На исходном фото тригонометрическое уравнение и отбор корней, а задано показательное неравенство P18. Модель верно отказалась: is_graded=false, причина называет несовпадение задания, grading=null.",
+        "evidence_run": "20260927-kostyan-all"
+      },
+      "sol": {
+        "id": "K-M2",
+        "actual_score": 0,
+        "score_match": null,
+        "joint_match": null,
+        "rejection_match": false,
+        "rationale": "Несоответствие фото условию правильно обнаружено, но дан численный 0; это не отказ без балла по контракту BotAI. Исключён из обеих основных метрик.",
+        "image_reviewed": false
+      },
+      "astra": {
+        "id": "K-M2",
+        "actual_score": 0,
+        "score_match": null,
+        "joint_match": null,
+        "rejection_match": false,
+        "rationale": "Несоответствие фото заданию обнаружено, но явно выставлен 0/2. Требуемого отказа без численного балла нет. Кейс исключён из обеих численных метрик.",
+        "needs_image_review": false,
+        "evidence_quote": "За задание на первом изображении — 0 из 2 баллов."
+      }
+    }
+  ],
+  "raw_output": "output/evals/20261008-gpt-comparison",
+  "review_method": "agent review; disputed cases cross-reviewed; no extra grading inference"
+}

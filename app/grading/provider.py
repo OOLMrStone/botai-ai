@@ -27,7 +27,7 @@ class Provider:
             raise LLMConfigError('Укажи LLM_BASE_URL для выбранного подключения модели')
         self.settings = settings
         self.client = AsyncOpenAI(api_key=settings.api_key, base_url=settings.base_url,
-                                  timeout=min(settings.timeout_s, 240), max_retries=0)
+                                  timeout=min(settings.timeout_s, 360), max_retries=0)
 
     async def close(self):
         await self.client.close()

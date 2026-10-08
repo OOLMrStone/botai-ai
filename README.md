@@ -17,7 +17,7 @@ Open [the test form](http://localhost:8000/ui/). Mock mode returns a clearly lab
 2. Attach one to four images of the student's work, in order.
 3. Submit and inspect the recognized text, analysis and single score, or the reason grading was declined.
 
-Each image may be up to 8 MiB. A complete request may contain all five images. Preparation and grading share a 240-second deadline; retries are manual. A readable statement and correct answer are required. A missing complete reference solution is allowed and shown in the form.
+Each image may be up to 8 MiB. A complete request may contain all five images. Preparation and grading share a 480-second deadline; retries are manual. A readable statement and correct answer are required. A missing complete reference solution is allowed and shown in the form.
 
 ## How the new workflow works
 
@@ -68,6 +68,7 @@ Install development dependencies from `requirements-dev.txt` in a Python 3.14 vi
 - [Current written contract](docs/grading/service.md)
 - [Prompt package and validator](tasks/16/README.md)
 - [Deployment and access](docs/DEPLOYMENT.md)
+- [Isolated server DEVELOP, model gateway and security snapshots](docs/DEVELOPMENT_SERVER.md)
 - [Legacy architecture](docs/ARCHITECTURE.md) and [debug toolkit](docs/DEBUG_TOOLKIT.md)
 
 The test service was deployed on 27 September 2026. Existing eval results and their limits are documented in [task 16](tasks/16/README.md). Deployment and current migration verification are tracked in [DEPLOYMENT.md](docs/DEPLOYMENT.md); a historical deployment test does not certify later edits.

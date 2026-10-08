@@ -1,0 +1,362 @@
+[
+  {
+    "id": "15.1.1",
+    "actual_score": 1,
+    "score_match": false,
+    "joint_match": false,
+    "rejection_match": null,
+    "rationale": "Назван 1/2 вместо экспертных 2; допустимая замена на выражение того же знака ошибочно признана неправильным тождественным разложением. Условные 2/2 относятся к исправленному решению.",
+    "image_reviewed": false
+  },
+  {
+    "id": "15.1.2",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верное решение принято; перечислены ОДЗ, разложение, изолированный корень и ответ.",
+    "image_reviewed": false
+  },
+  {
+    "id": "15.1.3",
+    "actual_score": 1,
+    "score_match": true,
+    "joint_match": false,
+    "rejection_match": null,
+    "rationale": "Верно найдены потерянные −1 и 1, но дополнительно объявлена ошибкой допустимая замена знаменателя на выражение того же знака. На фото нет утверждения их равенства; есть равносильные неравенства.",
+    "image_reviewed": true
+  },
+  {
+    "id": "15.1.4",
+    "actual_score": 0,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно указана потеря квадрата знаменателя, изменяющая знак дроби; исправление и ответ корректны.",
+    "image_reviewed": false
+  },
+  {
+    "id": "15.2.1",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Решение и ответ приняты верно; положительный множитель 2 и ОДЗ описаны без выдуманного существенного дефекта.",
+    "image_reviewed": false
+  },
+  {
+    "id": "15.2.2",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Решение и изолированный корень приняты. Осторожное замечание о почерке знака не названо основанием снижения.",
+    "image_reviewed": false
+  },
+  {
+    "id": "15.2.3",
+    "actual_score": 1,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Точно указана потеря закрашенной точки t=3 при переходе от прямой к t>9; исправлены t=3 и x=1.",
+    "image_reviewed": true
+  },
+  {
+    "id": "15.2.4",
+    "actual_score": 2,
+    "score_match": false,
+    "joint_match": false,
+    "rejection_match": null,
+    "rationale": "Пропущен знак «+» в петле над t=3; текущая работа ошибочно принята на 2 вместо 0.",
+    "image_reviewed": false
+  },
+  {
+    "id": "15.3.1",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верное решение и ОДЗ приняты, существенных ошибок не придумано.",
+    "image_reviewed": false
+  },
+  {
+    "id": "15.3.2",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты преобразования логарифмов, ОДЗ и ответ.",
+    "image_reviewed": false
+  },
+  {
+    "id": "15.3.3",
+    "actual_score": 1,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Явный текущий балл 1; правильно найдена открытая правая граница 31. Последующее условное 2 относится к гипотетически другой записи.",
+    "image_reviewed": false
+  },
+  {
+    "id": "15.3.4",
+    "actual_score": 2,
+    "score_match": false,
+    "joint_match": false,
+    "rejection_match": null,
+    "rationale": "Дано 2 вместо 0: неверно решённая система ОДЗ сведена к небольшой неточности записи.",
+    "image_reviewed": false
+  },
+  {
+    "id": "15.4.1",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Правильный ход, ОДЗ и ответ приняты. Замечание о знаке на (9;27) относится к неоднозначному тёмному исправлению в рукописи; математически правильный знак и ответ указаны, балл не снижен. Считается локальной оговоркой.",
+    "image_reviewed": true
+  },
+  {
+    "id": "15.4.2",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Решение и корректный ответ приняты; рекомендации о порядке записи не объявлены ошибками.",
+    "image_reviewed": false
+  },
+  {
+    "id": "15.4.3",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верный ход, ОДЗ и ответ приняты; замечание о заметности закрашенной точки не меняет диагноз.",
+    "image_reviewed": false
+  },
+  {
+    "id": "15.4.4",
+    "actual_score": 0,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Правильно локализован переход к 3t−9≥0 с отбрасыванием знакопеременного знаменателя; объяснение и исправление корректны.",
+    "image_reviewed": false
+  },
+  {
+    "id": "15.5.1",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верное решение принято, исключённая точка t=4 после сокращения сохранена.",
+    "image_reviewed": false
+  },
+  {
+    "id": "15.5.2",
+    "actual_score": 1,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно локализована потеря допустимой границы x=3 в последнем интервале; объяснено включение нуля при нестрогом знаке.",
+    "image_reviewed": false
+  },
+  {
+    "id": "15.5.3",
+    "actual_score": 1,
+    "score_match": false,
+    "joint_match": false,
+    "rejection_match": null,
+    "rationale": "Ошибка отбрасывания знаменателя точно найдена и исправлена, но назначен 1 вместо экспертных 0.",
+    "image_reviewed": false
+  },
+  {
+    "id": "15.6.1",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Корректны ОДЗ, преобразования и итог; верное решение принято.",
+    "image_reviewed": false
+  },
+  {
+    "id": "15.6.2",
+    "actual_score": 2,
+    "score_match": false,
+    "joint_match": false,
+    "rejection_match": null,
+    "rationale": "Неверная система ОДЗ замечена, но ошибочно объявлена допустимой для полного балла при правильном ответе: 2 вместо 0.",
+    "image_reviewed": false
+  },
+  {
+    "id": "K-B-2",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты замена, рациональная дробь, корни и ответ; положительный множитель 3 не влияет на знак.",
+    "image_reviewed": false
+  },
+  {
+    "id": "K-B-3",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верное решение принято; рекомендация явно ограничить замену t>0 математически корректна.",
+    "image_reviewed": false
+  },
+  {
+    "id": "K-B-4",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верное решение принято; зачёркнутые исправления не считаются ошибками.",
+    "image_reviewed": false
+  },
+  {
+    "id": "K-D-11",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты ОДЗ, обе ветви и исправленная цифра 22; ответ корректен.",
+    "image_reviewed": false
+  },
+  {
+    "id": "K-D-12",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты ОДЗ, обе ветви, цифра 22 и итоговый ответ.",
+    "image_reviewed": false
+  },
+  {
+    "id": "K-D-13",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты замена, обе ветви и учёт ОДЗ; ошибки не придуманы.",
+    "image_reviewed": false
+  },
+  {
+    "id": "K-I",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно учтены запрещённые t=0,5 и изолированный t=2; отсутствие отдельной строки ОДЗ не ведёт к штрафу.",
+    "image_reviewed": false
+  },
+  {
+    "id": "K-K",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты смена основания, модуль и обе ветви; ОДЗ фактически учтена.",
+    "image_reviewed": false
+  },
+  {
+    "id": "K-L",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верное сведение к квадрату ≤0 и единственный корень приняты.",
+    "image_reviewed": false
+  },
+  {
+    "id": "K-X4",
+    "actual_score": 1,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Точно локализовано деление на (t−2)² с потерей t=2; возвращены t=2 и x=4, объяснение корректно.",
+    "image_reviewed": false
+  },
+  {
+    "id": "K-X5",
+    "actual_score": 1,
+    "score_match": false,
+    "joint_match": false,
+    "rejection_match": null,
+    "rationale": "Пропуск ОДЗ и лишние интервалы правильно найдены, но дан 1 вместо экспертных 0.",
+    "image_reviewed": false
+  },
+  {
+    "id": "K-P16",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верные разложение, отбор t>0 и x=0 приняты. Замечание о внешней скобке относится к оформлению/почерку, не выдумывает существенный дефект.",
+    "image_reviewed": true
+  },
+  {
+    "id": "K-P17",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верное решение принято; объяснение отдельной невозможной ветви 3^x≤−2 корректно. Замечание о скобке считается локальным оформлением.",
+    "image_reviewed": true
+  },
+  {
+    "id": "K-P18",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верные интервалы и обратная замена приняты. На фото действительно подписано 2 вместо −2 на оси при верных вычислениях и ответе.",
+    "image_reviewed": true
+  },
+  {
+    "id": "K-X6",
+    "actual_score": 0,
+    "score_match": false,
+    "joint_match": false,
+    "rejection_match": null,
+    "rationale": "Вычислительная ошибка раскрытия 8(x+1)² точно найдена и исправлена, но назначен 0 вместо экспертного 1.",
+    "image_reviewed": false
+  },
+  {
+    "id": "K-P19",
+    "actual_score": 1,
+    "score_match": false,
+    "joint_match": false,
+    "rejection_match": null,
+    "rationale": "Запрещённый x=0 и потеря ранее записанного ограничения найдены верно, но поставлен 1 вместо экспертных 0.",
+    "image_reviewed": false
+  },
+  {
+    "id": "K-P20",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Правильные знаки, ограничения и обратная замена приняты; ответ верный.",
+    "image_reviewed": false
+  },
+  {
+    "id": "K-P21",
+    "actual_score": 1,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Точно найдена потеря допустимой левой границы −1−log₂5 при переписывании ответа, исправление корректно.",
+    "image_reviewed": false
+  },
+  {
+    "id": "K-M2",
+    "actual_score": 0,
+    "score_match": null,
+    "joint_match": null,
+    "rejection_match": false,
+    "rationale": "Несоответствие фото условию правильно обнаружено, но дан численный 0; это не отказ без балла по контракту BotAI. Исключён из обеих основных метрик.",
+    "image_reviewed": false
+  }
+]

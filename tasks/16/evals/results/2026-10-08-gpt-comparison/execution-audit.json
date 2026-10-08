@@ -1,0 +1,31 @@
+{
+  "models": {
+    "gpt-6.1-sol-low": {
+      "completed": 40,
+      "tool_items": [],
+      "usage": {
+        "input_tokens": 283716,
+        "cached_input_tokens": 74880,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 9432,
+        "reasoning_output_tokens": 1677
+      },
+      "total_case_seconds": 761.321
+    },
+    "gpt-6-astra-medium": {
+      "completed": 40,
+      "tool_items": [],
+      "usage": {
+        "input_tokens": 283716,
+        "cached_input_tokens": 75008,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 9561,
+        "reasoning_output_tokens": 1898
+      },
+      "total_case_seconds": 764.621
+    }
+  },
+  "fresh_contexts": 80,
+  "unique_contexts": 80,
+  "runner_sha256": "cf066b37801f5247e7474fa9af355775c71258fe09dfa14aef7ae23c62f453d8"
+}

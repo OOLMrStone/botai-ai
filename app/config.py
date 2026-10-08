@@ -13,7 +13,7 @@ import logging
 from functools import lru_cache
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 logger = logging.getLogger(__name__)
@@ -195,10 +195,20 @@ class DebugSettings(BaseSettings):
 
 class PhotoSettings(BaseSettings):
     model_config = _BASE_CONFIG | SettingsConfigDict(env_prefix="PHOTO_")
-    deadline_seconds: float = Field(default=240, gt=0, le=240)
+    deadline_seconds: float = Field(default=360, gt=0, le=360)
     max_model_turns: int = Field(default=32, ge=12, le=48)
     concurrency: int = Field(default=2, ge=1, le=8)
     reports_dir: str = "./data/suspicious-submissions"
+
+
+class InternalGradingSettings(BaseSettings):
+    model_config = _BASE_CONFIG | SettingsConfigDict(env_prefix="INTERNAL_GRADING_")
+    enabled: bool = False
+    token: SecretStr | None = None
+
+    def check_enabled(self):
+        if self.enabled and (self.token is None or not self.token.get_secret_value().strip()):
+            raise ValueError("INTERNAL_GRADING_TOKEN is required when internal grading is enabled")
 
 
 class Settings(BaseModel):
@@ -209,6 +219,7 @@ class Settings(BaseModel):
     debug: DebugSettings
     features: FeatureSettings = Field(default_factory=FeatureSettings)
     photo: PhotoSettings = Field(default_factory=PhotoSettings)
+    internal_grading: InternalGradingSettings = Field(default_factory=InternalGradingSettings)
 
     @property
     def vision_llm(self) -> LLMSettings:
@@ -262,6 +273,7 @@ def build_settings() -> Settings:
     # FEATURES is a typo, and a typo that silently does nothing is worse than
     # a service that refuses to start.
     resolve_features(configured=settings.features.features)
+    settings.internal_grading.check_enabled()
 
     # Safety interlock: the debug toolkit exposes prompts, traces and score
     # overrides. It must not come up in prod by accident.

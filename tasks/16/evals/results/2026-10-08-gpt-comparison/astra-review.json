@@ -1,0 +1,371 @@
+[
+  {
+    "id": "15.1.1",
+    "actual_score": 1,
+    "score_match": false,
+    "joint_match": false,
+    "rejection_match": null,
+    "rationale": "Текущей работе поставлен 1/2 вместо 2; знакосохраняющая рационализация ошибочно названа недопустимым разложением. Заключительные 2/2 относятся лишь к предлагаемому исправлению.",
+    "needs_image_review": false,
+    "evidence_quote": "При строгой проверке — 1 из 2 баллов"
+  },
+  {
+    "id": "15.1.2",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты положительный знаменатель на ОДЗ, изолированный нуль −1 и итоговый ответ. Оговорка записи ограничения не объявлена существенной ошибкой.",
+    "needs_image_review": false
+  },
+  {
+    "id": "15.1.3",
+    "actual_score": 1,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Точно найдена замена ≥ на > и потеря −1 и 1; объяснены допустимость и нулевой числитель. Дополнительное замечание о нетождественности замены признаёт сохранение знаков и не меняет основной диагноз.",
+    "needs_image_review": false,
+    "image_reviewed": true
+  },
+  {
+    "id": "15.1.4",
+    "actual_score": 0,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Найден конкретный неверный переход: квадрат знаменателя заменён выражением со сменой знака; исправление и вывод корректны.",
+    "needs_image_review": false
+  },
+  {
+    "id": "15.2.1",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Правильные замена, двойной нуль t=3, запрет t=9 и обратный переход приняты; отдельная запись ОДЗ предложена только как оформление.",
+    "needs_image_review": false
+  },
+  {
+    "id": "15.2.2",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно принят ответ с изолированной точкой; замечание о неясном промежуточном знаке не изменяет оценку и правильно учитывает итоговый отбор.",
+    "needs_image_review": false
+  },
+  {
+    "id": "15.2.3",
+    "actual_score": 1,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Локализована потеря закрашенной точки t=3 при записи ответа, верно объяснено включение x=1.",
+    "needs_image_review": false
+  },
+  {
+    "id": "15.2.4",
+    "actual_score": 2,
+    "score_match": false,
+    "joint_match": false,
+    "rejection_match": null,
+    "rationale": "Дано 2 вместо 0: ошибочный плюс в петле над t=3 не обнаружен; метод интервалов объявлен правильным.",
+    "needs_image_review": false,
+    "evidence_quote": "Оценка: 2 из 2 баллов."
+  },
+  {
+    "id": "15.3.1",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты ОДЗ x>1, преобразования и пересечение с x≤31; дополнительный короткий способ математически верен.",
+    "needs_image_review": false
+  },
+  {
+    "id": "15.3.2",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты ОДЗ, смена основания, рационализация и итоговые границы (1;31].",
+    "needs_image_review": false
+  },
+  {
+    "id": "15.3.3",
+    "actual_score": 1,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Правильно прочитаны исключённая точка 31 и круглая скобка; объяснено включение допустимого нуля при нестрогом неравенстве.",
+    "needs_image_review": false
+  },
+  {
+    "id": "15.3.4",
+    "actual_score": 2,
+    "score_match": false,
+    "joint_match": false,
+    "rejection_match": null,
+    "rationale": "Несовпадение: неверную несовместную систему ОДЗ модель обнаружила, но необоснованно объявила неточностью записи и дала 2 вместо 0.",
+    "needs_image_review": false
+  },
+  {
+    "id": "15.4.1",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Правильный итоговый учёт ОДЗ принят. Фото просмотрено: замечание к знаку между 9 и 27 относится к локальной записи, а не выдуманной существенной ошибке; корректный отбор и итог не оспариваются.",
+    "needs_image_review": false,
+    "image_reviewed": true
+  },
+  {
+    "id": "15.4.2",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты ОДЗ, рациональная дробь, знаки и итог; явное t>0 предложено только как оформление.",
+    "needs_image_review": false
+  },
+  {
+    "id": "15.4.3",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты ограничения, преобразования, метод интервалов и ответ.",
+    "needs_image_review": false
+  },
+  {
+    "id": "15.4.4",
+    "actual_score": 1,
+    "score_match": false,
+    "joint_match": false,
+    "rejection_match": null,
+    "rationale": "Основной неверный переход к числителю найден и исправлен, но поставлен 1 вместо 0: ошибочно обещан балл за одно лишь сведение к рациональному неравенству.",
+    "needs_image_review": false
+  },
+  {
+    "id": "15.5.1",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты ограничения, сокращение с сохранением запрета t=4, знаки и окончательный ответ.",
+    "needs_image_review": false
+  },
+  {
+    "id": "15.5.2",
+    "actual_score": 1,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Текущая оценка явно 1/2: верно прочитана круглая скобка у 3 и объяснено её включение. Условные 2/2 относятся к иному прочтению скобки. Фото просмотрено: скобка круглая.",
+    "needs_image_review": false,
+    "image_reviewed": true,
+    "evidence_quote": "Оценка: 1 из 2 баллов."
+  },
+  {
+    "id": "15.5.3",
+    "actual_score": 1,
+    "score_match": false,
+    "joint_match": false,
+    "rejection_match": null,
+    "rationale": "Первопричина обнаружена точно: при переходе к многочлену исчез знаменатель. Однако дан 1 вместо 0 за промежуточное сведение; критерий балла применён неверно.",
+    "needs_image_review": false
+  },
+  {
+    "id": "15.6.1",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты ОДЗ, объединение логарифмов, дальнейшие преобразования и итоговый отбор. Замечания только к оформлению.",
+    "needs_image_review": false
+  },
+  {
+    "id": "15.6.2",
+    "actual_score": 1,
+    "score_match": false,
+    "joint_match": false,
+    "rejection_match": null,
+    "rationale": "Точно найдена логическая ошибка пересечения условий ОДЗ и лишний луч, но оценка 1 вместо 0. Условное исправленное решение на 2/2 не является текущим баллом.",
+    "needs_image_review": false
+  },
+  {
+    "id": "K-B-2",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты исправленная квадратная форма, корни 1/3 и 9 и обратный переход; зачёркнутый черновик не штрафуется.",
+    "needs_image_review": false
+  },
+  {
+    "id": "K-B-3",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно прочитаны итоговый числитель, корни и отбор [-1;2]; зачёркивания не штрафуются, учтена положительность новой переменной.",
+    "needs_image_review": false
+  },
+  {
+    "id": "K-B-4",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты обе страницы: исправленное квадратное неравенство, корни, интервалы и возврат к [-1;2]; черновик не штрафуется.",
+    "needs_image_review": false
+  },
+  {
+    "id": "K-D-11",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты исправленные крайние границы ±5, обе ветви замены и итоговое объединение с ОДЗ.",
+    "needs_image_review": false
+  },
+  {
+    "id": "K-D-12",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно распознаны исправления, ОДЗ и обе ветви; конечное объединение промежутков правильное.",
+    "needs_image_review": false
+  },
+  {
+    "id": "K-D-13",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты обе ветви и исправленные конечные границы; совет переписать ответ не превращён в штраф.",
+    "needs_image_review": false
+  },
+  {
+    "id": "K-I",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты рационализация, изолированный нуль t=2 и возврат к x; фактический учёт ОДЗ признан достаточным.",
+    "needs_image_review": false
+  },
+  {
+    "id": "K-K",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты тождество степеней, неравенство для модуля логарифма и границы; отдельная ОДЗ не требуется для балла.",
+    "needs_image_review": false
+  },
+  {
+    "id": "K-L",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты преобразования к квадрату ≤0 и единственный ответ −3.",
+    "needs_image_review": false
+  },
+  {
+    "id": "K-M2",
+    "actual_score": 0,
+    "score_match": null,
+    "joint_match": null,
+    "rejection_match": false,
+    "rationale": "Несоответствие фото заданию обнаружено, но явно выставлен 0/2. Требуемого отказа без численного балла нет. Кейс исключён из обеих численных метрик.",
+    "needs_image_review": false,
+    "evidence_quote": "За задание на первом изображении — 0 из 2 баллов."
+  },
+  {
+    "id": "K-P16",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты факторизация, положительная новая переменная и исключение отрицательной ветви; дополнительный короткий способ корректен.",
+    "needs_image_review": false
+  },
+  {
+    "id": "K-P17",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты обе страницы, ограничения, интервалы и исключение невозможной отрицательной ветви; 2log₃2=log₃4.",
+    "needs_image_review": false
+  },
+  {
+    "id": "K-P18",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты преобразования и обратный переход. Фото просмотрено: на нижней оси действительно подпись 2 вместо −2, при правильных вычислениях и ответе; замечание не выдумано.",
+    "needs_image_review": false,
+    "image_reviewed": true
+  },
+  {
+    "id": "K-P19",
+    "actual_score": 1,
+    "score_match": false,
+    "joint_match": false,
+    "rejection_match": null,
+    "rationale": "Правильно найдена включённая запрещённая точка x=0 и объяснён нуль знаменателя, но поставлен 1 вместо эталонного 0.",
+    "needs_image_review": false
+  },
+  {
+    "id": "K-P20",
+    "actual_score": 2,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Верно приняты обе страницы, метод интервалов, запрещённые точки 1 и 9, включённый нуль 3 и обратный переход.",
+    "needs_image_review": false
+  },
+  {
+    "id": "K-P21",
+    "actual_score": 1,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Точно локализована потеря допустимой границы в итоговой скобке при ранее правильном ≥; дан корректный ответ с квадратной скобкой.",
+    "needs_image_review": false
+  },
+  {
+    "id": "K-X4",
+    "actual_score": 1,
+    "score_match": true,
+    "joint_match": true,
+    "rejection_match": null,
+    "rationale": "Точно указан переход с делением на (t−2)², потеря t=2 и исправление x=4. Фраза «исходная дробь равна нулю» относится к показанной дроби перед сокращением, а не к начальной дроби от x; объяснение математически корректно.",
+    "needs_image_review": false,
+    "evidence_quote": "Сокращать на \\((t-2)^2\\) без отдельного рассмотрения этого случая нельзя."
+  },
+  {
+    "id": "K-X5",
+    "actual_score": 1,
+    "score_match": false,
+    "joint_match": false,
+    "rejection_match": null,
+    "rationale": "Верно локализовано отсутствие ОДЗ логарифма и лишние лучи; дано 1 вместо 0 при существенной логической ошибке.",
+    "needs_image_review": false
+  },
+  {
+    "id": "K-X6",
+    "actual_score": 0,
+    "score_match": false,
+    "joint_match": false,
+    "rejection_match": null,
+    "rationale": "Верно найдена одна арифметическая ошибка раскрытия 8(x+1)², но дано 0 вместо 1 за ошибку при правильной последовательности действий.",
+    "needs_image_review": false
+  }
+]
