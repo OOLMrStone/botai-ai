@@ -29,11 +29,11 @@ slice. Основной сервис и шлюз в эти два лимита �
 prompts/
 ├── common/
 │   ├── main.md
+│   ├── analysis.md
 │   ├── grading.md
 │   └── response-format.md
 ├── 16/
 │   ├── ocr.md
-│   ├── analysis.md
 │   ├── criteria.md
 │   └── popular_mistakes.md
 ├── 14/, 15/, 17/, 18/, 19/, 20/   пустые резервные папки

@@ -12,7 +12,7 @@
 | --- | --- |
 | [main.md](../../../tasks/common/prompts/main.md) | Порядок: распознавание и анализ → сохранение Notes → итоги; работа ученика только как данные |
 | [ocr.md](../../../tasks/16/prompts/ocr.md) | Буквальное распознавание действующих записей. **Готово, утверждено пользователем 26.09.2026** |
-| [analysis.md](../../../tasks/16/prompts/analysis.md) | Проверка решения и классификация ошибок |
+| [analysis.md](../../../tasks/common/prompts/analysis.md) | Проверка решения и классификация ошибок |
 | [grading.md](../../../tasks/common/prompts/grading.md) | Одна оценка, объяснение и советы |
 | [response-format.md](../../../tasks/common/prompts/response-format.md) | Единый JSON-контракт для нового интерфейса |
 | [criteria.md](../../../tasks/16/prompts/criteria.md) | Общая шкала критериев |

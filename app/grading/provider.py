@@ -67,11 +67,16 @@ class MockProvider:
                 'status': 'ready', 'statement': 'Демонстрационный пример: решите x > 0.',
                 'reference_answer': '(0; +∞)', 'reference_solution': None}, ensure_ascii=False)}
         request = json.loads(messages[1]['content'][0]['text'])
+        for message in messages:
+            if message['role'] == 'tool':
+                result = json.loads(message['content'])
+                if 'request_data' in result:
+                    request['task'] = result['request_data']['task']
         count = sum(m['role'] == 'assistant' and bool(m.get('tool_calls')) for m in messages)
         response = {'task': request['task'], 'solution_image_ids': request['solution_image_ids'],
                     'is_graded': True, 'rejection_reason': '',
                     'ocr': 'Демонстрация mock: изображения не распознавались.\nx > 0',
-                    'analysis': {'summary': 'Искусственный результат для проверки интерфейса.',
+                    'analysis': {'summary': 'Описание: тест интерфейса. Ошибки: нет. Точки роста: нет.',
                                  'checks': {'domain': None, 'transformations': None,
                                             'completeness': {'is_complete': True, 'reason': 'Демонстрация'}},
                                  'student_answer': {'text': '(0; +∞)', 'is_correct': True},
@@ -79,9 +84,11 @@ class MockProvider:
                     'grading': {'score': 2, 'criterion': 'Демонстрационный результат',
                                 'explanation': 'Это тест интерфейса, а не оценка загруженной работы.'}}
         raw = json.dumps(response, ensure_ascii=False)
-        sequence = [('read_file', {'path': p}) for p in READ_ORDER[:5]]
-        sequence += [('write_file', {'path': 'Notes.md', 'content': 'Описание: тест интерфейса. Ошибки: нет. Точки роста: нет.'})]
-        sequence += [('read_file', {'path': p}) for p in READ_ORDER[5:]]
+        sequence = [('read_file', {'path': p}) for p in READ_ORDER[:2]]
+        sequence += [('write_file', {'path': 'ocr_result.md', 'content': response['ocr']})]
+        sequence += [('read_file', {'path': p}) for p in READ_ORDER[2:6]]
+        sequence += [('write_file', {'path': 'notes.md', 'content': 'Описание: тест интерфейса. Ошибки: нет. Точки роста: нет.'})]
+        sequence += [('read_file', {'path': p}) for p in READ_ORDER[6:]]
         sequence += [('write_file', {'path': 'response.json', 'content': raw}),
                      ('validate_response', {'path': 'response.json'})]
         if count >= len(sequence):

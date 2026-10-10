@@ -21,7 +21,7 @@ Each image may be up to 8 MiB. A complete request may contain all five images. P
 
 ## How the new workflow works
 
-A separate model session transcribes the task image into request-local `Statement.md` and `Solution.md`. It does not solve the problem. One subsequent conversation reads the approved instructions, analyzes the student's images, saves unscored `Notes.md`, reads grading instructions and criteria, and writes and validates `response.json`. The server enforces tool permissions and order and returns the exact validated text.
+A separate model session transcribes the task image into request-local `Statement.md` and `Solution.md`. It does not solve the problem. One subsequent conversation saves immutable `ocr_result.md` before receiving the reference solution, reads the shared analysis instructions and task criteria, and saves an unscored step-by-step review in `notes.md`. Reading grading instructions freezes that review; the conversation then writes and validates `response.json`. The server enforces tool permissions and order and returns the exact validated text.
 
 The result contains `task`, `solution_image_ids`, `is_graded`, `rejection_reason`, `ocr`, `analysis` and `grading`. A declined submission has no score: its three result fields are `null`. Technical failures are errors, never zero grades. Structural validation does not establish mathematical correctness.
 

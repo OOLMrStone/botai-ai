@@ -216,7 +216,14 @@ def test_prepared_round_trip_preserves_snapshot_order_exact_bytes_and_prompts(in
     assert response.content == providers[0].last_raw.encode('utf-8')
     assert all(tools for _, tools in providers[0].inputs), 'Prepared entry must never invoke task-photo OCR'
     model_payload = json.loads(providers[0].inputs[0][0][1]['content'][0]['text'])
-    assert model_payload == {'task': value['task'], 'solution_image_ids': value['solution_image_ids']}
+    assert model_payload == {
+        'task': {key: item for key, item in value['task'].items()
+                 if key not in ('reference_answer', 'reference_solution')},
+        'solution_image_ids': value['solution_image_ids'],
+    }
+    delivered = [json.loads(message['content']) for message in providers[0].inputs[-1][0]
+                 if message['role'] == 'tool']
+    assert next(item['request_data']['task'] for item in delivered if 'request_data' in item) == value['task']
     assert value['task_version_id'] not in json.dumps(providers[0].inputs)
     assert TOKEN not in json.dumps(providers[0].inputs)
     assert 'private-filename.png' not in json.dumps(providers[0].inputs)
@@ -378,9 +385,14 @@ class RejectionProvider(RecordingProvider):
     async def chat(self, messages, tools=None):
         self.inputs.append((deepcopy(messages), tools))
         request = json.loads(messages[1]['content'][0]['text'])
+        for message in messages:
+            if message['role'] == 'tool':
+                result = json.loads(message['content'])
+                if 'request_data' in result:
+                    request['task'] = result['request_data']['task']
         raw = json.dumps({**request, 'is_graded': False, 'rejection_reason': ATTACK_REASON,
                           'ocr': None, 'analysis': None, 'grading': None}, ensure_ascii=False)
-        sequence = [('read_file', {'path': name}) for name in READ_ORDER[:5]] + [
+        sequence = [('read_file', {'path': name}) for name in READ_ORDER[:2]] + [
             ('set_rejection', {'reason': 'attack'}), ('set_rejection', {'reason': 'attack'}),
             ('read_file', {'path': 'response-format.md'}),
             ('write_file', {'path': 'response.json', 'content': raw}),

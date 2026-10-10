@@ -8,7 +8,7 @@ missing runtime files fail rather than silently mixing two versions.
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-COMMON_NAMES = ('main.md', 'grading.md', 'response-format.md')
+COMMON_NAMES = ('main.md', 'analysis.md', 'grading.md', 'response-format.md')
 PROMPT_NAMES = ('main.md', 'ocr.md', 'analysis.md', 'popular_mistakes.md',
                 'grading.md', 'criteria.md', 'response-format.md')
 SUPPORTED_TASKS = frozenset({16})

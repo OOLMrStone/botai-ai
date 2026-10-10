@@ -21,6 +21,9 @@ def test_loads_checkout_and_runtime_layout(tmp_path, task_relative):
     assert load_package(root=tmp_path) == {name: 'approved:' + name for name in PROMPT_NAMES}
     common = 'prompts/common' if task_relative == 'prompts/16' else 'tasks/common/prompts'
     assert package_paths(root=tmp_path)['main.md'] == tmp_path / common / 'main.md'
+    assert package_paths(root=tmp_path)['analysis.md'] == tmp_path / common / 'analysis.md'
+    (tmp_path / task_relative / 'analysis.md').write_text('stale task-specific analysis')
+    assert load_package(root=tmp_path)['analysis.md'] == 'approved:analysis.md'
 
 
 def test_runtime_package_wins_without_mixing_checkout_files(tmp_path):

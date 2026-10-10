@@ -74,7 +74,9 @@ class GradingService:
 
     async def _run_session(self, provider, task, image_ids, images, report_sink):
         session = Session(task, image_ids, self.package)
-        payload = json.dumps({'task': task, 'solution_image_ids': image_ids}, ensure_ascii=False)
+        initial_task = {key: value for key, value in task.items()
+                        if key not in ('reference_answer', 'reference_solution')}
+        payload = json.dumps({'task': initial_task, 'solution_image_ids': image_ids}, ensure_ascii=False)
         messages = [
             {'role': 'system', 'content': self.package['main.md'] + '\n\n' + ADAPTER},
             {'role': 'user', 'content': [{'type': 'text', 'text': payload}] + [im.part() for im in images]},

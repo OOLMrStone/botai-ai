@@ -17,7 +17,7 @@ def source_tree(tmp_path):
     files = {
         'app/main.py': '# app', 'app/__pycache__/main.pyc': 'private',
         'tasks/common/prompts/main.md': 'shared', 'prompts/legacy/stage.md': 'legacy',
-        'tasks/16/prompts/analysis.md': 'analysis',
+        'tasks/common/prompts/analysis.md': 'analysis',
         'tasks/16/prompts/README.md': 'documentation',
         'tasks/16/evals/student.jpg': 'private', '.env': 'private',
         'requirements.txt': 'fastapi', 'deploy/Dockerfile.runtime': 'FROM python:3.14-slim',
@@ -38,7 +38,7 @@ def test_runtime_export_allowlist_and_hashes(tmp_path):
     hashes = builder.export_runtime(output, source)
     assert set(hashes) == {
         'app/main.py', 'prompts/common/main.md', 'prompts/legacy/stage.md',
-        'prompts/16/analysis.md', 'requirements.txt', 'Dockerfile',
+        'prompts/common/analysis.md', 'requirements.txt', 'Dockerfile',
         'deploy/docker-compose.prod.yml',
     }
     assert all((output / 'prompts' / str(n)).is_dir() for n in range(14, 21))

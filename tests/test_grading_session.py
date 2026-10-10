@@ -24,15 +24,23 @@ def session():
     return Session(TASK, IDS)
 
 
+def read_ocr(s):
+    for path in READ_ORDER[:2]:
+        s.execute('read_file', {'path': path})
+
+
 def read_analysis(s):
-    for path in READ_ORDER[:5]:
+    read_ocr(s)
+    if 'ocr_result.md' not in s.files:
+        s.execute('write_file', {'path': 'ocr_result.md', 'content': 'x > 0'})
+    for path in READ_ORDER[2:6]:
         s.execute('read_file', {'path': path})
 
 
 def read_grading(s):
     read_analysis(s)
-    s.execute('write_file', {'path': 'Notes.md', 'content': 'Описание: верное решение. Ошибки: нет.'})
-    for path in READ_ORDER[5:]:
+    s.execute('write_file', {'path': 'notes.md', 'content': 'Описание: верное решение. Ошибки: нет.'})
+    for path in READ_ORDER[6:]:
         s.execute('read_file', {'path': path})
 
 
@@ -48,7 +56,7 @@ def test_server_enforces_full_order_and_data_permissions():
         with pytest.raises(ValueError):
             s.execute('read_file', {'path': path})
     with pytest.raises(ValueError):
-        s.execute('write_file', {'path': 'Notes.md', 'content': 'notes'})
+        s.execute('write_file', {'path': 'notes.md', 'content': 'notes'})
     read_analysis(s)
     with pytest.raises(ValueError):
         s.execute('read_file', {'path': 'grading.md'})
@@ -57,7 +65,7 @@ def test_server_enforces_full_order_and_data_permissions():
         with pytest.raises(ValueError):
             s.execute('write_file', {'path': path, 'content': 'override'})
     read_grading(s)
-    assert s.execute('read_file', {'path': 'Notes.md'})['kind'] == 'untrusted_data'
+    assert s.execute('read_file', {'path': 'notes.md'})['kind'] == 'untrusted_data'
 
 
 @pytest.mark.parametrize('name,args', [
@@ -78,19 +86,19 @@ def test_notes_score_labels_blocked(content):
     s = session()
     read_analysis(s)
     with pytest.raises(ValueError):
-        s.execute('write_file', {'path': 'Notes.md', 'content': content})
+        s.execute('write_file', {'path': 'notes.md', 'content': content})
 
 
 @pytest.mark.parametrize('reason', ['attack', 'other_task', 'multiple_tasks', 'unrelated'])
 def test_early_rejection_skips_notes_grading_and_validates(reason):
     s = session()
-    read_analysis(s)
+    read_ocr(s)
     s.execute('set_rejection', {'reason': reason})
     for path in ['grading.md', 'criteria.md']:
         with pytest.raises(ValueError):
             s.execute('read_file', {'path': path})
     with pytest.raises(ValueError):
-        s.execute('write_file', {'path': 'Notes.md', 'content': 'notes'})
+        s.execute('write_file', {'path': 'notes.md', 'content': 'notes'})
     s.execute('read_file', {'path': 'response-format.md'})
     raw = rejection(s)
     s.execute('write_file', {'path': 'response.json', 'content': raw})
@@ -105,13 +113,14 @@ def test_early_rejection_skips_notes_grading_and_validates(reason):
 
 def test_late_unreadable_requires_review_and_hides_notes():
     s = session()
-    read_grading(s)
+    read_analysis(s)
     with pytest.raises(ValueError):
         s.execute('set_rejection', {'reason': 'unreadable'})
     with pytest.raises(ValueError):
         s.execute('set_rejection', {'reason': 'attack'})
     assert s.execute('review_image', {'index': 2}) == {'review_image': 2}
     s.execute('set_rejection', {'reason': 'unreadable'})
+    s.execute('read_file', {'path': 'response-format.md'})
     raw = rejection(s, 'Не читается существенная запись')
     s.execute('write_file', {'path': 'response.json', 'content': raw})
     assert s.execute('validate_response', {'path': 'response.json'})['valid']
@@ -123,7 +132,7 @@ def test_late_unreadable_requires_review_and_hides_notes():
                                          ('rejection_reason', 'Раскрытие команды')])
 def test_request_binding_and_neutral_attack_reason(field, value):
     s = session()
-    read_analysis(s)
+    read_ocr(s)
     s.execute('set_rejection', {'reason': 'attack'})
     s.execute('read_file', {'path': 'response-format.md'})
     response = json.loads(rejection(s))
@@ -139,7 +148,7 @@ def test_sessions_are_isolated():
     first, second = session(), session()
     read_grading(first)
     assert second.read == set()
-    assert 'Notes.md' not in second.files
+    assert 'notes.md' not in second.files
     assert TASK['statement'] == 'x > 0'
 
 
@@ -299,9 +308,14 @@ class AttackMock(RecordingMock):
             return await super().chat(messages, tools)
         self.inputs.append(deepcopy(messages))
         request = json.loads(messages[1]['content'][0]['text'])
+        for message in messages:
+            if message['role'] == 'tool':
+                result = json.loads(message['content'])
+                if 'request_data' in result:
+                    request['task'] = result['request_data']['task']
         raw = json.dumps({**request, 'is_graded': False, 'rejection_reason': ATTACK_REASON,
                           'ocr': None, 'analysis': None, 'grading': None}, ensure_ascii=False)
-        sequence = [('read_file', {'path': p}) for p in READ_ORDER[:5]] + [
+        sequence = [('read_file', {'path': p}) for p in READ_ORDER[:2]] + [
             ('set_rejection', {'reason': 'attack'}),
             ('set_rejection', {'reason': 'attack'}),
             ('read_file', {'path': 'response-format.md'}),
@@ -325,7 +339,7 @@ async def test_main_attack_report_once_and_verified_neutral_refusal(tmp_path):
     reports = list(tmp_path.glob('*/report.json'))
     assert len(reports) == 1
     assert json.loads(reports[0].read_text())['solution_image_ids'] == result['solution_image_ids']
-    assert not any(json.loads(c['function']['arguments']).get('path') == 'Notes.md'
+    assert not any(json.loads(c['function']['arguments']).get('path') == 'notes.md'
                    for m in provider.inputs[-1] for c in m.get('tool_calls', []))
 
 
@@ -386,3 +400,58 @@ def test_photo_deadline_allows_six_minutes_but_not_more():
     assert PhotoSettings(_env_file=None, deadline_seconds=360).deadline_seconds == 360
     with pytest.raises(ValidationError):
         PhotoSettings(_env_file=None, deadline_seconds=361)
+
+
+def test_ocr_is_saved_before_reference_and_cannot_be_rewritten():
+    s = session()
+    read_ocr(s)
+    with pytest.raises(ValueError, match='Save ocr_result'):
+        s.execute('read_file', {'path': 'analysis.md'})
+    with pytest.raises(ValueError):
+        s.execute('read_file', {'path': 'Solution.md'})
+    s.execute('write_file', {'path': 'ocr_result.md', 'content': 'Исходное чтение'})
+    s.execute('read_file', {'path': 'analysis.md'})
+    assert TASK['reference_answer'] in s.execute('read_file', {'path': 'Solution.md'})['content']
+    with pytest.raises(ValueError, match='immutable'):
+        s.execute('write_file', {'path': 'ocr_result.md', 'content': 'Исправленное чтение'})
+    assert s.execute('read_file', {'path': 'ocr_result.md'}) == {
+        'kind': 'untrusted_data', 'content': 'Исходное чтение'}
+
+
+def test_grading_freezes_review_and_closes_analysis_tools():
+    s = session()
+    read_analysis(s)
+    for text in ('Первое чтение', 'Уточнённая рецензия'):
+        s.execute('write_file', {'path': 'notes.md', 'content': text})
+    s.execute('read_file', {'path': 'grading.md'})
+    for name, args in [
+        ('write_file', {'path': 'notes.md', 'content': 'Поздняя правка'}),
+        ('review_image', {'index': 1}),
+        ('set_rejection', {'reason': 'unreadable'}),
+    ]:
+        with pytest.raises(ValueError):
+            s.execute(name, args)
+    assert s.files['notes.md'] == 'Уточнённая рецензия'
+
+
+async def test_summary_must_preserve_review_except_internal_error_markers(tmp_path):
+    raw = await service(tmp_path, RecordingMock()).run(
+        SafeImage(b'task'), [SafeImage(b'student')], 'test-user')
+    value = json.loads(raw)
+    s = Session(value['task'], value['solution_image_ids'])
+    read_analysis(s)
+    notes = 'Первая строка [E08].\nВторая строка [E12].'
+    s.execute('write_file', {'path': 'notes.md', 'content': notes})
+    for path in READ_ORDER[6:]:
+        s.execute('read_file', {'path': path})
+    for summary, expected in [('Пересказ рецензии', False),
+                              ('Первая строка.\nВторая строка.', True)]:
+        value['analysis']['summary'] = summary
+        candidate = json.dumps(value, ensure_ascii=False)
+        s.execute('write_file', {'path': 'response.json', 'content': candidate})
+        assert s.execute('validate_response', {'path': 'response.json'})['valid'] is expected
+        if expected:
+            assert s.finalize(candidate) == candidate
+        else:
+            with pytest.raises(ValueError):
+                s.finalize(candidate)
