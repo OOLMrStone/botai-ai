@@ -33,7 +33,10 @@ jobs:
         run: python scripts/build_local.py
       - name: Verify native startup and browser assets without model calls
         run: python scripts/smoke_local_build.py
+      - name: Verify dummy credential in temporary native copy
+        run: python scripts/smoke_local_embedded.py
       - name: Upload native portable ZIP
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: BotAI-Local-${{ runner.os }}-${{ runner.arch }}

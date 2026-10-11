@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+from textwrap import dedent
 
 from fastapi.testclient import TestClient
 from PIL import Image
@@ -134,7 +135,46 @@ def test_mock_roundtrip_external_workspace_from_another_cwd(workspace, tmp_path,
         assert log.status_code == 200 and 'attachment' in log.headers['Content-Disposition']
         assert SECRET not in log.text and 'base64,' not in log.text
         assert not (other / 'data').exists()
-    assert (workspace / 'data' / 'local-reports' / '.identity-secret').is_file()
+    assert not (workspace / 'data' / 'local-reports' / '.identity-secret').exists()
+
+
+def test_local_lifecycle_uses_memory_signer_and_replaces_cookie_after_restart(workspace, monkeypatch):
+    def disk_signer_forbidden(_):
+        pytest.fail('The portable app must not use the POSIX-only persistent signer')
+
+    monkeypatch.setattr('app.grading.reports.ReportStore.identity_secret', disk_signer_forbidden)
+    first_app = create_local_app(workspace, LocalConfig(), mock=True)
+    with TestClient(first_app, base_url='http://127.0.0.1') as client:
+        assert client.get('/api/v1/photo-check/config').status_code == 200
+        first_cookie = client.cookies['botai_test_user']
+        first_signer = first_app.state.photo_identity_secret
+        assert type(first_signer) is bytes and len(first_signer) == 32
+        client.get('/api/v1/photo-check/config')
+        assert client.cookies['botai_test_user'] == first_cookie
+    second_app = create_local_app(workspace, LocalConfig(), mock=True)
+    with TestClient(second_app, base_url='http://127.0.0.1') as client:
+        assert second_app.state.photo_identity_secret != first_signer
+        response = client.get('/api/v1/photo-check/config', headers={'Cookie': 'botai_test_user=' + first_cookie})
+        assert response.status_code == 200
+        assert client.cookies['botai_test_user'] != first_cookie
+        assert client.cookies['botai_test_user'].split('.')[0] != first_cookie.split('.')[0]
+    assert not (workspace / 'data' / 'local-reports' / '.identity-secret').exists()
+
+
+def test_default_server_factory_keeps_persistent_cookie_signer(workspace):
+    from app.application import create_app
+
+    settings = make_settings(workspace, LocalConfig(), mock=True)
+    with TestClient(create_app(settings), base_url='http://127.0.0.1') as client:
+        client.get('/api/v1/photo-check/config')
+        original_cookie = client.cookies['botai_test_user']
+        signer = client.app.state.photo_identity_secret
+    assert (workspace / 'data' / 'local-reports' / '.identity-secret').read_bytes() == signer
+    with TestClient(create_app(settings), base_url='http://127.0.0.1') as client:
+        response = client.get('/api/v1/photo-check/config', headers={'Cookie': 'botai_test_user=' + original_cookie})
+        assert response.status_code == 200
+        assert client.app.state.photo_identity_secret == signer
+        assert client.cookies['botai_test_user'] == original_cookie
 
 
 def test_validation_failure_logs_http_status_and_request_id(workspace):
@@ -261,5 +301,37 @@ def test_fresh_process_never_initializes_server_environment(workspace, tmp_path)
               'import sys; app = create_local_app(Path(sys.argv[1]), LocalConfig(), mock=True); '
               'assert app.state.settings.llm.provider == "mock"')
     result = subprocess.run([sys.executable, '-c', script, str(workspace)], cwd=other,
+                            env=environment, capture_output=True, text=True, timeout=20)
+    assert result.returncode == 0, result.stderr
+
+
+def test_local_app_imports_and_starts_without_posix_fcntl(workspace):
+    environment = dict(os.environ)
+    environment['PYTHONPATH'] = str(ROOT)
+    script = dedent('''
+        import importlib.abc
+        import sys
+        from pathlib import Path
+
+        class NoFcntl(importlib.abc.MetaPathFinder):
+            def find_spec(self, fullname, path=None, target=None):
+                if fullname == 'fcntl':
+                    raise ModuleNotFoundError('fcntl is not available on Windows')
+
+        sys.modules.pop('fcntl', None)
+        sys.meta_path.insert(0, NoFcntl())
+        from fastapi.testclient import TestClient
+        from app.local.launcher import LocalConfig, create_local_app
+        workspace = Path(sys.argv[1])
+        app = create_local_app(workspace, LocalConfig(), mock=True)
+        with TestClient(app, base_url='http://127.0.0.1') as client:
+            assert client.get('/ui/?local=1').status_code == 200
+            assert client.get('/api/v1/photo-check/config').status_code == 200
+            assert client.cookies['botai_test_user']
+            assert len(app.state.photo_identity_secret) == 32
+        assert 'fcntl' not in sys.modules
+        assert not (workspace / 'data' / 'local-reports' / '.identity-secret').exists()
+    ''')
+    result = subprocess.run([sys.executable, '-c', script, str(workspace)], cwd=workspace,
                             env=environment, capture_output=True, text=True, timeout=20)
     assert result.returncode == 0, result.stderr

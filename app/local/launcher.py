@@ -159,7 +159,7 @@ def create_local_app(workspace: Path, config: LocalConfig, *, mock: bool = False
     paths = package_paths(root=workspace)
     load_error_codes(paths['popular_mistakes.md'])
     settings = make_settings(workspace, config, mock)
-    app = create_app(settings)
+    app = create_app(settings, ephemeral_identity=True)
     events = EventStore(config.api_key.get_secret_value())
     app.state.local_events = events
 

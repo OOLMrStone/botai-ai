@@ -1,6 +1,5 @@
 """Private local test identifiers and 30-day retention, independent of legacy reports."""
 import json
-import fcntl
 import secrets
 import os
 from pathlib import Path
@@ -19,6 +18,10 @@ class ReportStore:
 
     def identity_secret(self) -> bytes:
         """Persist the anonymous test-cookie signer across container restarts."""
+        # The Linux server persists its cookie signer using a POSIX file lock.
+        # The portable app instead keeps an ephemeral signer in memory.
+        import fcntl
+
         self.root.mkdir(parents=True, exist_ok=True, mode=0o700)
         path = self.root / '.identity-secret'
         descriptor = os.open(path, os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)

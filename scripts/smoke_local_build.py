@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import deque
 import json
 import os
 from pathlib import Path
@@ -11,6 +12,7 @@ import socket
 import struct
 import subprocess
 import sys
+import threading
 import time
 from urllib.error import URLError
 from urllib.request import ProxyHandler, Request, build_opener
@@ -77,9 +79,25 @@ def smoke_test(executable: Path) -> dict:
         probe.bind(("127.0.0.1", 0))
         port = probe.getsockname()[1]
     command = [str(executable), "--mock", "--no-browser", "--port", str(port)]
-    process = subprocess.Popen(command, cwd=executable.parent, stdout=subprocess.DEVNULL,
-                               stderr=subprocess.DEVNULL,
+    process = subprocess.Popen(command, cwd=executable.parent, stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT,
                                start_new_session=os.name != "nt")
+    # Keep the tail of native startup diagnostics in memory only. Reading chunks
+    # avoids an unbounded line allocation if a bootloader emits a very long line.
+    chunks = deque(maxlen=24)
+    output_lock = threading.Lock()
+
+    def capture_output():
+        try:
+            while chunk := process.stdout.read1(4096):
+                with output_lock:
+                    chunks.append(chunk)
+        except (OSError, ValueError):
+            pass
+
+    reader = threading.Thread(target=capture_output, daemon=True)
+    reader.start()
+    failure = None
     base = f"http://127.0.0.1:{port}"
     try:
         deadline = time.monotonic() + 45
@@ -106,6 +124,8 @@ def smoke_test(executable: Path) -> dict:
                 if response.status != 200 or not response.read():
                     raise RuntimeError(f"Missing native browser resource: {suffix}")
         check_mock_grading(opener, base)
+    except Exception as error:
+        failure = error
     finally:
         if process.poll() is None:
             if os.name == "nt":
@@ -122,10 +142,23 @@ def smoke_test(executable: Path) -> dict:
             except subprocess.TimeoutExpired:
                 process.kill()
                 process.wait(timeout=5)
+        reader.join(timeout=2)
+        if not reader.is_alive():
+            process.stdout.close()
+    if failure is not None:
+        with output_lock:
+            diagnostics = b''.join(chunks).decode('utf-8', errors='replace').strip()[-6000:]
+        message = str(failure)
+        if diagnostics:
+            message += '\nNative process diagnostics:\n' + diagnostics
+        raise RuntimeError(message) from failure
     return status
 
 
 def main() -> int:
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, 'reconfigure'):
+            stream.reconfigure(encoding='utf-8', errors='backslashreplace')
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("executable", nargs="?", type=Path)
     args = parser.parse_args()
@@ -139,7 +172,13 @@ def main() -> int:
     try:
         smoke_test(executable)
     except (OSError, RuntimeError, ValueError) as exc:
-        print(f"Native smoke test failed: {exc}", file=sys.stderr)
+        message = f"Native smoke test failed: {exc}"
+        print(message, file=sys.stderr)
+        if os.environ.get('GITHUB_ACTIONS') == 'true':
+            # Escape workflow-command data so a multiline traceback is exposed
+            # as one check-run annotation, accessible without downloading logs.
+            escaped = message.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+            print(f'::error::{escaped}', flush=True)
         return 1
     print("Native mock startup, browser assets, complete grading, and validated event trace passed.")
     return 0

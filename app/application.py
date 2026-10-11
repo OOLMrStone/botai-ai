@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import secrets
 import time
 from collections.abc import Awaitable, Callable
 from contextlib import asynccontextmanager
@@ -76,8 +77,9 @@ async def lifespan(_app: FastAPI):
                 logger.error("Suspicious submission retention cleanup failed")
             await asyncio.sleep(3600)
 
-    _app.state.photo_identity_secret = await asyncio.to_thread(
-        ReportStore(settings.photo.reports_dir).identity_secret)
+    _app.state.photo_identity_secret = (secrets.token_bytes(32) if _app.state.ephemeral_identity else
+                                      await asyncio.to_thread(
+                                          ReportStore(settings.photo.reports_dir).identity_secret))
     cleanup = asyncio.create_task(cleanup_reports())
     try:
         yield
@@ -92,7 +94,7 @@ async def lifespan(_app: FastAPI):
         logger.info("service stopped")
 
 
-def create_app(settings: Settings | None = None) -> FastAPI:
+def create_app(settings: Settings | None = None, *, ephemeral_identity: bool = False) -> FastAPI:
     settings = settings or get_settings()
     settings.internal_grading.check_enabled()
     configure_logging(settings.app.log_level, settings.app.log_format)
@@ -107,6 +109,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         openapi_url=None if settings.app.is_prod else "/openapi.json",
     )
     _app.state.settings = settings
+    _app.state.ephemeral_identity = ephemeral_identity
     _app.state.photo_active = 0
     _app.state.photo_service_factory = GradingService
     _app.add_middleware(routes_grading.UploadLimitMiddleware)
