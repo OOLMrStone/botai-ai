@@ -5,6 +5,8 @@
 | Путь | Назначение |
 | --- | --- |
 | `app/main.py`, `app/api/` | FastAPI, маршруты, middleware и ошибки |
+| `app/application.py` | Общая фабрика FastAPI без чтения окружения при импорте |
+| `app/local/`, `scripts/run_local.py` | Локальный запуск, прямое API и журнал; [инструкция](LOCAL_APP.md) |
 | `app/grading/` | Фото-проверка: service, session, provider, images, reports, validator |
 | `app/legacy_grading/` | Сохранённые старые текстовый и двухоценочный конвейеры |
 | `app/llm/`, `app/core/`, `app/config.py` | Общие модели доступа к LLM, ошибки, журналирование и настройки |

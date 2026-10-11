@@ -4,6 +4,14 @@ A FastAPI microservice for checking photographed ЕГЭ mathematics solutions. T
 
 Python 3.14 · FastAPI · OpenAI-compatible model · Docker Compose
 
+## Portable local app
+
+The [local app](docs/LOCAL_APP.md) reuses the photo form and current task-16
+pipeline, reads prompts beside the executable, and calls DeepSeek directly
+without Selectel or its gateway. It shows tool activity and a one-second waiting
+indicator. Native Windows/macOS builds require no Python on the tester's machine.
+Start from source without charges: `.venv/bin/python scripts/run_local.py --mock`.
+
 ## Run locally without model charges
 
 ```bash
@@ -17,7 +25,7 @@ Open [the test form](http://localhost:8000/ui/). Mock mode returns a clearly lab
 2. Attach one to four images of the student's work, in order.
 3. Submit and inspect the recognized text, analysis and single score, or the reason grading was declined.
 
-Each image may be up to 8 MiB. A complete request may contain all five images. Preparation and grading share a 480-second deadline; retries are manual. A readable statement and correct answer are required. A missing complete reference solution is allowed and shown in the form.
+Each image may be up to 8 MiB. A complete request may contain all five images. Preparation and grading share a 360-second deadline; retries are manual. A readable statement and correct answer are required. A missing complete reference solution is allowed and shown in the form.
 
 ## How the new workflow works
 

@@ -1,0 +1,3 @@
+# Install in the same native Python 3.14 environment used for the build.
+-r requirements.txt
+PyInstaller>=6.22.3,<7

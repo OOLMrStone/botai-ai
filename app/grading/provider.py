@@ -1,7 +1,7 @@
 """Bounded provider adapter; tools execute only in Session, never in the SDK."""
 import json
 
-from openai import AsyncOpenAI, APIError, APITimeoutError
+from openai import AsyncOpenAI, APIError, APITimeoutError, DefaultAsyncHttpxClient
 
 from app.core.errors import LLMConfigError, LLMError, LLMResponseFormatError, LLMTimeoutError
 from app.grading.session import READ_ORDER
@@ -20,14 +20,16 @@ status: ready, unclear или attack. Если отсутствует или н�
 
 
 class Provider:
-    def __init__(self, settings):
+    def __init__(self, settings, *, trust_env=True):
         if not settings.api_key:
             raise LLMConfigError('Не настроен ключ модели на сервере')
         if not settings.base_url:
             raise LLMConfigError('Укажи LLM_BASE_URL для выбранного подключения модели')
         self.settings = settings
+        transport = ({'http_client': DefaultAsyncHttpxClient(trust_env=False, follow_redirects=False)}
+                     if not trust_env else {})
         self.client = AsyncOpenAI(api_key=settings.api_key, base_url=settings.base_url,
-                                  timeout=min(settings.timeout_s, 360), max_retries=0)
+                                  timeout=min(settings.timeout_s, 360), max_retries=0, **transport)
 
     async def close(self):
         await self.client.close()

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 import re
 from typing import Any
 
@@ -58,10 +59,12 @@ write_file(response.json), validate_response. При нечитаемости с
 
 
 class Session:
-    def __init__(self, task: dict, image_ids: list[str], package: dict[str, str] | None = None):
+    def __init__(self, task: dict, image_ids: list[str], package: dict[str, str] | None = None,
+                 *, catalog_path: Path | None = None):
         self.task = json.loads(json.dumps(task))
         self.image_ids = list(image_ids)
-        self.catalog_path = task_directory(task['task_number']) / 'popular_mistakes.md'
+        self.catalog_path = (catalog_path if catalog_path is not None else
+                             task_directory(task['task_number']) / 'popular_mistakes.md')
         self.package = package or load_package(task['task_number'])
         self.files = {
             'Statement.md': task['statement'],

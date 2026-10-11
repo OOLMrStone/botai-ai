@@ -1,0 +1,149 @@
+#!/usr/bin/env python3
+"""Start a native portable build in mock mode and check its browser surface."""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+from pathlib import Path
+import signal
+import socket
+import struct
+import subprocess
+import sys
+import time
+from urllib.error import URLError
+from urllib.request import ProxyHandler, Request, build_opener
+import zlib
+
+
+def synthetic_png() -> bytes:
+    """Create a tiny RGB upload entirely in memory, with no student data."""
+    def chunk(kind: bytes, data: bytes) -> bytes:
+        return (struct.pack('!I', len(data)) + kind + data
+                + struct.pack('!I', zlib.crc32(kind + data)))
+    pixels = (b'\x00' + b'\xff\xff\xff' * 16) * 16
+    return (b'\x89PNG\r\n\x1a\n'
+            + chunk(b'IHDR', struct.pack('!2I5B', 16, 16, 8, 2, 0, 0, 0))
+            + chunk(b'IDAT', zlib.compress(pixels)) + chunk(b'IEND', b''))
+
+
+def check_mock_grading(opener, base: str) -> None:
+    boundary = 'botai-local-native-smoke-boundary'
+    image = synthetic_png()
+    body = b''.join(
+        (f'--{boundary}\r\n'
+         f'Content-Disposition: form-data; name="{field}"; filename="synthetic.png"\r\n'
+         'Content-Type: image/png\r\n\r\n').encode('ascii') + image + b'\r\n'
+        for field in ('task_image', 'solution_images')
+    ) + f'--{boundary}--\r\n'.encode('ascii')
+    request = Request(base + '/api/v1/photo-check', data=body, headers={
+        'Content-Type': f'multipart/form-data; boundary={boundary}', 'Origin': base,
+    }, method='POST')
+    with opener.open(request, timeout=20) as response:
+        raw = response.read().decode('utf-8')
+        result = json.loads(raw)
+        request_id = response.headers.get('X-Request-ID')
+    if (not request_id or result.get('is_graded') is not True
+            or result.get('grading', {}).get('score') != 2
+            or result.get('task', {}).get('task_number') != 16
+            or len(result.get('solution_image_ids', [])) != 1):
+        raise RuntimeError('Native mock grading did not return its expected validated result')
+    with opener.open(base + '/local/events', timeout=5) as response:
+        events = [event for event in json.load(response)['events']
+                  if event.get('request_id') == request_id]
+    writes = {
+        event['details']['path']: event['details'].get('content')
+        for event in events if event.get('kind') == 'tool_result'
+        and event.get('details', {}).get('tool') == 'write_file'
+        and event['details'].get('ok') is True
+    }
+    if not {'ocr_result.md', 'notes.md', 'response.json'} <= writes.keys():
+        raise RuntimeError('Native mock diagnostics missed OCR, review, or response writes')
+    if writes['response.json'] != raw:
+        raise RuntimeError('Native mock response differs from the validated saved JSON')
+    if not any(event.get('kind') == 'validation' and event.get('details', {}).get('valid') is True
+               for event in events):
+        raise RuntimeError('Native mock diagnostics missed successful validation')
+    if not any(event.get('kind') == 'final' and event.get('details', {}).get('validated') is True
+               for event in events):
+        raise RuntimeError('Native mock diagnostics missed the validated final result')
+
+
+def smoke_test(executable: Path) -> dict:
+    executable = executable.resolve(strict=True)
+    opener = build_opener(ProxyHandler({}))
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
+        probe.bind(("127.0.0.1", 0))
+        port = probe.getsockname()[1]
+    command = [str(executable), "--mock", "--no-browser", "--port", str(port)]
+    process = subprocess.Popen(command, cwd=executable.parent, stdout=subprocess.DEVNULL,
+                               stderr=subprocess.DEVNULL,
+                               start_new_session=os.name != "nt")
+    base = f"http://127.0.0.1:{port}"
+    try:
+        deadline = time.monotonic() + 45
+        while True:
+            if process.poll() is not None:
+                raise RuntimeError(f"Native application exited with code {process.returncode}")
+            try:
+                with opener.open(base + "/local/status", timeout=1) as response:
+                    status = json.load(response)
+                break
+            except (URLError, TimeoutError):
+                if time.monotonic() >= deadline:
+                    raise RuntimeError("Native application did not start within 45 seconds") from None
+                time.sleep(0.2)
+        if status.get("mode") != "mock" or status.get("endpoint") != "https://api.deepseek.com/v1":
+            raise RuntimeError("Native application reported an unexpected provider configuration")
+        if set(status.get("prompt_files", {})) != {
+            "main.md", "analysis.md", "grading.md", "response-format.md", "ocr.md",
+            "criteria.md", "popular_mistakes.md",
+        }:
+            raise RuntimeError("Native application did not load the seven approved prompt files")
+        for suffix in ("/ui/?local=1", "/ui/local.js", "/ui/local.css", "/local/events"):
+            with opener.open(base + suffix, timeout=5) as response:
+                if response.status != 200 or not response.read():
+                    raise RuntimeError(f"Missing native browser resource: {suffix}")
+        check_mock_grading(opener, base)
+    finally:
+        if process.poll() is None:
+            if os.name == "nt":
+                # Terminate the onefile bootloader and its child Python process.
+                subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"],
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
+            else:
+                try:
+                    os.killpg(process.pid, signal.SIGTERM)
+                except ProcessLookupError:
+                    pass
+            try:
+                process.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait(timeout=5)
+    return status
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("executable", nargs="?", type=Path)
+    args = parser.parse_args()
+    executable = args.executable
+    if executable is None:
+        name = "BotAI-Local.exe" if os.name == "nt" else "BotAI-Local"
+        candidates = list((Path(__file__).resolve().parents[1] / "dist").glob(f"*/{name}"))
+        if len(candidates) != 1:
+            parser.error("Specify one executable; dist does not contain exactly one native build")
+        executable = candidates[0]
+    try:
+        smoke_test(executable)
+    except (OSError, RuntimeError, ValueError) as exc:
+        print(f"Native smoke test failed: {exc}", file=sys.stderr)
+        return 1
+    print("Native mock startup, browser assets, complete grading, and validated event trace passed.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
