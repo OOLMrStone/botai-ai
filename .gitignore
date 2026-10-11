@@ -8,6 +8,10 @@ __pycache__/
 build/
 dist/
 
+# Portable executables may contain the private provider key.
+/BotAI-Local
+/BotAI-Local.exe
+
 .env
 .env.*
 !.env.example

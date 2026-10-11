@@ -5,10 +5,25 @@ from pathlib import Path
 import shutil
 import sys
 import tempfile
+import time
 
 from build_local import APP_NAME, ROOT
 from embed_local_key import embed, executable_config
 from smoke_local_build import smoke_test
+
+
+def cleanup_with_retry(directory) -> None:
+    """Wait briefly for Windows executable/antivirus handles to be released."""
+    deadline = time.monotonic() + 10
+    while True:
+        try:
+            directory.cleanup()
+            return
+        except PermissionError:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise
+            time.sleep(min(0.2, remaining))
 
 
 def main() -> int:
@@ -22,15 +37,19 @@ def main() -> int:
     source = candidates[0].resolve(strict=True)
     if executable_config(source) != {}:
         parser.error('Refusing to copy an executable that already contains credentials')
-    with tempfile.TemporaryDirectory(prefix='botai-dummy-embedded-smoke-') as temporary:
-        destination = Path(temporary)
+    temporary = tempfile.TemporaryDirectory(prefix='botai-dummy-embedded-smoke-')
+    try:
+        destination = Path(temporary.name)
         executable = destination / source.name
         shutil.copy2(source, executable)
         shutil.copytree(source.parent / 'prompts', destination / 'prompts')
         embed(executable, 'sk-ci-mock-only')
         if smoke_test(executable)['key_configured'] is not True:
             raise RuntimeError('Native application did not detect its dummy embedded credential')
-    print('Dummy embedded credential, native startup, grading, and validation passed; source unchanged.')
+        print('Dummy embedded credential, native startup, grading, and validation passed.', flush=True)
+    finally:
+        cleanup_with_retry(temporary)
+    print('Temporary embedded executable removed; source unchanged.')
     return 0
 
 
