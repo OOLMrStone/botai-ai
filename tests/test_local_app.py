@@ -102,7 +102,16 @@ def test_public_config_has_no_key_and_direct_url_normalizes(workspace, monkeypat
     assert not config.api_key.get_secret_value()
 
 
-def test_mock_roundtrip_external_workspace_from_another_cwd(workspace, tmp_path, monkeypatch):
+@pytest.mark.parametrize('layout', ['prompts', 'siblings', 'siblings-nested'])
+def test_mock_roundtrip_external_workspace_from_another_cwd(workspace, tmp_path, monkeypatch, layout):
+    if layout != 'prompts':
+        for group in ('common', '16'):
+            target = workspace / group
+            if layout == 'siblings-nested':
+                target = target / 'prompts'
+            target.parent.mkdir(parents=True, exist_ok=True)
+            (workspace / 'prompts' / group).rename(target)
+        (workspace / 'prompts').rmdir()
     other = tmp_path / 'elsewhere'
     other.mkdir()
     monkeypatch.chdir(other)
@@ -116,6 +125,10 @@ def test_mock_roundtrip_external_workspace_from_another_cwd(workspace, tmp_path,
         assert status.json()['endpoint'] == DIRECT_URL and status.json()['mode'] == 'mock'
         assert SECRET not in status.text
         assert all(Path(path).is_relative_to(workspace) for path in status.json()['prompt_files'].values())
+        expected = workspace / ('prompts/common' if layout == 'prompts' else 'common')
+        if layout == 'siblings-nested':
+            expected = expected / 'prompts'
+        assert Path(status.json()['prompt_files']['main.md']) == expected / 'main.md'
         response = client.post('/api/v1/photo-check', files=uploads(), headers={'X-Request-ID': 'local-run-123'})
         assert response.status_code == 200, response.text
         assert response.json()['grading']['score'] == 2

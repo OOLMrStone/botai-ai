@@ -74,7 +74,7 @@ async def test_failed_observer_does_not_change_result(tmp_path):
     assert json.loads(result)['grading']['score'] == 2
 
 
-@pytest.mark.parametrize('layout', ['tasks', 'prompts'])
+@pytest.mark.parametrize('layout', ['tasks', 'prompts', 'siblings', 'siblings-nested'])
 async def test_external_package_and_validator_use_same_local_root(tmp_path, layout):
     package = load_package()
     package['main.md'] += '\nLOCAL PACKAGE MARKER'
@@ -82,8 +82,13 @@ async def test_external_package_and_validator_use_same_local_root(tmp_path, layo
     for name, content in package.items():
         if layout == 'tasks':
             path = tmp_path / 'tasks' / ('common' if name in COMMON_NAMES else '16') / 'prompts' / name
-        else:
+        elif layout == 'prompts':
             path = tmp_path / 'prompts' / ('common' if name in COMMON_NAMES else '16') / name
+        else:
+            path = tmp_path / ('common' if name in COMMON_NAMES else '16')
+            if layout == 'siblings-nested':
+                path = path / 'prompts'
+            path = path / name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content, encoding='utf-8')
         paths[name] = path

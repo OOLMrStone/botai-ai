@@ -42,20 +42,31 @@ def test_export_is_allowlisted_and_preserves_prompt_bytes(tmp_path, system, exec
     executable.write_bytes(b"fake executable")
     destination = tmp_path / "portable"
     hashes = builder.export_workspace(destination, executable, source=source, system=system)
-    expected = {*builder.PROMPT_FILES, executable_name, "README.txt"}
+    expected_prompts = {
+        "common/main.md", "common/analysis.md", "common/grading.md",
+        "common/response-format.md", "16/ocr.md", "16/criteria.md", "16/popular_mistakes.md",
+    }
+    assert set(builder.PROMPT_FILES) == expected_prompts
+    expected = {*expected_prompts, executable_name, "README.txt"}
     if system == "Darwin":
         expected.add("Start.command")
     assert set(hashes) == expected
     for target, original in builder.PROMPT_FILES.items():
         assert (destination / target).read_bytes() == (source / original).read_bytes()
-    assert all((destination / "prompts" / str(number)).is_dir() for number in range(14, 21))
+    assert (destination / "common").is_dir()
+    assert all((destination / str(number)).is_dir() for number in range(14, 21))
+    assert not (destination / "prompts").exists()
+    assert not (destination / "tasks").exists()
     manifest = json.loads((destination / "manifest.json").read_text())
     assert manifest["files"] == hashes
     assert all(hashlib.sha256((destination / name).read_bytes()).hexdigest() == digest
                for name, digest in hashes.items())
     archive = builder.archive_workspace(destination)
     with zipfile.ZipFile(archive) as bundle:
-        assert "portable/prompts/14/" in bundle.namelist()
+        assert "portable/14/" in bundle.namelist()
+        assert "portable/common/main.md" in bundle.namelist()
+        assert "portable/16/ocr.md" in bundle.namelist()
+        assert not any(name.startswith("portable/prompts/") for name in bundle.namelist())
         assert not any("private" in name or "evals" in name for name in bundle.namelist())
         if system == "Darwin":
             assert bundle.getinfo("portable/Start.command").external_attr >> 16 & 0o111

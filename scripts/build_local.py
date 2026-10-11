@@ -17,9 +17,9 @@ ROOT = Path(__file__).resolve().parents[1]
 APP_NAME = "BotAI-Local"
 STATIC_FILES = ("index.html", "console.html", "local.js", "local.css")
 PROMPT_FILES = {
-    **{f"prompts/common/{name}.md": f"tasks/common/prompts/{name}.md"
+    **{f"common/{name}.md": f"tasks/common/prompts/{name}.md"
        for name in ("main", "analysis", "grading", "response-format")},
-    **{f"prompts/16/{name}.md": f"tasks/16/prompts/{name}.md"
+    **{f"16/{name}.md": f"tasks/16/prompts/{name}.md"
        for name in ("ocr", "criteria", "popular_mistakes")},
 }
 START_COMMAND = '''#!/bin/sh
@@ -28,17 +28,48 @@ exec ./BotAI-Local "$@"
 '''
 PORTABLE_README = """BotAI Local — проверка напрямую через DeepSeek API
 
-Windows: откройте BotAI-Local.exe.
-macOS: откройте Start.command. Окно терминала держите открытым.
+Положите программу в ту папку, где рядом лежат common, 14, 15, 16 и так далее.
+На Windows нужен файл BotAI-Local.exe; запустите его двойным щелчком.
+На macOS положите туда BotAI-Local вместе со Start.command и откройте
+Start.command двойным щелчком. Окно терминала держите открытым.
 Форма откроется в браузере. Закрытие вкладки не выключает сервер;
 для остановки нажмите Ctrl+C в окне программы или закройте это окно.
 
-Программа читает prompts/common/*.md и prompts/16/*.md рядом с собой.
-Вместо этой структуры можно положить executable в корень рабочего checkout,
-где уже есть tasks/common/prompts и tasks/16/prompts. На macOS перенесите
-вместе с ним Start.command. Только задание проекта 16 сейчас поддерживается.
+Рабочая папка/
+├── BotAI-Local.exe (Windows) или BotAI-Local (macOS)
+├── Start.command (только macOS)
+├── common/
+│   ├── main.md
+│   ├── analysis.md
+│   ├── grading.md
+│   └── response-format.md
+├── 14/
+├── 15/
+├── 16/
+│   ├── ocr.md
+│   ├── criteria.md
+│   └── popular_mistakes.md
+├── 17/
+├── 18/
+├── 19/
+└── 20/
 
-Ключ встраивается отдельным шагом только в конечный исполняемый файл.
+Четыре общих файла лежат в common, три файла задания — в 16.
+Они читаются с вашего компьютера; меняйте их без пересборки программы.
+Не кладите исполняемый файл внутрь 16 или common: он должен быть рядом с ними.
+Если в вашей структуре файлы уже лежат в common/prompts и 16/prompts,
+положите программу рядом с common и 16 — это расположение тоже поддержано.
+Совместимы также прежние prompts/common + prompts/16 и структура репозитория
+tasks/common/prompts + tasks/16/prompts; программа лежит рядом с prompts
+или tasks соответственно. Файлы разных структур не смешиваются.
+
+Сейчас поддерживается только задание проекта 16 (ФИПИ-2026 №15), оценка 0–2.
+Папки 14, 15 и 17–20 зарезервированы и пока не включают проверку этих заданий.
+В форме прикрепите одно фото условия и правильного ответа, затем отдельно
+от одного до четырёх фото решения ученика и нажмите «Проверить».
+
+В персональной сборке ключ уже встроен в исполняемый файл: вводить его
+при запуске не нужно. Если получена сборка без ключа, доступно только демо.
 Не сохраняйте ключ в конфигурации, .env, исходниках или текстовых файлах.
 Для проверки интерфейса без API запустите программу с аргументом --mock.
 Проверка с настоящим ключом расходует средства вашего DeepSeek API.
@@ -108,7 +139,7 @@ def export_workspace(destination: Path, executable: Path, *, source: Path = ROOT
     name = APP_NAME + (".exe" if system == "Windows" else "")
     destination.mkdir(parents=True, exist_ok=True)
     for number in ("common", *(str(n) for n in range(14, 21))):
-        (destination / "prompts" / number).mkdir(parents=True)
+        (destination / number).mkdir(parents=True)
     for target, original in prompts.items():
         shutil.copyfile(original, destination / target)
     shutil.copyfile(executable, destination / name)
