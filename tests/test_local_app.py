@@ -11,7 +11,7 @@ from fastapi.testclient import TestClient
 from PIL import Image
 import pytest
 
-from app.grading.package import package_paths
+from app.grading.package import MAX_SCORES, package_paths
 from app.grading.provider import MockProvider
 from app.local.launcher import (CONFIG_END, CONFIG_START, DIRECT_URL, EventStore, LocalConfig,
                                 create_local_app, executable_config, load_config, make_settings)
@@ -201,20 +201,75 @@ def test_validation_failure_logs_http_status_and_request_id(workspace):
         assert app.state.photo_active == 0
 
 
-def test_external_catalog_is_required_at_start_and_used_for_each_run(workspace):
+def test_invalid_catalog_is_reported_in_form_and_blocks_before_provider(workspace):
     catalog = workspace / 'prompts' / '16' / 'popular_mistakes.md'
     original = catalog.read_text(encoding='utf-8')
     catalog.write_text('No error-code table', encoding='utf-8')
-    with pytest.raises(ValueError, match='error-code rows'):
-        create_local_app(workspace, LocalConfig(), mock=True)
-    catalog.write_text(original, encoding='utf-8')
     app = create_local_app(workspace, LocalConfig(), mock=True)
     with TestClient(app, base_url='http://127.0.0.1') as client:
+        status = client.get('/local/status').json()
+        assert not status['package_available']
+        assert client.get('/ui/?local=1').status_code == 200
+        catalog.write_text(original, encoding='utf-8')
+        assert client.get('/local/status').json()['package_available']
         catalog.write_text('No error-code table', encoding='utf-8')
         response = client.post('/api/v1/photo-check', files=uploads())
-        assert response.status_code == 502 and 'grading' not in response.json()
+        assert response.status_code == 422 and 'grading' not in response.json()
+        assert response.json()['error']['code'] == 'task_package_unavailable'
         events = client.get('/local/events').json()['events']
-        assert any(event['kind'] == 'validation' and event['details'].get('valid') is False for event in events)
+        assert not any(event['kind'] == 'model_request' for event in events)
+
+
+def test_task_choices_report_missing_packages_without_fallback(workspace):
+    app = create_local_app(workspace, LocalConfig(), mock=True)
+    with TestClient(app, base_url='http://127.0.0.1') as client:
+        config = client.get('/api/v1/photo-check/config').json()
+        assert config['default_task_number'] == 16
+        assert {t['task_number']: t['max_score'] for t in config['tasks']} == MAX_SCORES
+        assert [t['task_number'] for t in config['tasks'] if t['available']] == [16]
+        status = client.get('/local/status?task_number=19').json()
+        assert status['task_number'] == 19 and status['max_score'] == 4
+        assert status['package_available'] is False
+        assert '19' in status['prompt_files']['criteria.md']
+        result = client.post('/api/v1/photo-check', data={'task_number': '19'}, files=uploads())
+        assert result.status_code == 422
+        assert result.json()['error']['code'] == 'task_package_unavailable'
+        assert result.headers['X-Request-ID']
+        assert not any(e['kind'] == 'model_request' for e in client.get('/local/events').json()['events'])
+
+
+@pytest.mark.parametrize('number', MAX_SCORES)
+def test_selected_number_uses_its_own_files_score_and_catalog(workspace, number):
+    directory = workspace / 'prompts' / str(number)
+    directory.mkdir(exist_ok=True)
+    (directory / 'ocr.md').write_text(f'SYNTHETIC OCR FOR TASK {number}', encoding='utf-8')
+    (directory / 'criteria.md').write_text(f'SYNTHETIC CRITERIA FOR TASK {number}', encoding='utf-8')
+    (directory / 'popular_mistakes.md').write_text('| E99 | Synthetic error | Synthetic advice |', encoding='utf-8')
+    app = create_local_app(workspace, LocalConfig(), mock=True)
+    with TestClient(app, base_url='http://127.0.0.1') as client:
+        result = client.post('/api/v1/photo-check', data={'task_number': str(number)}, files=uploads())
+        assert result.status_code == 200, result.text
+        assert result.json()['task']['task_number'] == number
+        assert result.json()['task']['max_score'] == MAX_SCORES[number]
+        assert result.json()['grading']['score'] == MAX_SCORES[number]
+        events = client.get('/local/events').json()['events']
+        reads = {e['details']['path']: e['details']['content'] for e in events
+                 if e['kind'] == 'tool_result' and e['details'].get('tool') == 'read_file'}
+        assert reads['ocr.md'] == f'SYNTHETIC OCR FOR TASK {number}'
+        assert reads['criteria.md'] == f'SYNTHETIC CRITERIA FOR TASK {number}'
+        assert '| E99 |' in reads['popular_mistakes.md']
+        saved = next(e['details']['content'] for e in events if e['kind'] == 'tool_result'
+                     and e['details'].get('tool') == 'write_file' and e['details'].get('path') == 'response.json')
+        assert saved == result.text
+
+
+@pytest.mark.parametrize('value', ['13', '21', '../16', '16.0', 'true', '', '016'])
+def test_invalid_task_selection_is_rejected(workspace, value):
+    app = create_local_app(workspace, LocalConfig(), mock=True)
+    with TestClient(app, base_url='http://127.0.0.1') as client:
+        response = client.post('/api/v1/photo-check', data={'task_number': value}, files=uploads())
+        assert response.status_code == 422
+        assert not any(e['kind'] == 'model_request' for e in client.get('/local/events').json()['events'])
 
 
 def test_private_key_is_redacted_from_explicit_file_data(workspace):

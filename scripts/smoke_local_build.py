@@ -33,7 +33,8 @@ def synthetic_png() -> bytes:
 def check_mock_grading(opener, base: str) -> None:
     boundary = 'botai-local-native-smoke-boundary'
     image = synthetic_png()
-    body = b''.join(
+    body = (f'--{boundary}\r\nContent-Disposition: form-data; name="task_number"\r\n'
+            '\r\n16\r\n').encode('ascii') + b''.join(
         (f'--{boundary}\r\n'
          f'Content-Disposition: form-data; name="{field}"; filename="synthetic.png"\r\n'
          'Content-Type: image/png\r\n\r\n').encode('ascii') + image + b'\r\n'
@@ -114,6 +115,16 @@ def smoke_test(executable: Path) -> dict:
                 time.sleep(0.2)
         if status.get("mode") != "mock" or status.get("endpoint") != "https://api.deepseek.com/v1":
             raise RuntimeError("Native application reported an unexpected provider configuration")
+        with opener.open(base + '/api/v1/photo-check/config', timeout=5) as response:
+            catalog = json.load(response)
+        tasks = catalog.get('tasks', [])
+        expected_scores = {14: 2, 15: 3, 16: 2, 17: 2, 18: 3, 19: 4, 20: 4}
+        if (len(tasks) != 7 or
+                {task.get('task_number'): task.get('max_score') for task in tasks} != expected_scores):
+            raise RuntimeError('Native task catalog must describe numbers 14–20 with their score scales')
+        selected = next(task for task in tasks if task['task_number'] == 16)
+        if selected.get('available') is not True or selected.get('missing_files') != []:
+            raise RuntimeError('Native task 16 package must be available for the grading smoke test')
         if set(status.get("prompt_files", {})) != {
             "main.md", "analysis.md", "grading.md", "response-format.md", "ocr.md",
             "criteria.md", "popular_mistakes.md",
@@ -180,7 +191,7 @@ def main() -> int:
             escaped = message.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
             print(f'::error::{escaped}', flush=True)
         return 1
-    print("Native mock startup, browser assets, complete grading, and validated event trace passed.")
+    print("Native task catalog, browser assets, complete mock grading, and validated event trace passed.")
     return 0
 
 

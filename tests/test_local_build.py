@@ -26,7 +26,7 @@ def source_tree(tmp_path):
         "tasks/16/prompts/README.md": "private draft",
         "tasks/16/prompts/extra.md": "unapproved prompt",
         "tasks/16/evals/student.jpg": "private photograph",
-        "tasks/17/prompts/criteria.md": "unapproved task",
+        "tasks/17/prompts/README.md": "unapproved task documentation",
     }
     for name, content in files.items():
         path = source / name
@@ -77,9 +77,52 @@ def test_export_is_allowlisted_and_preserves_prompt_bytes(tmp_path, system, exec
 def test_missing_approved_prompt_fails_before_export(tmp_path):
     source = source_tree(tmp_path)
     (source / "tasks/16/prompts/ocr.md").unlink()
-    with pytest.raises(ValueError, match="Missing build input"):
+    with pytest.raises(ValueError, match="Incomplete task package 16.*ocr.md"):
         builder.export_workspace(tmp_path / "portable", tmp_path / "native", source=source)
     assert not (tmp_path / "portable").exists()
+
+
+def test_export_includes_each_complete_package_without_borrowing_task_16(tmp_path):
+    source = source_tree(tmp_path)
+    for number in (14, 15, 17, 18, 19, 20):
+        for name in builder.TASK_PROMPT_NAMES:
+            path = source / f"tasks/{number}/prompts/{name}.md"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(f"synthetic task {number}: {name}\r\n".encode())
+    executable = tmp_path / "native"
+    executable.write_bytes(b"fake executable")
+    destination = tmp_path / "portable"
+    builder.export_workspace(destination, executable, source=source, system="Windows")
+    for number in range(14, 21):
+        for name in builder.TASK_PROMPT_NAMES:
+            assert ((destination / str(number) / f"{name}.md").read_bytes()
+                    == (source / f"tasks/{number}/prompts/{name}.md").read_bytes())
+    assert not (destination / "17/README.md").exists()
+
+
+def test_partial_optional_package_fails_before_writing(tmp_path):
+    source = source_tree(tmp_path)
+    (source / "tasks/17/prompts/criteria.md").write_text("synthetic partial package")
+    with pytest.raises(ValueError, match="Incomplete task package 17.*ocr.md.*popular_mistakes.md"):
+        builder.export_workspace(tmp_path / "portable", tmp_path / "native", source=source)
+    assert not (tmp_path / "portable").exists()
+
+
+def test_missing_task_packages_stay_empty_and_shared_files_remain_required(tmp_path):
+    source = source_tree(tmp_path)
+    for name in builder.TASK_PROMPT_NAMES:
+        (source / f"tasks/16/prompts/{name}.md").unlink()
+    assert set(builder.prompt_inputs(source)) == {
+        "common/main.md", "common/analysis.md", "common/grading.md", "common/response-format.md",
+    }
+    executable = tmp_path / "native"
+    executable.write_bytes(b"fake executable")
+    destination = tmp_path / "portable"
+    builder.export_workspace(destination, executable, source=source)
+    assert all(not list((destination / str(number)).iterdir()) for number in range(14, 21))
+    (source / "tasks/common/prompts/main.md").unlink()
+    with pytest.raises(ValueError, match="Missing build input: tasks/common/prompts/main.md"):
+        builder.prompt_inputs(source)
 
 
 def test_symlinked_input_directory_fails_before_export(tmp_path):

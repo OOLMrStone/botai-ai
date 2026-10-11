@@ -10,12 +10,20 @@ ROOT = Path(__file__).resolve().parents[2]
 COMMON_NAMES = ('main.md', 'analysis.md', 'grading.md', 'response-format.md')
 PROMPT_NAMES = ('main.md', 'ocr.md', 'analysis.md', 'popular_mistakes.md',
                 'grading.md', 'criteria.md', 'response-format.md')
-SUPPORTED_TASKS = frozenset({16})
+# Project task numbering and score scale, independent of legacy rubrics.
+# A known number is not an approved production handler or a complete package.
+MAX_SCORES = {14: 2, 15: 3, 16: 2, 17: 2, 18: 3, 19: 4, 20: 4}
+SUPPORTED_TASKS = frozenset(MAX_SCORES)
+
+
+def task_max_score(task_number: int) -> int:
+    if type(task_number) is not int or task_number not in MAX_SCORES:
+        raise ValueError(f'Unsupported grading task: {task_number!r}')
+    return MAX_SCORES[task_number]
 
 
 def _directories(task_number: int, root: Path) -> tuple[Path, Path]:
-    if type(task_number) is not int or task_number not in SUPPORTED_TASKS:
-        raise ValueError(f'Unsupported grading task: {task_number!r}')
+    task_max_score(task_number)
     runtime = root / 'prompts' / str(task_number)
     if runtime.exists():
         return root / 'prompts' / 'common', runtime

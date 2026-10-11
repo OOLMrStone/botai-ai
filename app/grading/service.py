@@ -8,7 +8,7 @@ import re
 from uuid import uuid4
 
 from app.core.errors import LLMResponseFormatError, ServiceError, ValidationError
-from app.grading.package import task_directory
+from app.grading.package import task_directory, task_max_score
 from app.grading.provider import PREP_PROMPT, MockProvider, Provider
 from app.grading.reports import ReportStore
 from app.grading.session import ADAPTER, ATTACK_REASON, MAX_TEXT, READ_ORDER, TOOLS, Session, load_package
@@ -21,12 +21,16 @@ class TaskPreparationError(ValidationError):
 
 class GradingService:
     def __init__(self, settings, provider=None, *, package=None, package_root: Path | None = None,
-                 observer: Callable[[str, str, dict | None], None] | None = None):
+                 observer: Callable[[str, str, dict | None], None] | None = None,
+                 task_number: int = 16):
         self.settings = settings
         self.provider = provider
+        self.max_score = task_max_score(task_number)
+        self.task_number = task_number
         self.store = ReportStore(settings.photo.reports_dir)
         self.package = (package if package is not None else
-                        load_package(root=package_root) if package_root is not None else load_package())
+                        load_package(task_number, root=package_root) if package_root is not None else
+                        load_package(task_number))
         self.package_root = package_root
         self.observer = observer
 
@@ -112,7 +116,8 @@ class GradingService:
         self._emit('error', 'Проверка завершилась ошибкой', {'code': code})
 
     async def run(self, task_image, images, user_id):
-        self._emit('start', 'Проверка запущена', {'task_number': 16, 'image_count': len(images)})
+        self._emit('start', 'Проверка запущена',
+                   {'task_number': self.task_number, 'image_count': len(images)})
         provider = self.provider or (MockProvider() if self.settings.llm.provider == 'mock'
                                      else Provider(self.settings.llm))
         image_ids = ['test-image-' + uuid4().hex for _ in images]
@@ -145,7 +150,8 @@ class GradingService:
                     raise ValueError('Invalid reference solution')
             except (ValueError, TypeError, RecursionError) as exc:
                 raise LLMResponseFormatError('Не удалось подготовить задачу: модель вернула неверный формат. Повтори проверку') from exc
-            task = {'id': 'test-task-' + uuid4().hex, 'task_number': 16, 'max_score': 2,
+            task = {'id': 'test-task-' + uuid4().hex, 'task_number': self.task_number,
+                    'max_score': self.max_score,
                     'statement': data['statement'], 'reference_answer': data['reference_answer'],
                     'reference_solution': reference}
             self._emit('preparation', 'Условие и правильный ответ подготовлены')
@@ -164,6 +170,9 @@ class GradingService:
 
     async def run_prepared(self, task, image_ids, images, report_sink):
         """Use the server snapshot directly, preserving the bounded session."""
+        if (type(task.get('task_number')) is not int or task['task_number'] != self.task_number
+                or type(task.get('max_score')) is not int or task['max_score'] != self.max_score):
+            raise ValidationError('Номер задания или максимальный балл не совпадают с выбранным пакетом')
         self._emit('start', 'Проверка запущена',
                    {'task_number': task['task_number'], 'image_count': len(images)})
         provider = self.provider or (MockProvider() if self.settings.llm.provider == 'mock'

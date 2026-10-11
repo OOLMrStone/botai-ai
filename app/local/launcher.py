@@ -19,8 +19,8 @@ from app.config import (AppSettings, DebugSettings, FeatureSettings, GradingSett
                         InternalGradingSettings, LLMSettings, PhotoSettings, Settings,
                         VisionOverrides)
 from app.core.context import get_request_id, new_id
-from app.grading.package import load_package, package_paths
-from app.grading.validator import load_error_codes
+from app.grading.package import package_paths
+from app.grading.selection import require_task, task_descriptor
 
 DIRECT_URL = 'https://api.deepseek.com/v1'
 CONFIG_END = b'BOTAI_LOCAL_CONFIG_END\n'
@@ -150,26 +150,26 @@ def create_local_app(workspace: Path, config: LocalConfig, *, mock: bool = False
     from app.application import create_app
 
     workspace = workspace.resolve()
-    # Fail before accepting work if any approved file is missing or malformed.
+    # The form can explain missing task packages before accepting a submission.
     static = Path(__file__).resolve().parents[1] / 'static'
     for name in ('index.html', 'local.js', 'local.css'):
         if not (static / name).is_file():
             raise FileNotFoundError('Missing local application asset: ' + name)
-    load_package(root=workspace)
-    paths = package_paths(root=workspace)
-    load_error_codes(paths['popular_mistakes.md'])
     settings = make_settings(workspace, config, mock)
     app = create_app(settings, ephemeral_identity=True)
     events = EventStore(config.api_key.get_secret_value())
     app.state.local_events = events
 
-    def service_factory(current):
+    def service_factory(current, *, task_number=16):
         # Load prompts before creating a network client, including on each new run.
-        service = GradingService(current, package_root=workspace, observer=events.emit)
+        require_task(task_number, root=workspace)
+        service = GradingService(current, task_number=task_number,
+                                 package_root=workspace, observer=events.emit)
         service.provider = MockProvider() if mock else Provider(current.llm, trust_env=False)
         return service
 
     app.state.photo_service_factory = service_factory
+    app.state.photo_package_root = workspace
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=['127.0.0.1', 'localhost'])
 
     @app.middleware('http')
@@ -196,10 +196,14 @@ def create_local_app(workspace: Path, config: LocalConfig, *, mock: bool = False
         return response
 
     @app.get('/local/status')
-    async def status():
+    async def status(task_number: int = Query(default=16, ge=14, le=20)):
+        selected = task_descriptor(task_number, root=workspace)
+        paths = package_paths(task_number, root=workspace)
         return {'mode': settings.llm.provider, 'model': settings.llm.model,
                 'endpoint': DIRECT_URL, 'workspace': str(workspace),
                 'key_configured': bool(config.api_key.get_secret_value()),
+                'task_number': task_number, 'max_score': selected['max_score'],
+                'package_available': selected['available'], 'package_message': selected['message'],
                 'prompt_files': {name: str(path) for name, path in paths.items()}}
 
     @app.get('/local/events')

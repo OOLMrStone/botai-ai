@@ -10,6 +10,8 @@ import sys
 
 import pytest
 
+from app.grading.package import MAX_SCORES
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts/validate_response.py"
@@ -51,6 +53,67 @@ def test_valid_variants_and_array_lengths(response):
     response["analysis"]["student_answer"] = None
     response["analysis"]["checks"]["transformations"] = None
     assert validator.validate_response(response) == []
+
+
+@pytest.mark.parametrize('task_number,maximum', MAX_SCORES.items())
+def test_trusted_task_scale_accepts_every_integer_score_without_clamping(response, tmp_path, task_number, maximum):
+    catalog = tmp_path / 'popular_mistakes.md'
+    catalog.write_text('| E999 | Synthetic test catalog declaration |\n', encoding='utf-8')
+    response['task'].update(task_number=task_number, max_score=maximum)
+    gate = validator.ValidationGate(catalog_path=catalog,
+                                    expected_task_number=task_number, expected_max_score=maximum)
+    for score in range(maximum + 1):
+        response['grading']['score'] = score
+        raw = json.dumps(response, ensure_ascii=False)
+        assert gate.validate(raw) == []
+        assert gate.finalize(raw) == response
+        with pytest.raises(ValueError):
+            gate.finalize(raw + '\n')
+
+
+@pytest.mark.parametrize('task_number,maximum', MAX_SCORES.items())
+def test_trusted_task_scale_rejects_wrong_task_maximum_and_score(response, tmp_path, task_number, maximum):
+    catalog = tmp_path / 'popular_mistakes.md'
+    catalog.write_text('| E999 | Synthetic test catalog declaration |\n', encoding='utf-8')
+    response['task'].update(task_number=task_number, max_score=maximum)
+    response['grading']['score'] = maximum
+    options = dict(catalog_path=catalog, expected_task_number=task_number, expected_max_score=maximum)
+    for score in [-1, maximum + 1, True, float(maximum), str(maximum)]:
+        candidate = copy.deepcopy(response)
+        candidate['grading']['score'] = score
+        assert validator.validate_response(candidate, **options)
+        assert candidate['grading']['score'] == score
+    for field, value in [('task_number', 14 if task_number != 14 else 15), ('max_score', maximum + 1)]:
+        candidate = copy.deepcopy(response)
+        candidate['task'][field] = value
+        assert any('$.task.' + field in error for error in validator.validate_response(candidate, **options))
+    gate = validator.ValidationGate(**options)
+    invalid = copy.deepcopy(response)
+    invalid['grading']['score'] = maximum + 1
+    raw = json.dumps(invalid)
+    assert gate.validate(raw)
+    with pytest.raises(ValueError):
+        gate.finalize(raw)
+
+
+@pytest.mark.parametrize('task_number,maximum', [(13, 2), (21, 4), (16, 4), (19, 2), (True, 2), (16, True)])
+def test_validator_cannot_be_configured_with_an_untrusted_scale(task_number, maximum):
+    with pytest.raises(ValueError):
+        validator.ValidationGate(expected_task_number=task_number, expected_max_score=maximum)
+
+
+def test_nondefault_validator_never_borrows_task16_catalog(response, tmp_path, monkeypatch):
+    directory = tmp_path / '19'
+    directory.mkdir()
+    catalog = directory / 'popular_mistakes.md'
+    catalog.write_text('| E999 | Synthetic test catalog declaration |\n', encoding='utf-8')
+    monkeypatch.setattr('app.grading.validator.task_directory', lambda number: tmp_path / str(number))
+    response['task'].update(task_number=19, max_score=4)
+    response['grading']['score'] = 4
+    response['analysis']['errors'] = [error(code='E999')]
+    assert validator.validate_response(response, expected_task_number=19, expected_max_score=4) == []
+    catalog.unlink()
+    assert validator.validate_response(response, expected_task_number=19, expected_max_score=4)
 
 
 def object_paths(value, path=()):

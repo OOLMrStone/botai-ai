@@ -7,9 +7,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from app.core.errors import LLMError, LLMResponseFormatError
+from app.core.errors import LLMError, LLMResponseFormatError, ValidationError
 from app.grading.images import SafeImage
-from app.grading.package import COMMON_NAMES, load_package
+from app.grading.package import COMMON_NAMES, MAX_SCORES, PROMPT_NAMES, load_package
 from app.grading.provider import MockProvider, Provider
 from app.grading.service import GradingService
 
@@ -165,3 +165,49 @@ def test_default_provider_keeps_sdk_transport_defaults(monkeypatch):
     Provider(SimpleNamespace(api_key='test-key', base_url='https://provider.invalid', timeout_s=360))
     assert 'http_client' not in captured
     assert captured['max_retries'] == 0
+
+
+@pytest.mark.parametrize('task_number,maximum', MAX_SCORES.items())
+async def test_selected_task_uses_local_package_and_its_full_score_scale(tmp_path, task_number, maximum):
+    for name in PROMPT_NAMES:
+        group = 'common' if name in COMMON_NAMES else str(task_number)
+        path = tmp_path / group / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        content = f'SYNTHETIC TEST FIXTURE {group}/{name}'
+        if name == 'popular_mistakes.md':
+            content += '\n| E999 | Synthetic test catalog declaration |\n'
+        path.write_text(content, encoding='utf-8')
+    provider = RecordingMock()
+    service = GradingService(config(tmp_path), provider, package_root=tmp_path, task_number=task_number)
+    raw = await service.run(SafeImage(b'synthetic-task-photo'), IMAGES, 'test-local-user')
+    value = json.loads(raw)
+    assert value['task']['task_number'] == task_number
+    assert value['task']['max_score'] == value['grading']['score'] == maximum
+    assert 'SYNTHETIC TEST FIXTURE common/main.md' in provider.inputs[1][0]['content']
+    returned_ocr = [json.loads(message['content'])['content'] for message in provider.inputs[-1]
+                    if message['role'] == 'tool' and json.loads(message['content']).get('kind') == 'server_instruction']
+    assert f'SYNTHETIC TEST FIXTURE {task_number}/ocr.md' in returned_ocr
+    saved = [json.loads(message['tool_calls'][0]['function']['arguments'])['content']
+             for message in provider.inputs[-1] if message.get('tool_calls')
+             and message['tool_calls'][0]['function']['name'] == 'write_file'
+             and json.loads(message['tool_calls'][0]['function']['arguments'])['path'] == 'response.json']
+    assert saved == [raw]
+
+
+@pytest.mark.parametrize('task_number', MAX_SCORES)
+def test_missing_selected_package_fails_before_provider_construction(tmp_path, monkeypatch, task_number):
+    provider = AsyncMock()
+    monkeypatch.setattr('app.grading.service.Provider', provider)
+    with pytest.raises(FileNotFoundError):
+        GradingService(config(tmp_path), package_root=tmp_path, task_number=task_number)
+    provider.assert_not_called()
+
+
+@pytest.mark.parametrize('task', [{**TASK, 'task_number': 15, 'max_score': 3},
+                                 {**TASK, 'max_score': 4}, {**TASK, 'max_score': True}])
+async def test_prepared_snapshot_cannot_override_selected_number_or_scale(tmp_path, task):
+    provider = RecordingMock()
+    service = GradingService(config(tmp_path), provider)
+    with pytest.raises(ValidationError, match='выбранным пакетом'):
+        await service.run_prepared(task, IDS, IMAGES, AsyncMock())
+    assert not provider.inputs

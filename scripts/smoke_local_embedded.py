@@ -10,7 +10,7 @@ import time
 from build_local import APP_NAME, ROOT
 from embed_local_key import embed, executable_config
 from smoke_local_build import smoke_test
-from app.grading.package import package_paths
+from app.grading.package import MAX_SCORES, package_paths
 
 
 def cleanup_with_retry(directory) -> None:
@@ -43,10 +43,14 @@ def main() -> int:
         destination = Path(temporary.name)
         executable = destination / source.name
         shutil.copy2(source, executable)
-        for prompt in package_paths(root=source.parent).values():
-            target = destination / prompt.relative_to(source.parent)
-            target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(prompt, target)
+        for number in MAX_SCORES:
+            paths = package_paths(number, root=source.parent).values()
+            if not all(prompt.is_file() for prompt in paths):
+                continue
+            for prompt in paths:
+                target = destination / prompt.relative_to(source.parent)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(prompt, target)
         embed(executable, 'sk-ci-mock-only')
         if smoke_test(executable)['key_configured'] is not True:
             raise RuntimeError('Native application did not detect its dummy embedded credential')

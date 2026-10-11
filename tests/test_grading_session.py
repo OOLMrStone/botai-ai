@@ -11,6 +11,7 @@ import pytest
 
 from app.core.errors import LLMError, LLMResponseFormatError, LLMTimeoutError
 from app.grading.images import SafeImage
+from app.grading.package import MAX_SCORES
 from app.grading.provider import MockProvider, Provider
 from app.grading.service import GradingService, TaskPreparationError
 from app.grading.session import ATTACK_REASON, READ_ORDER, Session
@@ -150,6 +151,14 @@ def test_sessions_are_isolated():
     assert second.read == set()
     assert 'notes.md' not in second.files
     assert TASK['statement'] == 'x > 0'
+
+
+@pytest.mark.parametrize('task_number,maximum', MAX_SCORES.items())
+def test_session_rejects_caller_supplied_score_scale(task_number, maximum):
+    for invalid in [maximum + 1, True, float(maximum), str(maximum)]:
+        task = {**TASK, 'task_number': task_number, 'max_score': invalid}
+        with pytest.raises(ValueError, match='trusted project scale'):
+            Session(task, IDS, {'main.md': 'synthetic test fixture only'})
 
 
 class RecordingMock(MockProvider):

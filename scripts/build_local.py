@@ -16,11 +16,13 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 APP_NAME = "BotAI-Local"
 STATIC_FILES = ("index.html", "console.html", "local.js", "local.css")
+TASK_NUMBERS = range(14, 21)
+TASK_PROMPT_NAMES = ("ocr", "criteria", "popular_mistakes")
 PROMPT_FILES = {
     **{f"common/{name}.md": f"tasks/common/prompts/{name}.md"
        for name in ("main", "analysis", "grading", "response-format")},
     **{f"16/{name}.md": f"tasks/16/prompts/{name}.md"
-       for name in ("ocr", "criteria", "popular_mistakes")},
+       for name in TASK_PROMPT_NAMES},
 }
 START_COMMAND = '''#!/bin/sh
 cd -- "$(dirname -- "$0")" || exit 1
@@ -54,7 +56,10 @@ Start.command двойным щелчком. Окно терминала дер�
 ├── 19/
 └── 20/
 
-Четыре общих файла лежат в common, три файла задания — в 16.
+Четыре общих файла лежат в common. Для каждого выбранного номера нужны
+собственные ocr.md, criteria.md и popular_mistakes.md в папке этого номера.
+В дереве выше показан пакет 16. Для другого номера положите его три файла
+в соответствующую папку 14, 15, 17, 18, 19 или 20.
 Они читаются с вашего компьютера; меняйте их без пересборки программы.
 Не кладите исполняемый файл внутрь 16 или common: он должен быть рядом с ними.
 Если в вашей структуре файлы уже лежат в common/prompts и 16/prompts,
@@ -63,9 +68,15 @@ Start.command двойным щелчком. Окно терминала дер�
 tasks/common/prompts + tasks/16/prompts; программа лежит рядом с prompts
 или tasks соответственно. Файлы разных структур не смешиваются.
 
-Сейчас поддерживается только задание проекта 16 (ФИПИ-2026 №15), оценка 0–2.
-Папки 14, 15 и 17–20 зарезервированы и пока не включают проверку этих заданий.
-В форме прикрепите одно фото условия и правильного ответа, затем отдельно
+В форме можно выбрать номер проекта от 14 до 20. Максимальные баллы:
+14 — 2; 15 — 3; 16 — 2; 17 — 2; 18 — 3; 19 — 4; 20 — 4.
+Интерфейс показывает недостающие файлы и не запускает проверку неполного пакета.
+В исходном репозитории сейчас подготовлен только пакет 16 (ФИПИ-2026 №15).
+Пустые папки других номеров нужно заполнить их собственными промптами;
+копирование промптов 16 в другие номера не делает их готовыми.
+Наличие файлов означает готовность запуска, а не подтверждённое качество
+математической проверки нового номера.
+Выберите номер и прикрепите одно фото условия и правильного ответа, затем отдельно
 от одного до четырёх фото решения ученика и нажмите «Проверить».
 
 В персональной сборке ключ уже встроен в исполняемый файл: вводить его
@@ -93,7 +104,22 @@ def safe_file(source: Path, relative: str) -> Path:
 
 
 def prompt_inputs(source: Path) -> dict[str, Path]:
-    return {target: safe_file(source, original) for target, original in PROMPT_FILES.items()}
+    planned = {target: safe_file(source, original) for target, original in PROMPT_FILES.items()
+               if target.startswith("common/")}
+    for number in TASK_NUMBERS:
+        originals = {f"{number}/{name}.md": f"tasks/{number}/prompts/{name}.md"
+                     for name in TASK_PROMPT_NAMES}
+        present = {target: original for target, original in originals.items()
+                   if (source / original).exists() or (source / original).is_symlink()}
+        if not present:
+            continue
+        checked = {target: safe_file(source, original) for target, original in present.items()}
+        if len(checked) != len(originals):
+            missing = ", ".join(Path(path).name for target, path in originals.items()
+                                if target not in checked)
+            raise ValueError(f"Incomplete task package {number}; missing build inputs: {missing}")
+        planned.update(checked)
+    return planned
 
 
 def static_inputs(source: Path) -> list[Path]:
@@ -138,7 +164,7 @@ def export_workspace(destination: Path, executable: Path, *, source: Path = ROOT
         raise ValueError(f"Unsupported build platform: {system}")
     name = APP_NAME + (".exe" if system == "Windows" else "")
     destination.mkdir(parents=True, exist_ok=True)
-    for number in ("common", *(str(n) for n in range(14, 21))):
+    for number in ("common", *(str(n) for n in TASK_NUMBERS)):
         (destination / number).mkdir(parents=True)
     for target, original in prompts.items():
         shutil.copyfile(original, destination / target)

@@ -18,6 +18,10 @@
   let droppedCount = 0;
   let historyGap = false;
   let eventCount = 0;
+  let selectedTaskNumber = Number(document.getElementById('task-number')?.value) || 16;
+  let statusVersion = 0;
+  let taskStatusPending = true;
+  const requestTasks = new Map();
 
   function node(tag, text, className) {
     const element = document.createElement(tag);
@@ -90,6 +94,19 @@
   files.append(filesSummary, filesContent);
   panel.append(heading, connection, current, timeline, footer, files);
   document.getElementById('form').after(panel);
+  document.addEventListener('botai-task-change', event => {
+    const taskNumber = Number(event.detail?.task_number);
+    if (!Number.isInteger(taskNumber) || taskNumber < 14 || taskNumber > 20) return;
+    selectedTaskNumber = taskNumber;
+    statusVersion += 1;
+    taskStatusPending = true;
+    configured = false;
+    filesSummary.textContent = 'Локальные файлы задания ' + taskNumber + ' и подключение';
+    filesContent.replaceChildren(node('p', 'Загружаем пути к файлам задания ' + taskNumber + '…', 'muted'));
+    setCurrent('Задание ' + taskNumber + ' · проверяем доступность файлов', 'idle');
+    clearTimeout(retryTimer);
+    poll();
+  });
 
   function setCurrent(label, state, waiting = '') {
     lastState = state;
@@ -134,15 +151,26 @@
   }
 
   async function loadStatus() {
-    const status = await getJSON('/local/status');
+    const taskNumber = selectedTaskNumber;
+    const version = ++statusVersion;
+    let status;
+    try {
+      status = await getJSON('/local/status?task_number=' + encodeURIComponent(taskNumber));
+    } catch (error) {
+      if (version !== statusVersion || taskNumber !== selectedTaskNumber) return;
+      throw error;
+    }
+    if (version !== statusVersion || taskNumber !== selectedTaskNumber) return;
     environment.textContent = status.mode === 'mock'
       ? 'Демонстрационный режим · без обращения к API'
       : 'Прямое API · ' + String(status.model || 'модель не указана') + ' · ' + String(status.endpoint || '');
     filesContent.replaceChildren();
+    filesSummary.textContent = 'Локальные файлы задания ' + taskNumber + ' и подключение';
     const metadata = node('dl', undefined, 'local-config');
     metadata.append(
       configurationItem('API', String(status.endpoint || '—')),
       configurationItem('Модель', String(status.model || '—')),
+      configurationItem('Задание', String(taskNumber)),
       configurationItem('Рабочая папка', String(status.workspace || '—'))
     );
     filesContent.append(metadata);
@@ -150,12 +178,27 @@
       filesContent.append(node('p', 'В этой сборке нет ключа API. Для прямой проверки нужна сборка приложения со встроенным ключом.', 'local-key-warning'));
       environment.textContent = 'Прямое подключение · ключ API не настроен';
     }
-    filesContent.append(node('p', 'Файлы задания 16. Приложение передаёт модели содержимое только разрешённых файлов.', 'muted'));
+    if (Number(status.task_number ?? 16) !== taskNumber) {
+      filesContent.append(node('p', 'Эта версия приложения не предоставила файлы задания ' + taskNumber + '.', 'local-key-warning'));
+      setCurrent('Задание ' + taskNumber + ' · файлы недоступны', 'error');
+      taskStatusPending = false;
+      configured = true;
+      return;
+    }
+    const available = status.package_available !== false;
+    if (!available) {
+      filesContent.append(node('p', String(status.package_message || 'Файлы задания ' + taskNumber + ' не готовы к проверке.'), 'local-key-warning'));
+    }
+    filesContent.append(node('p', 'Файлы задания ' + taskNumber + '. Приложение передаёт модели содержимое только разрешённых файлов.', 'muted'));
     const paths = node('dl', undefined, 'local-config local-paths');
     for (const [name, path] of Object.entries(status.prompt_files || {})) {
       paths.append(configurationItem(name, String(path)));
     }
     filesContent.append(paths);
+    if (taskStatusPending || !available) {
+      setCurrent('Задание ' + taskNumber + (available ? ' · готово к проверке' : ' · файлы недоступны'), available ? 'idle' : 'error');
+    }
+    taskStatusPending = false;
     configured = true;
   }
 
@@ -178,6 +221,12 @@
   function updateCurrent(event) {
     const kind = event.kind;
     const details = event.details || {};
+    if (kind === 'start' && Number.isInteger(details.task_number)) {
+      requestTasks.set(event.request_id, details.task_number);
+      if (requestTasks.size > MAX_EVENTS) requestTasks.delete(requestTasks.keys().next().value);
+    }
+    const eventTask = details.task_number ?? requestTasks.get(event.request_id);
+    if (eventTask !== undefined && Number(eventTask) !== selectedTaskNumber) return;
     switch (kind) {
       case 'start': setCurrent('Начинаем проверку', 'active'); break;
       case 'preparation': setCurrent(String(event.message || 'Распознаём условие и правильный ответ'), 'active'); break;

@@ -83,7 +83,7 @@ class MockProvider:
                                             'completeness': {'is_complete': True, 'reason': 'Демонстрация'}},
                                  'student_answer': {'text': '(0; +∞)', 'is_correct': True},
                                  'errors': [], 'strengths': []},
-                    'grading': {'score': 2, 'criterion': 'Демонстрационный результат',
+                    'grading': {'score': request['task']['max_score'], 'criterion': 'Демонстрационный результат',
                                 'explanation': 'Это тест интерфейса, а не оценка загруженной работы.'}}
         raw = json.dumps(response, ensure_ascii=False)
         sequence = [('read_file', {'path': p}) for p in READ_ORDER[:2]]

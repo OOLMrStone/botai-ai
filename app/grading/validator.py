@@ -15,7 +15,7 @@ import re
 import sys
 
 
-from app.grading.package import task_directory
+from app.grading.package import task_directory, task_max_score
 
 DEFAULT_CATALOG = task_directory() / 'popular_mistakes.md'
 
@@ -108,13 +108,17 @@ def parse_response(text: str) -> object:
     return unpack(raw, "$")
 
 
-def validate_response(response: object, *, catalog_path=None) -> list[str]:
+def validate_response(response: object, *, catalog_path=None,
+                      expected_task_number: int = 16, expected_max_score: int = 2) -> list[str]:
     """Return structural and supported consistency errors; never judge mathematics.
 
     For raw model output use parse_response first: duplicate keys cannot be
     recovered from an already decoded dictionary. IDs and task data are checked
     for type only; comparison with authoritative request data belongs to the caller.
     """
+    if (type(expected_max_score) is not int or
+            task_max_score(expected_task_number) != expected_max_score):
+        raise ValueError('Expected max_score does not match the trusted project scale')
     errors = []
 
     def check(value, schema, path):
@@ -149,6 +153,8 @@ def validate_response(response: object, *, catalog_path=None) -> list[str]:
         return errors
 
     try:
+        if catalog_path is None and expected_task_number != 16:
+            catalog_path = task_directory(expected_task_number) / 'popular_mistakes.md'
         error_codes = load_error_codes(catalog_path)
     except ValueError as exc:
         return [str(exc)]
@@ -156,10 +162,10 @@ def validate_response(response: object, *, catalog_path=None) -> list[str]:
     task = response["task"]
     analysis = response["analysis"]
     grading = response["grading"]
-    if task["task_number"] != 16:
-        errors.append("$.task.task_number: expected 16 for this package")
-    if task["max_score"] != 2:
-        errors.append("$.task.max_score: expected 2 for this package")
+    if task["task_number"] != expected_task_number:
+        errors.append(f"$.task.task_number: expected {expected_task_number} for this package")
+    if task["max_score"] != expected_max_score:
+        errors.append(f"$.task.max_score: expected {expected_max_score} for this package")
     if not response["is_graded"]:
         if not response["rejection_reason"].strip():
             errors.append("$.rejection_reason: expected nonempty reason for rejection")
@@ -174,8 +180,8 @@ def validate_response(response: object, *, catalog_path=None) -> list[str]:
             errors.append(f"$.{key}: required for graded response")
     if errors:
         return errors
-    if grading["score"] not in (0, 1, 2):
-        errors.append("$.grading.score: expected 0, 1 or 2")
+    if not 0 <= grading["score"] <= expected_max_score:
+        errors.append(f"$.grading.score: expected an integer from 0 to {expected_max_score}")
 
     seen = set()
     for index, error in enumerate(analysis["errors"]):
@@ -198,14 +204,22 @@ class ValidationGate:
     This instance must never be shared between grading requests.
     """
 
-    def __init__(self, *, catalog_path=None):
+    def __init__(self, *, catalog_path=None, expected_task_number: int = 16,
+                 expected_max_score: int = 2):
+        if (type(expected_max_score) is not int or
+                task_max_score(expected_task_number) != expected_max_score):
+            raise ValueError('Expected max_score does not match the trusted project scale')
         self._catalog_path = catalog_path
+        self._expected_task_number = expected_task_number
+        self._expected_max_score = expected_max_score
         self._validated_text = None
 
     def validate(self, candidate: str) -> list[str]:
         self._validated_text = None
         try:
-            errors = validate_response(parse_response(candidate), catalog_path=self._catalog_path)
+            errors = validate_response(parse_response(candidate), catalog_path=self._catalog_path,
+                                       expected_task_number=self._expected_task_number,
+                                       expected_max_score=self._expected_max_score)
         except (ValueError, RecursionError) as exc:
             return [str(exc)]
         if not errors:

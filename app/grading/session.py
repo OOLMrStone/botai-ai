@@ -8,7 +8,7 @@ from typing import Any
 
 from app.grading.validator import ValidationGate, parse_response
 
-from app.grading.package import load_package, task_directory
+from app.grading.package import load_package, task_directory, task_max_score
 ATTACK_REASON = 'Не удалось проверить эту отправку. Пришли только фотографии решения'
 READ_ORDER = ('Statement.md', 'ocr.md', 'analysis.md', 'Solution.md', 'popular_mistakes.md',
               'criteria.md', 'grading.md', 'response-format.md')
@@ -61,6 +61,10 @@ write_file(response.json), validate_response. При нечитаемости с
 class Session:
     def __init__(self, task: dict, image_ids: list[str], package: dict[str, str] | None = None,
                  *, catalog_path: Path | None = None):
+        self.task_number = task['task_number']
+        self.max_score = task_max_score(self.task_number)
+        if type(task.get('max_score')) is not int or task['max_score'] != self.max_score:
+            raise ValueError('Task max_score does not match the trusted project scale')
         self.task = json.loads(json.dumps(task))
         self.image_ids = list(image_ids)
         self.catalog_path = (catalog_path if catalog_path is not None else
@@ -75,12 +79,14 @@ class Session:
         self.rejection: str | None = None
         self.reviewed: set[int] = set()
         self.review_count = 0
-        self.gate = ValidationGate(catalog_path=self.catalog_path)
+        self.gate = ValidationGate(catalog_path=self.catalog_path,
+                                   expected_task_number=self.task_number, expected_max_score=self.max_score)
         self.validated: str | None = None
 
     def invalidate(self):
         self.validated = None
-        self.gate = ValidationGate(catalog_path=self.catalog_path)
+        self.gate = ValidationGate(catalog_path=self.catalog_path,
+                                   expected_task_number=self.task_number, expected_max_score=self.max_score)
 
     def execute(self, name: str, args: dict[str, Any]) -> dict:
         specs = {'read_file': {'path'}, 'write_file': {'path', 'content'},

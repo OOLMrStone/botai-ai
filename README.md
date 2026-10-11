@@ -7,10 +7,12 @@ Python 3.14 · FastAPI · OpenAI-compatible model · Docker Compose
 ## Portable local app
 
 The [local app](docs/LOCAL_APP.md) reuses the photo form and current task-16
-pipeline, reads prompts beside the executable, and calls DeepSeek directly
+pipeline, selects task14–20 using shared and selected-task prompts beside the executable, and calls DeepSeek directly
 without Selectel or its gateway. It shows tool activity and a one-second waiting
 indicator. Native Windows/macOS builds require no Python on the tester's machine.
-Start from source without charges: `.venv/bin/python scripts/run_local.py --mock`.
+Only task16 currently has a complete authored package; other numbers activate
+when their own three prompt files are installed. Missing packages are shown in
+the form before submission. Start from source without charges: `.venv/bin/python scripts/run_local.py --mock`.
 
 ## Run locally without model charges
 
@@ -53,7 +55,7 @@ Paid model calls require a direct user request in the current message. Offline t
 
 | Endpoint | Purpose |
 | --- | --- |
-| `POST /api/v1/photo-check` | Multipart upload: one `task_image`, one to four repeated `solution_images` fields |
+| `POST /api/v1/photo-check` | Multipart upload: one `task_image`, one to four repeated `solution_images`, optional `task_number`14–20 (default16) |
 | `GET /api/v1/photo-check/config` | Form configuration and local test identity; no model call |
 | `GET /ui/` | Standalone test form |
 | `GET /health` | Application liveness when called directly on the application |
