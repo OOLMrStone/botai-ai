@@ -12,10 +12,12 @@ from starlette.datastructures import UploadFile
 
 from app.core.errors import LLMTimeoutError, ServiceError, ValidationError
 from app.grading.images import MAX_IMAGE_BYTES, sanitize
+from app.grading.package import DEFAULT_TASK, MAX_SCORES, SUPPORTED_TASKS, TASK_TITLES
 from app.grading.service import GradingService
 
 router = APIRouter(prefix='/api/v1/photo-check', tags=['standalone photo grading'])
 MAX_BODY = 40 * 1024 * 1024 + 1024 * 1024
+REQUIRED_FIELDS = {'task_image', 'solution_images'}
 
 
 class UploadTooLarge(Exception):
@@ -71,7 +73,9 @@ async def config(request: Request):
     response = JSONResponse({'mode': settings.llm.provider,
             'model': settings.llm.model if settings.llm.provider != 'mock' else 'mock',
             'deadline_seconds': settings.photo.deadline_seconds, 'max_solution_images': 4,
-            'max_image_mb': 8, 'test_ids': True}, headers={'Cache-Control': 'no-store'})
+            'max_image_mb': 8, 'test_ids': True, 'default_task': DEFAULT_TASK,
+            'tasks': [{'number': n, 'title': TASK_TITLES[n], 'max_score': MAX_SCORES[n]}
+                      for n in sorted(SUPPORTED_TASKS)]}, headers={'Cache-Control': 'no-store'})
     set_identity(response, cookie, request)
     return response
 
@@ -87,9 +91,17 @@ async def check(request: Request):
     request.app.state.photo_active += 1
     try:
         async with asyncio.timeout(settings.photo.deadline_seconds):
-            async with request.form(max_files=5, max_fields=0, max_part_size=MAX_IMAGE_BYTES) as form:
-                if set(form.keys()) != {'task_image', 'solution_images'}:
+            async with request.form(max_files=5, max_fields=1, max_part_size=MAX_IMAGE_BYTES) as form:
+                if not REQUIRED_FIELDS <= set(form.keys()) <= REQUIRED_FIELDS | {'task_number'}:
                     raise ValidationError('Прикрепи одно фото условия и эталона, затем фотографии решения')
+                task_number = DEFAULT_TASK
+                if 'task_number' in form:
+                    values = form.getlist('task_number')
+                    if (len(values) != 1 or not isinstance(values[0], str)
+                            or not re.fullmatch(r'[0-9]{2}', values[0]) or int(values[0]) not in SUPPORTED_TASKS):
+                        raise ValidationError('Выбери номер задания: '
+                                              + ', '.join(str(n) for n in sorted(SUPPORTED_TASKS)))
+                    task_number = int(values[0])
                 tasks = form.getlist('task_image')
                 solutions = form.getlist('solution_images')
                 if len(tasks) != 1 or not 1 <= len(solutions) <= 4:
@@ -103,7 +115,7 @@ async def check(request: Request):
             # This explicitly represents a local test user, never a database identity.
             user_id, cookie = test_identity(request)
             service = request.app.state.photo_service_factory(settings)
-            raw = await service.run(images[0], images[1:], user_id)
+            raw = await service.run(images[0], images[1:], user_id, task_number)
             response = Response(raw, media_type='application/json', headers={'Cache-Control': 'no-store'})
             set_identity(response, cookie, request)
             return response

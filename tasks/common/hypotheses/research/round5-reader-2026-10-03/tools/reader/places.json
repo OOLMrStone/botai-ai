@@ -1,0 +1,26 @@
+{
+  "note": "Спорные места: right — что написал ученик (верное прочтение), wrong — «исправленный» вариант модели. Регулярные выражения применяются к расшифровке после нормализации (без пробелов, π→pi).",
+  "places": [
+    {"run": "v4-14", "id": "13.2.3", "kind": "problem", "what": "x2 = −π", "right": "x_?2=-pi(?![0-9/])", "wrong": "x_?2=-3pi"},
+    {"run": "tr2-14", "id": "13.2.4", "kind": "problem", "what": "серия π/4 + πn", "right": "pi/4\\+pin", "wrong": "pi/4\\+2pin"},
+    {"run": "v4-14", "id": "13.3.2", "kind": "problem", "what": "π ≤ k ≤ 5π/2", "right": "pi(≤|<=)k(≤|<=)5pi/2", "wrong": "pi(≤|<=)(pik|kpi)(≤|<=)5pi/2"},
+    {"run": "v4-14", "id": "13.3.3", "kind": "problem", "what": "в ответе π/2", "right": "(;|,)pi/2", "wrong": "5pi/2"},
+    {"run": "v4-14", "id": "13.5.2", "kind": "problem", "what": "1 5/6 < k", "right": "15/6<k", "wrong": "15/12<k"},
+    {"run": "v4-14", "id": "13.5.3", "kind": "problem", "what": "x = π + πd", "right": "pi\\+pid", "wrong": "pi\\+2pid"},
+    {"run": "v4-14", "id": "13.6.3", "kind": "problem", "what": "8 = 4 sin x", "right": "8=4sinx|4sinx=8", "wrong": "16=4sinx|4sinx=16"},
+    {"run": "v4-14", "id": "13.6.3", "kind": "problem", "what": "ОДЗ 4 sin x ≠ 0", "right": "4sinx(≠|!=)0", "wrong": "4sinx>0"},
+    {"run": "tr-15", "id": "14.1.2", "kind": "problem", "what": "MC = … = 1/3", "right": "4/9\\)?=1/3", "wrong": "1/\\(?3(√|sqrt)2"},
+    {"run": "v4-15", "id": "14.4.4", "kind": "problem", "what": "12√15/15", "right": "12(√|sqrt)15", "wrong": "12(√|sqrt)5/15"},
+    {"run": "reshu-14", "id": "515919.2", "kind": "problem", "what": "5π/6 в ответе", "right": "5pi/6", "wrong": "7pi/6"},
+    {"run": "reshu-14", "id": "513092.1", "kind": "problem", "what": "π/4 в правой колонке", "right": "pi/4", "wrong": null},
+    {"run": "v4-15", "id": "14.5.1", "kind": "problem", "what": "BO ⊥ ZR", "right": "BO(⊥|perp)ZR", "wrong": null},
+    {"run": "v4-14", "id": "13.3.1", "kind": "control", "what": "7π/4", "right": "7pi/4", "wrong": null},
+    {"run": "v4-14", "id": "13.4.2", "kind": "control", "what": "19π/6", "right": "19pi/6|19/6pi", "wrong": null},
+    {"run": "v4-14", "id": "13.4.2", "kind": "control", "what": "7π/2", "right": "7pi/2", "wrong": null},
+    {"run": "v4-14", "id": "13.1.1", "kind": "control", "what": "−11π/4", "right": "-11pi/4", "wrong": null},
+    {"run": "v4-14", "id": "13.2.1", "kind": "control", "what": "−13π/4", "right": "-13pi/4", "wrong": null},
+    {"run": "v4-15", "id": "14.1.1", "kind": "control", "what": "√ в ответе 15", "right": "(√|sqrt)", "wrong": null},
+    {"run": "reshu-14", "id": "515919.3", "kind": "control", "what": "±√3/4 (описка ученика)", "right": "(√|sqrt)3/4", "wrong": "(√|sqrt)3/2"},
+    {"run": "reshu-14", "id": "500366.3", "kind": "control", "what": "двойное неравенство", "right": "(≤|<=)", "wrong": null}
+  ]
+}

@@ -1,0 +1,837 @@
+{
+ "13.1.2": {
+  "text": "## Фото 1, полоса 1 из 8\n13. а) 1 - cos2x + √2 sinx = √2 - 2 sinx (x ≠ π/2)\n1 - (1 - 2sin²x) + √2 sinx = √2 - 2 sinx\n2sin²x - 2 sinx + √2 sinx - √2 = 0\n2 sinx (sinx - 1) + √2 (sinx - 1) = 0\n[неразборчиво: 2 sinx | (sinx - 1)]\n\n## Фото 1, полоса 2 из 8\n2 sinx (sinx - 1) + √2 (sinx - 1) = 0\n(2 sinx + √2)(sinx - 1) = 0\n2 sinx + √2 = 0 или sinx - 1 = 0\nsinx = -√2/2 sinx = 1\nx = π/4 + πk, k ∈ Z [неразборчиво: x = π/2 + 2πk, k ∈ Z | x = π/2 + πk, k ∈ Z]\n\n## Фото 1, полоса 3 из 8\n[неразборчиво: верхняя строка обрезана]\nx = -π/4 + 2πk, k ∈ ℝ\nx = -3π/4 + 2πk, k ∈ ℝ\nx = π/2 + 2πk, k ∈ ℝ\n\n## Фото 1, полоса 4 из 8\nб) Проведу отбор корней на окружности [-3π; -3π/2] с помощью\nединичной окружности:\n\n## Фото 1, полоса 5 из 8\n[Слева: фрагмент тригонометрической окружности; в верхней точке отмечена точка с подписью (3) и значением −3π/2; внизу видна часть вертикальной оси и начало другой отметки]\n(1): -π/4 - 2π = -9π/4\n(2): -3π/4 - 2π = -11π/4\n\n## Фото 1, полоса 6 из 8\n[Тригонометрическая окружность: горизонтальная ось с точкой на левом конце, подпись −3π; вертикальная ось; дуга в верхней части окружности со стрелкой; отмеченные точки на нижней части окружности, одна с подписью (2)]\n(2): - π/4 - 2π = - 9π/4\n(3): - 3π/2\n\n## Фото 1, полоса 7 из 8\n[Фрагмент тригонометрической окружности: вертикальная ось, дуга в нижней части; слева от дуги подпись «(1)», справа — «(2)»; на дуге отмечены две точки: слева и справа, обе без подписей значений]\n\n## Фото 1, полоса 8 из 8\nОтвет: а) π/2 + 2πk; -π/4 + 2πk; -3π/4 + 2πk, k ∈ Z\nб) -3π/2; -11π/4; -9π/4",
+  "seconds": 12,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3079,
+    "completion_tokens": 119,
+    "duration_ms": 2054
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3135,
+    "completion_tokens": 122,
+    "duration_ms": 1533
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3135,
+    "completion_tokens": 62,
+    "duration_ms": 1185
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3135,
+    "completion_tokens": 31,
+    "duration_ms": 1199
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3135,
+    "completion_tokens": 90,
+    "duration_ms": 1477
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3135,
+    "completion_tokens": 94,
+    "duration_ms": 1570
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3135,
+    "completion_tokens": 67,
+    "duration_ms": 1241
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3079,
+    "completion_tokens": 57,
+    "duration_ms": 1179
+   }
+  ]
+ },
+ "13.1.4": {
+  "text": "## Фото 1, полоса 1 из 8\n√13\na) 1 - cos2x + √2 sinx = √2 - 2sin(x + π)\n[зачёркнуто: 1 - 1] + 2sin²x + √2 sinx = √2 - 2sin(π + x)\n\n## Фото 1, полоса 2 из 8\n[зачёркнуто: 1] - [неразборчиво: 1 | x] + 2sin²x + √2 sinx = √2 - 2sin(π + x)\n2sin²x + √2 sinx = √2 + 2sinx\n2sin²x - 2sinx + √2 sinx - √2 = 0\n2sinx(sinx - 1) + √2(sinx - 1) = 0\n\n## Фото 1, полоса 3 из 8\n2sinx(sinx - 1) + √2(sinx - 1) = 0\n(sinx - 1)(2sinx + √2) = 0\nsinx - 1 = 0 или 2sinx + √2 = 0\n[неразборчиво: √2 | 2]\n\n## Фото 1, полоса 4 из 8\nsinx - 1 = 0\nsinx = 1\nx = π/2 + πn, n ∈ Z\n\n2sinx + √2 = 0\nsinx = -√2/2\nx = -π/4 + 2πk, k ∈ Z\nx = -3π/4 + 2πk, k ∈ Z\n\n## Фото 1, полоса 5 из 8\nx = -π/4 + 2πk, k ∈ Z\n1) [-3π; -3π/2]\n1) -3π ≤ π/2 + πn ≤ -3π/2 | : π\n2) -3π ≤ -π/4 + 2πk ≤ -3π/2 | : π\n\n## Фото 1, полоса 6 из 8\n1) -3Π ≤ 11/2 + Πn ≤ -31/2 | : Π\n-3 ≤ 11/2 + n ≤ -31/2\n-6 ≤ 11 + 2n ≤ -3\n-17 ≤ n ≤ -14\n\n2) -3Π ≤ -Π/4 + 2Πk ≤ -31/2 | : Π\n-3 ≤ -1/4 + 2k ≤ -31/2\n-12 ≤ -1 + 8k ≤ -6\n-11 ≤ k ≤ -5\n\n## Фото 1, полоса 7 из 8\n- 7/2 ≤ n ≤ - 4/2\n- 3 1/2 ≤ n ≤ -2\nn = -2    x = π/2 - 2π = - 3π/2\n- 11/8 ≤ k ≤ - 5/8\nk = -1    x = - π/4 - 2π = - 9π/4\n3) -3π ≤ - 3π/4 + 2πk ≤ - 3π/2   / : π\n\n## Фото 1, полоса 8 из 8\nn = -2    x = π/2 - 2π = -3π/2\nn = -3    x = π/2 - 3π = -5π/2\n\n3) -3π ≤ π/4 + 2πk ≤ -3π/2\n-3 ≤ 1/4 + 2k ≤ -3/2\n-12 ≤ -3 + 8k ≤ -6\n-9/8 ≤ k ≤ -3/8\n\n## Фото 2, полоса 1 из 8\nВот расшифровка фрагмента рукописного решения:\n\n[Рисунок: неразборчиво: фрагмент строки с математическими вычислениями | часть записи обрезана]\n\n- 3π/... - 2π = - 11π/...\n\n## Фото 2, полоса 2 из 8\nk = -1    x = 4    πn - π/4\n\n## Фото 2, полоса 3 из 8\nНа изображении видна только узкая полоса с фрагментами символов, которые не складываются в читаемые строки. Распознать рукописный текст, математические выражения, ОДЗ, отбор корней или рисунок по этому фрагменту невозможно.\n\nПожалуйста, загрузите фотографию рукописного решения целиком или более полный её фрагмент.\n\n## Фото 2, полоса 4 из 8\nОтвет: а) $\\frac{\\pi}{2} + \\pi n, n \\in \\mathbb{Z}$  \nб) $-\\frac{11\\pi}{2}; -\\frac{9\\pi}{2}; -\\frac{3\\pi}{2}; -\\frac{5\\pi}{2}$\n\n## Фото 2, полоса 5 из 8\nОтвет: а) 2 [неразборчиво: πn | 2πn], n ∈ Z\nб) [неразборчиво: 4 | 9], [неразборчиво: 4 | 9], [неразборчиво: 2 | 3], 2\n\n## Фото 2, полоса 6 из 8\n- π/4 + 2πk, k ∈ Z\n\n## Фото 2, полоса 7 из 8\nНа изображении видна только нижняя часть листа с обрезанными строками. Читаемые фрагменты:\n\n[неразборчиво: 9 | g] [неразборчиво: π | n], k ∈ ℤ\n[неразборчиво: 3π | 3n] [неразборчиво: ...]\n\n## Фото 2, полоса 8 из 8\n- 2π/4 + 2πk, k ∈ Z",
+  "seconds": 45,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3200,
+    "completion_tokens": 63,
+    "duration_ms": 1230
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3257,
+    "completion_tokens": 106,
+    "duration_ms": 1453
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3257,
+    "completion_tokens": 72,
+    "duration_ms": 1216
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3314,
+    "completion_tokens": 79,
+    "duration_ms": 1254
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3257,
+    "completion_tokens": 74,
+    "duration_ms": 1260
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3257,
+    "completion_tokens": 119,
+    "duration_ms": 1538
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3257,
+    "completion_tokens": 114,
+    "duration_ms": 1634
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3200,
+    "completion_tokens": 104,
+    "duration_ms": 1264
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2906,
+    "completion_tokens": 61,
+    "duration_ms": 1293
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2894,
+    "completion_tokens": 16,
+    "duration_ms": 1014
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "length",
+    "prompt_tokens": 2894,
+    "completion_tokens": 8000,
+    "duration_ms": 20756
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2894,
+    "completion_tokens": 90,
+    "duration_ms": 1475
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2888,
+    "completion_tokens": 59,
+    "duration_ms": 1293
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2894,
+    "completion_tokens": 68,
+    "duration_ms": 1093
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2894,
+    "completion_tokens": 13,
+    "duration_ms": 1105
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2894,
+    "completion_tokens": 79,
+    "duration_ms": 1347
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2900,
+    "completion_tokens": 15,
+    "duration_ms": 1159
+   }
+  ]
+ },
+ "13.2.3": {
+  "text": "## Фото 1, полоса 1 из 8\n√13. a) cos 2x - √2 sin(x + π/4) - 1 = 0\n1 - 2sin²x + √2 sin x - 1 = 0\n\n## Фото 1, полоса 2 из 8\n- 2sin²x + √2 sinx = 0\n2sin²x - √2 sinx = 0\n\n## Фото 1, полоса 3 из 8\nsin x (2 sin x - √2) = 0\nI. sin x = 0\nx = [неразборчиво: πn | πk], n ∈ Z\n\n## Фото 1, полоса 4 из 8\nx = πn , n ∈ ℤ\n2sin x - √2 = 0\nsinx = √2/2\n\n## Фото 1, полоса 5 из 8\nsinx = [неразборчиво: √2/2 | √3/2]\nx = [зачёркнуто: π/4] + 2πk; k ∈ Z          x = 3π/4 + 2πl, l ∈ Z\n\n## Фото 1, полоса 6 из 8\nб) Проверим корни с помощью тригонометрической окружности на отрезке [-2π; -π/2]\n\n[Рисунок: фрагмент тригонометрической окружности; сверху подпись sinx; отмечена точка x₁ в третьей четверти и точка x на границе; над вертикальной осью подпись -3π/2]\n\nx₁ = -π/2 + π/4 = -13π/4\n\n## Фото 1, полоса 7 из 8\n[Слева: тригонометрическая окружность; горизонтальная ось направлена вправо, вертикальная — вверх; отмечены точки: слева на горизонтальной оси подписана `x₁`, справа на горизонтальной оси подписана `x₁`, сверху слева подписана `x₁`, сверху справа подписана `x₁`; в центре подписано `0`; справа внизу подписано `-2π cos x`]\n\n1\n2\n4\n4\n\nx₂ = -∅\n\nx₃ = -2∅\n\n## Фото 1, полоса 8 из 8\nx₃ = -2π\nОтвет a) x = πn, n ∈ ℤ ; x = π/4 + 2πk, k ∈ ℤ , x = 5π/4 + 2πk, k ∈ ℤ\nб) x = -13π/4 x = -π x = -2π",
+  "seconds": 10,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3143,
+    "completion_tokens": 44,
+    "duration_ms": 1265
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3143,
+    "completion_tokens": 27,
+    "duration_ms": 1094
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3143,
+    "completion_tokens": 40,
+    "duration_ms": 1198
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3143,
+    "completion_tokens": 27,
+    "duration_ms": 919
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3143,
+    "completion_tokens": 59,
+    "duration_ms": 1240
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3143,
+    "completion_tokens": 99,
+    "duration_ms": 1621
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3143,
+    "completion_tokens": 137,
+    "duration_ms": 1479
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3143,
+    "completion_tokens": 73,
+    "duration_ms": 1475
+   }
+  ]
+ },
+ "13.3.3": {
+  "text": "## Фото 1, полоса 1 из 8\nω13\nsin x · cos 2x + √2 cos²x + sin x = 0\nsin x (1 - 2 sin²x) + √2 cos²x + sin x = 0\n\n## Фото 1, полоса 2 из 8\nsin x ( 1 - 2 sin² x ) + √2 cos² x + sin x = 0\nsin x - [зачёркнуто: 2] 2 sin³ x + √2 cos² x + sin x = 0\n2 sin x - 2 sin³ x + √2 cos² x = 0\n\n## Фото 1, полоса 3 из 8\n2 sinx - 2 sin²x + √2 cos²x = 0\n2 sinx (1 - sin²x) + √2 cos²x = 0\n2 sinx · cos²x + √2 cos²x = 0\n\n## Фото 1, полоса 4 из 8\ncos²x (2sinx + √2) = 0\n[cos²x = 0\n2sinx = -√2\n=> [cosx = 0\nsinx = -√2/2\n=> [x = π/2 + πn, n ∈ ℤ\nx = -π/4 + 2πn, n ∈ ℤ\n\n## Фото 1, полоса 5 из 8\n[слева система]\n{ 2sinx = -√2\n{ sinx = -√2/2\n=>\n{ x = -π/4 + 2πn, n ∈ Z\n{ x = -3π/4 + 2πn, n ∈ Z\n\nб) отберем корни с помощью триг. окруж-ти, кот ∈ [3π/2, 3π]\n[неразборчиво: 8π-π | 8π-π] = [неразборчиво: 7π | 4π]\n\n## Фото 1, полоса 6 из 8\nt₁ = 2π - π/4 = (8π - π)/4 = 7π/4\n=> нам подх. 3π/2, 7π/4, π/2\n[справа фрагмент тригонометрической окружности: вертикальная ось с подписью sin x, горизонтальная ось с подписью π/2, выделена дуга в верхней части окружности штриховкой; в правом верхнем углу фрагмент записи [зачёркнуто: …] [π/2, 3π/2]]\n\n## Фото 1, полоса 7 из 8\nОтвет: а) x = π/2 + πn, n ∈ Z\nx = -π/4 + 2πn, n ∈ Z   x = -3π/4 + 2πn, n ∈ Z\n[справа изображена тригонометрическая окружность: горизонтальная ось подписана cos x, вертикальная ось не подписана; на окружности отмечены точки: 3π (слева на горизонтальной оси), 2π (справа на горизонтальной оси), -π/2 (внизу на вертикальной оси); дуга окружности выделена штриховкой]\n\n## Фото 1, полоса 8 из 8\nx = -π/4 + 2πn, n ∈ Z          , x = -3π/4 + 2πn, n ∈ Z\nб) 3π/2 ; 7π/4 ; π/2\n\n[Рисунок: фрагмент тригонометрической окружности; в верхней части вертикальная линия с подписью -π/2, от неё вправо идёт горизонтальная пунктирная линия; в нижней части окружности отмечена точка с подписью 3π/2; вдоль окружности справа нанесены короткие штрихи]",
+  "seconds": 12,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3127,
+    "completion_tokens": 46,
+    "duration_ms": 1074
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3182,
+    "completion_tokens": 74,
+    "duration_ms": 1292
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3182,
+    "completion_tokens": 55,
+    "duration_ms": 1221
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3182,
+    "completion_tokens": 80,
+    "duration_ms": 1539
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3182,
+    "completion_tokens": 127,
+    "duration_ms": 1586
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3182,
+    "completion_tokens": 130,
+    "duration_ms": 1568
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3182,
+    "completion_tokens": 140,
+    "duration_ms": 1651
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3127,
+    "completion_tokens": 137,
+    "duration_ms": 1673
+   }
+  ]
+ },
+ "13.4.4": {
+  "text": "## Фото 1, полоса 1 из 8\na) sin 2x + 2sin(-x) + cos(-x) - 1 = 0\nsin 2x = 2sin x cos x, sin(-x) = -sin x, cos(-x) = cos x, тогда:\n2sin x cos x - 2sin x + cos x - 1 = 0\n\n## Фото 1, полоса 2 из 8\n2sinxcosx - 2sinx + cosx - 1 = 0\n2sinx (cosx - 1) + cosx - 1 = 0\n(2sinx - 1)(cosx - 1) = 0\n[неразборчиво: 2sinx - 1 = 0 | 2sinx = 1] [неразборчиво: cosx - 1 = 0 | cosx = 1]\nx = π + 2πn, n ∈ Z\n\n## Фото 1, полоса 3 из 8\n[слева система из двух уравнений]\n2sinx - 1 = 0\ncosx - 1 = 0\n\n[стрелка вправо]\n\n[система из двух уравнений]\nsinx = 0,5\ncosx = 1\n\n[стрелка вправо]\n\n[система из трёх строк]\nx = π/6 + 2πn, n ∈ Z\nx = 5π/6 + 2πn₁, n₁ ∈ Z\nx = 2πn₂, n₂ ∈ Z\n\n## Фото 1, полоса 4 из 8\n[сверху справа фигурная скобка]\nx = 2πn, n ∈ Z\nб) Отбери корни, используя единичную\nокружность\n\n## Фото 1, полоса 5 из 8\nокружность\n[Рисунок: фрагмент тригонометрической окружности; ось y направлена вверх; отмечены две точки на верхней дуге: слева подпись 7π/6, справа подпись 13π/6; между точками проведена выделенная дуга; внизу справа видна часть подписи, похожей на 2x]\n\n## Фото 1, полоса 6 из 8\n[Рисунок: фрагмент тригонометрической окружности с осями; ось X направлена вправо, подписана «X»; на окружности отмечены точки: справа подпись «2π», снизу подпись «3π/2», слева вверху подпись «π»; в верхней части окружности проведены два отрезка из центра к точкам на окружности]\n\n## Фото 1, полоса 7 из 8\n[Сверху по центру вертикальная черта, слева от неё дробь: числитель неразборчиво: 13 | 15, знаменатель 2]\nПодходят 2π, 13π/6, 13π/6\nОтвет: а) x = π + 2πk, x = 5π/6 + 2πk, x = -7π/6 + 2πk, k ∈ Z [неразборчиво: б | 6]\n\n## Фото 1, полоса 8 из 8\nОтвет: а) x = 5π/6 + 2πn₁, x = 5π/6 + 2πn₂, x = 2πn₃, n₁, n₂, n₃ ∈ Z\nб) x = 2π, x = 13π/6, x = 17π/6",
+  "seconds": 11,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3191,
+    "completion_tokens": 75,
+    "duration_ms": 1350
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3247,
+    "completion_tokens": 118,
+    "duration_ms": 1569
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3247,
+    "completion_tokens": 120,
+    "duration_ms": 1563
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3247,
+    "completion_tokens": 42,
+    "duration_ms": 1076
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3247,
+    "completion_tokens": 90,
+    "duration_ms": 1411
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3247,
+    "completion_tokens": 96,
+    "duration_ms": 1479
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3247,
+    "completion_tokens": 113,
+    "duration_ms": 1494
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3191,
+    "completion_tokens": 76,
+    "duration_ms": 1353
+   }
+  ]
+ },
+ "13.6.3": {
+  "text": null,
+  "seconds": 58,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2952,
+    "completion_tokens": 89,
+    "duration_ms": 1294
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3005,
+    "completion_tokens": 98,
+    "duration_ms": 1614
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3005,
+    "completion_tokens": 151,
+    "duration_ms": 1691
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3005,
+    "completion_tokens": 116,
+    "duration_ms": 1630
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3005,
+    "completion_tokens": 112,
+    "duration_ms": 1669
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3005,
+    "completion_tokens": 60,
+    "duration_ms": 1204
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3005,
+    "completion_tokens": 58,
+    "duration_ms": 1135
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2952,
+    "completion_tokens": 65,
+    "duration_ms": 1359
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2875,
+    "completion_tokens": 44,
+    "duration_ms": 1210
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2857,
+    "completion_tokens": 73,
+    "duration_ms": 1337
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "length",
+    "prompt_tokens": 2857,
+    "completion_tokens": 8000,
+    "duration_ms": 20678
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "length",
+    "prompt_tokens": 2857,
+    "completion_tokens": 8000,
+    "duration_ms": 20581
+   }
+  ]
+ },
+ "500366.1": {
+  "text": "## Фото 1, полоса 1 из 8\nC1.\na) cos2x + sin²x = 0,5\n\n## Фото 1, полоса 2 из 8\ncos²x - sin²x + sin²x = 0,5\ncos²x = 1/2\n\n## Фото 1, полоса 3 из 8\ncos²x = 1/2\ncos x = ±1/√2\n\n## Фото 1, полоса 4 из 8\nx = ±arccos 1/4 + 2πk, или x = π - arccos 1/4 + 2πk\nk ∈ Z.\n\n## Фото 1, полоса 5 из 8\nб) [-2π; -2π]\n\nx = -π + arccos 1/4 + 2πk, k ∈ Z.\n\n-2π/2\n\n## Фото 1, полоса 6 из 8\nб) [-π/2, -2π]\n\n1) (π - arccos 1/4) - 2π = -arccos 1/4 - π\n\n[Рисунок: фрагмент тригонометрической окружности; отмечены точки с подписями arccos 1/4 и -arccos 1/4, проведены линии к точкам на окружности]\n\n## Фото 1, полоса 7 из 8\n1) \\((\\pi - \\arccos \\frac{1}{4}) - 2\\pi = -\\arccos \\frac{1}{4} - \\pi\\)\n2) \\(-\\pi + \\arccos \\frac{1}{4} - 2\\pi = \\arccos \\frac{1}{4} - 3\\pi\\)\n\n[Справа изображена тригонометрическая окружность. На ней отмечены точки с подписями: слева \\(-3\\pi\\), справа \\(-2\\pi\\), внутри отрезка отмечены точки \\(-\\frac{1}{4}\\) и \\(\\frac{1}{4}\\).]\n\n## Фото 1, полоса 8 из 8\n3) -arcsin 1/4 - 2π\n[справа фрагмент тригонометрической окружности; внизу подписи: -arcsin 1/4, -arccos 1/4]",
+  "seconds": 10,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2937,
+    "completion_tokens": 17,
+    "duration_ms": 1137
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2987,
+    "completion_tokens": 25,
+    "duration_ms": 978
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2987,
+    "completion_tokens": 17,
+    "duration_ms": 879
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2987,
+    "completion_tokens": 38,
+    "duration_ms": 1138
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2987,
+    "completion_tokens": 37,
+    "duration_ms": 1418
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2987,
+    "completion_tokens": 91,
+    "duration_ms": 1326
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2987,
+    "completion_tokens": 136,
+    "duration_ms": 1687
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2937,
+    "completion_tokens": 52,
+    "duration_ms": 1248
+   }
+  ]
+ },
+ "505470.1": {
+  "text": "## Фото 1, полоса 1 из 8\nc 1.  2√3 cos²(3π/2 + x) - sin 2x = 0                  [3π/2 ; 3π]\na) cos(3π/2 + x) = sin x\n\n## Фото 1, полоса 2 из 8\nsin 2x = 2 sinx cosx\n2√3 sin²x - 2 sinx cosx = 0\n2 sinx (√3 sinx - cosx) = 0\n\n## Фото 1, полоса 3 из 8\n2 sinx (√3 sinx - cosx) = 0\n2 sinx = 0\nsinx = 0\n(√3 sinx - cosx) / cosx = 0   / : cosx ≠ 0\n√3 tgx - 1 = 0\n\n## Фото 1, полоса 4 из 8\nsinx = 0\nx = πk; k ∈ Z\nx = 2π\nx = π\n[слева внизу фрагмент тригонометрической окружности с выделенной дугой, отмечены точки 0 и π]\n√3 tgx - 1 = 0\n√3 tgx = 1\ntgx = 1/√3\n\n## Фото 1, полоса 5 из 8\n[слева: тригонометрическая окружность с отмеченными точками, подпись справа от окружности] x = 3π\ntgx = 1/√3\nx = π/3 + πk ; k ∈ Z\n[ниже: фрагмент чертежа с вертикальной осью и штриховкой, далее неразборчиво: π/2 | 4π]\n\n## Фото 1, полоса 6 из 8\n[рисунок: тригонометрическая окружность с осями; на окружности отмечена дуга штриховкой в первой четверти; отмечена точка на дуге, из неё проведена вертикальная линия вниз; рядом с точкой подпись отсутствует; около окружности стоит цифра 1)]\n\nx = [неразборчиво: π/3 | π/5] + 2π = 4π/3\n\nОтвет: а) x = [неразборчиво: π/3 | π/5]; б) [неразборчиво: 4π/3 | 4π/5]\n\n## Фото 1, полоса 7 из 8\nОтвет: а) x = πk; k ∈ Z\nx = π/3 + πk; k ∈ Z\nб) x = 2π\n\n## Фото 1, полоса 8 из 8\nб) x = 2 //\nx = 3 //\nx = 4π/3",
+  "seconds": 10,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2974,
+    "completion_tokens": 51,
+    "duration_ms": 1091
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3015,
+    "completion_tokens": 44,
+    "duration_ms": 1029
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3015,
+    "completion_tokens": 63,
+    "duration_ms": 1264
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3015,
+    "completion_tokens": 84,
+    "duration_ms": 1252
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3015,
+    "completion_tokens": 92,
+    "duration_ms": 1456
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3015,
+    "completion_tokens": 143,
+    "duration_ms": 1770
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3015,
+    "completion_tokens": 33,
+    "duration_ms": 1063
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2974,
+    "completion_tokens": 19,
+    "duration_ms": 954
+   }
+  ]
+ },
+ "513092.1": {
+  "text": "## Фото 1, полоса 1 из 8\n15. a) 2cos 2x + 4cos(3π/2 - x) + 1 = 0\n2cos2x - 4sinx + 1 = 0\n2(cos²x - sin²x) - 4sinx + sin²x + cos²x = 0\n4/6 ≤ k ≤ 11/12\nнет целых k\n3π/2 ≤ 5π/6 + 2πk ≤ 3π\n\n## Фото 1, полоса 2 из 8\n2(cosx - sinx) - 4sinx + sin²x + cosx = 0\n2cos²x - 2sin²x + sin²x + cos²x - 4sinx = 0\n3cos²x - sin²x - 4sinx = 0\n3cos²x - sinx(3sinx + 4) = 0\n3(1 - sin²x) - sin²x - 4sinx = 0\n3 - 3sin²x - sin²x - 4sinx = 0\n\n2 = 6\n9π/6 - 5π/6 ≤ 2πk ≤ 12π/6 - 5π/6\n4π/6 ≤ 2πk ≤ 7π/6\n\n## Фото 1, полоса 3 из 8\n3 - 3sin²x - sin²x - 4sinx = 0\n- 4sin²x - 4sinx + 3 = 0 | · (-1)\n4sin²x + 4sinx - 3 = 0\nПусть sinx = t,   -1 ≤ t ≤ 1\n4t² - 4t - 3 = 0\nD = 16 + 4·4·3 = 16 + 48 = 64\n\n[правая колонка]\nπ/6 ≤ 2πk ≤ 7π/6\n1/3 ≤ 2k ≤ 7/6\n1/6 ≤ k ≤ 7/12\nsinx = -1/2\n\n## Фото 1, полоса 4 из 8\n4t² - 4t - 3 = 0\nD = 16 + 4·4·3 = 16 + 48 = 64\nt₁,₂ = (4 ± 8) / 8 = ↳ 12/8 = не уд.\n↳ -4/8 = -1/2\nВернемся к исходной переменной\n\nsin x = -1/2\nx = (-1)ⁿ⁺¹ arcsin 1/2 + πk, k ∈ Z\nx = π/6 + πk, k ∈ Z\n[x = π/6 + πk, k ∈ Z\n\n## Фото 1, полоса 5 из 8\nВернемся к исходной переменной\nsin x = -1/2\nx = (-1)^(k+1) arcsin 1/2 + πk, k ∈ Z\nx = (-1)^(k+1) π/6 + πk, k ∈ Z\n[слева вертикальная фигурная скобка]\nx = π/4 + 2πk, k ∈ Z\nx = 3π/4 + 2πk, k ∈ Z\nб) 3π/2 ≤ π/4 + 2πk ≤ 3π\n\n## Фото 1, полоса 6 из 8\nx = (-1)ᵏ · π/6 + πk, k ∈ ℤ\n[ x = π/6 + 2πk, k ∈ ℤ\n[ x = 5π/6 + 2πk, k ∈ ℤ\nб) Отберем корни на [ 3π/2 ; 3π ]\n[неразборчиво: π/2 = 4 | π/2 = 4 ...]\nπ/2 ≤ 2πk ≤ 3π\n1/4 ≤ k ≤ 3/2\nk = 1 : x = 9π/4\n\n## Фото 1, полоса 7 из 8\nб) Отберем корни на [3π/2; 3π]\n3π/2 ≤ π/6 + 2πk ≤ 3π\n9π/6 - π/6 ≤ 2πk ≤ 18π/6 - π/6\nk = 1 : x = 3π/4\n3π/2 ≤ 3π/4 + 2πk ≤ 3π\n3/4 ≤ 2k ≤ 9/4\n3/8 ≤ k ≤ 9/8\n\n## Фото 1, полоса 8 из 8\n\\(\\frac{3\\pi}{6} - \\frac{\\pi}{8} \\leq 2\\pi k \\leq \\frac{11\\pi}{6} - \\frac{\\pi}{6}\\)\n\n\\(\\frac{4\\pi}{3} \\leq 2\\pi k \\leq \\frac{11\\pi}{6}\\)\n\n\\(\\frac{4}{3} \\leq 2k \\leq \\frac{11}{6}\\)\n\n\\(\\frac{3}{8} \\leq k \\leq \\frac{9}{8}\\)\n\n\\(k=1 : x = \\frac{11\\pi}{4}\\)\n\nОтвет: а) \\(\\frac{\\pi}{4} + 2\\pi k ; \\frac{3\\pi}{4} + 2\\pi k\\)\n\nб) \\(\\frac{9\\pi}{4} ; \\frac{11\\pi}{4}\\)",
+  "seconds": 13,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3218,
+    "completion_tokens": 107,
+    "duration_ms": 1714
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3277,
+    "completion_tokens": 176,
+    "duration_ms": 1678
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3277,
+    "completion_tokens": 162,
+    "duration_ms": 1892
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3277,
+    "completion_tokens": 138,
+    "duration_ms": 1740
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3277,
+    "completion_tokens": 129,
+    "duration_ms": 1577
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3277,
+    "completion_tokens": 134,
+    "duration_ms": 1592
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3277,
+    "completion_tokens": 116,
+    "duration_ms": 1457
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3218,
+    "completion_tokens": 169,
+    "duration_ms": 1408
+   }
+  ]
+ },
+ "515919.2": {
+  "text": "## Фото 1, полоса 1 из 8\n15) a) cos2x + sin²x = 0,75\ncos2x = cos²x - sin²x\n\n## Фото 1, полоса 2 из 8\ncos 2x = cos x + sin x\ncos²x - sin²x + sin²x = 0,75\ncos²x = 0,75\n[неразборчиво: √ | 7]\n\n## Фото 1, полоса 3 из 8\ncos x = √3 / 2\n[фигурная скобка]\ncos x = − √3 / 2\nx = ± arccos(−√3 / 2) + 2πn,\n\n## Фото 1, полоса 4 из 8\nx = ± arccos(√3/2) + 2πn, n ∈ Z\nx = ± π/6 + 2πn, n ∈ Z\nx = ± arccos(-√3/2) + 2πn, n ∈ Z\nx = ± 5π/6 + 2πn, n ∈ Z\n\n## Фото 1, полоса 5 из 8\nx = -π/6 + 2πn, n ∈ Z\nx = -π/6 + 2πn, n ∈ Z\nб) [π; 5π/2]\n[13π; 5π; 11π]\n\n## Фото 1, полоса 6 из 8\nб) [ π ; 3π/2 ]\n[неразборчиво: 5π | 3π] / 6\n13π/6\ncos x\n[ 13π/6 ; 5π/6 ; 11π/6 ]\n\n## Фото 1, полоса 7 из 8\n[Слева: фрагмент тригонометрической окружности; отмечены точки: слева на горизонтальном диаметре с подписью «π», снизу слева с подписью «5π/6», справа снизу с подписью «11π/6»; дуга между точками «5π/6» и «11π/6» выделена штриховой линией; справа от окружности подпись «cos x». Справа: фрагмент графика косинусоиды с горизонтальной осью и отметкой «1» на вертикальной оси.]\n\n## Фото 1, полоса 8 из 8\n[слева видна нижняя часть дроби: [неразборчиво: 7/6 | 1/6], ниже — отдельная цифра 6]\n[по центру — фрагмент тригонометрической окружности: видны пересекающиеся линии и дуги, около одной из точек подпись, похожая на [неразборчиво: π/6 | 7/6]; рядом ещё одна подпись, похожая на 6]\n[справа — росчерки, разобрать нельзя]\n[в правом нижнем углу — печатный текст: РЕШУЕГЭ.РФ]",
+  "seconds": 12,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3100,
+    "completion_tokens": 28,
+    "duration_ms": 1410
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3159,
+    "completion_tokens": 49,
+    "duration_ms": 1485
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3159,
+    "completion_tokens": 47,
+    "duration_ms": 1416
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3159,
+    "completion_tokens": 77,
+    "duration_ms": 1496
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3159,
+    "completion_tokens": 55,
+    "duration_ms": 1143
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3159,
+    "completion_tokens": 57,
+    "duration_ms": 1364
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3159,
+    "completion_tokens": 134,
+    "duration_ms": 1630
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3100,
+    "completion_tokens": 143,
+    "duration_ms": 2034
+   }
+  ]
+ },
+ "515919.3": {
+  "text": "## Фото 1, полоса 1 из 8\n15 acos2x + sin²x = 0,75\n[справа фрагмент чертежа: вертикальная ось со стрелкой вверх, подпись у острия «sinx», слева от оси подпись «5π/2»]\n\n## Фото 1, полоса 2 из 8\n15) 4cos2x sin2x = 0,75\ncos²x - sin²x + sin²x = 0,75\ncos²x = 3/4\n[фрагмент тригонометрической окружности; справа подпись 13π/6]\n\n## Фото 1, полоса 3 из 8\ncos²x = 3/4\ncos x = ±√3/4\n[справа виден фрагмент числовой прямой с отметкой π и точкой, около которой подписано 5π/6]\n\n## Фото 1, полоса 4 из 8\n[неразборчиво: cos x = ...]\nx₁ = ± π/6 + 2πk, k ∈ Z    x₂ = ± 5π/6 + 2πn, n ∈ Z\n[числовая прямая/ось cos x; отмечены точки, подписи неразборчивы]\n\n## Фото 1, полоса 5 из 8\nб) подберем корни, принадлежащие\n[фрагмент тригонометрической окружности; слева подпись 7π/6, справа подпись 11π/6; на дуге между ними отмечены точки]\n\n## Фото 1, полоса 6 из 8\nотрезку [π; 5π/2], с помощью тригоно-\nметрической окружности\n6\n[неразборчиво: зачёркнутое слово | рисунок] 6\n\n## Фото 1, полоса 7 из 8\nтригонометрической окружности\nОтвет: а) x = [неразборчиво: π/4 | π/6] + π/2 n, n ∈ Z   б) x = 5π/4 + 2πn, n ∈ Z   в) x = 7π/4, 11π/4, 13π/4\n\n## Фото 1, полоса 8 из 8\nОтвет: а) x = ± π/6 + 2πk, k ∈ ℤ; x = ± 5π/6 + 2πn, n ∈ ℤ; б) x = π/6, 5π/6, 13π/6",
+  "seconds": 11,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2923,
+    "completion_tokens": 61,
+    "duration_ms": 1095
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2923,
+    "completion_tokens": 64,
+    "duration_ms": 1203
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2923,
+    "completion_tokens": 50,
+    "duration_ms": 1196
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2923,
+    "completion_tokens": 74,
+    "duration_ms": 1612
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2923,
+    "completion_tokens": 55,
+    "duration_ms": 1182
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2923,
+    "completion_tokens": 46,
+    "duration_ms": 1495
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2923,
+    "completion_tokens": 78,
+    "duration_ms": 1576
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2923,
+    "completion_tokens": 59,
+    "duration_ms": 1318
+   }
+  ]
+ },
+ "559481.1": {
+  "text": "## Фото 1, полоса 1 из 8\nN13.\na) cos 2x + 0,5 = cos²x\n2cos²x - 1 + 0,5 - cos²x = 0\n\n## Фото 1, полоса 2 из 8\n2Cos²x - 1 + 0,5 - Cos²x = 0\nCos²x - 1/2 = 0\n(Cosx - 1/√2)(Cosx + 1/√2) = 0\n\n## Фото 1, полоса 3 из 8\n(cos x - √2/2)(cos x + √2/2) = 0\n(cos x - √2/2)(cos x + √2/2) = 0\n1. cos x = √2/2\n⇒\n[справа изображена тригонометрическая окружность: вертикальная ось с подписью Y, горизонтальная ось; на верхней дуге отмечены точки, около правой верхней точки подпись π/4 + 2πn, n ∈ Z, около левой верхней точки подпись 7π/4 + 2πn, n ∈ Z]\nx = ±π/4 + πk, k ∈ Z\n\n## Фото 1, полоса 4 из 8\n1. [неразборчиво: cos x = | cos x =] 1/2\n2. cos x = -√2/2 ⇒ [рисунок: тригонометрическая окружность; горизонтальная ось с подписью x справа; вертикальная ось; отмечены точки -√2/2 и √2/2 на горизонтальной оси; на окружности отмечены точки -3π/4 + 2πk, k ∈ Z и -π/4 + 2πk, k ∈ Z]\na) Ответ: ±π/4 + πk, k ∈ Z\n\n## Фото 1, полоса 5 из 8\nа) Ответ: ±π/4 + πk, k ∈ z.\nб) x ∈ [-3π; -3π/2]. Для отбора корней построена\nединичную окружность.\n\n## Фото 1, полоса 6 из 8\n[сверху неразборчиво: рукописный текст]\n[рисунок: фрагмент тригонометрической окружности; ось y направлена вверх; отмечена точка на верхней части окружности с подписью −3π/2; правее вертикальная линия и подпись −2π + π/4 = −7π/4]\nб) Ответ: −11π/4; −9π/4; −7π/4.\n\n## Фото 1, полоса 7 из 8\n[Рисунок: фрагмент тригонометрической окружности с горизонтальной осью, направленной вправо, подписанной «x». На окружности отмечены точки: слева подпись «-3π», справа подпись «-2π». Внутри окружности проведены радиусы к отмеченным точкам. Слева вверху подпись «-√3/2», справа вверху подпись «√3/2». Внизу справа подпись «-2π - π = -3π». Слева внизу неразборчиво: «-3π + π =»]\n\n## Фото 1, полоса 8 из 8\n[фрагмент тригонометрической окружности; на окружности отмечены точки, около правой верхней точки подпись со стрелкой: −2π−π/4 = −9π/4]\n\n− 3π + π/4 =\n= − 11π/4\n\nРЕШУЕГЭ.РФ",
+  "seconds": 12,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3127,
+    "completion_tokens": 38,
+    "duration_ms": 1357
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3182,
+    "completion_tokens": 54,
+    "duration_ms": 1156
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3182,
+    "completion_tokens": 151,
+    "duration_ms": 1688
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3182,
+    "completion_tokens": 132,
+    "duration_ms": 1683
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3182,
+    "completion_tokens": 44,
+    "duration_ms": 1269
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3182,
+    "completion_tokens": 106,
+    "duration_ms": 1518
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3182,
+    "completion_tokens": 148,
+    "duration_ms": 1732
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3127,
+    "completion_tokens": 72,
+    "duration_ms": 1371
+   }
+  ]
+ }
+}

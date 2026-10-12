@@ -308,3 +308,39 @@ def test_cli_catalog_and_default_from_other_directory(response, tmp_path):
     catalog.unlink()
     result = subprocess.run(command, cwd=tmp_path, capture_output=True, text=True)
     assert result.returncode != 0 and "INVALID" in result.stderr
+
+
+@pytest.mark.parametrize("task_number,max_score,score,valid", [
+    (14, 2, 2, True), (14, 2, 3, False), (15, 3, 3, True), (15, 3, 4, False),
+    (18, 3, 0, True), (18, 3, 4, False),
+])
+def test_score_range_follows_task(response, task_number, max_score, score, valid):
+    response["task"]["task_number"] = task_number
+    response["task"]["max_score"] = max_score
+    response["grading"]["score"] = score
+    errors = validator.validate_response(response)
+    assert (errors == []) is valid
+    if not valid:
+        assert any("$.grading.score" in e for e in errors)
+
+
+@pytest.mark.parametrize("task_number,max_score", [(14, 3), (15, 2), (18, 2)])
+def test_max_score_must_match_task(response, task_number, max_score):
+    response["task"]["task_number"] = task_number
+    response["task"]["max_score"] = max_score
+    response["grading"]["score"] = 0
+    assert any("$.task.max_score" in e for e in validator.validate_response(response))
+
+
+@pytest.mark.parametrize("task_number", [13, 17, 19])
+def test_unsupported_task_is_rejected(response, task_number):
+    response["task"]["task_number"] = task_number
+    assert any("$.task.task_number" in e for e in validator.validate_response(response))
+
+
+def test_default_catalog_follows_task(response):
+    # The inequalities catalog (16) ends at E36; the equations catalog (14) goes on to E40.
+    response["analysis"]["errors"] = [error(code="E40")]
+    assert any("code" in e for e in validator.validate_response(response))
+    response["task"]["task_number"] = 14
+    assert validator.validate_response(response) == []

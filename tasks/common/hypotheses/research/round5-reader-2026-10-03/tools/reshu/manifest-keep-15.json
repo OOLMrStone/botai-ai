@@ -1,0 +1,76 @@
+{
+ "source": "Решу ЕГЭ, Школа экспертов (баллы экспертов сайта)",
+ "target_task_number": 15,
+ "cases": [
+  {
+   "id": "484571.1",
+   "problem_and_reference_answer": "problems/484571.png",
+   "solution": "484571.1/solution.png",
+   "expected": "484571.1/expected.json"
+  },
+  {
+   "id": "484571.2",
+   "problem_and_reference_answer": "problems/484571.png",
+   "solution": "484571.2/solution.png",
+   "expected": "484571.2/expected.json"
+  },
+  {
+   "id": "484571.3",
+   "problem_and_reference_answer": "problems/484571.png",
+   "solution": "484571.3/solution.png",
+   "expected": "484571.3/expected.json"
+  },
+  {
+   "id": "505524.1",
+   "problem_and_reference_answer": "problems/505524.png",
+   "solution": "505524.1/solution.png",
+   "expected": "505524.1/expected.json"
+  },
+  {
+   "id": "505524.2",
+   "problem_and_reference_answer": "problems/505524.png",
+   "solution": "505524.2/solution.png",
+   "expected": "505524.2/expected.json"
+  },
+  {
+   "id": "505549.1",
+   "problem_and_reference_answer": "problems/505549.png",
+   "solution": "505549.1/solution.png",
+   "expected": "505549.1/expected.json"
+  },
+  {
+   "id": "513095.1",
+   "problem_and_reference_answer": "problems/513095.png",
+   "solution": "513095.1/solution.png",
+   "expected": "513095.1/expected.json"
+  },
+  {
+   "id": "513096.1",
+   "problem_and_reference_answer": "problems/513096.png",
+   "solution": "513096.1/solution.png",
+   "expected": "513096.1/expected.json"
+  },
+  {
+   "id": "513097.1",
+   "problem_and_reference_answer": "problems/513097.png",
+   "solution": "513097.1/solution.png",
+   "expected": "513097.1/expected.json"
+  },
+  {
+   "id": "513097.2",
+   "problem_and_reference_answer": "problems/513097.png",
+   "solution": "513097.2/solution.png",
+   "expected": "513097.2/expected.json"
+  },
+  {
+   "id": "515920.3",
+   "problem_and_reference_answer": "problems/515920.png",
+   "solution": [
+    "515920.3/solution-01.png",
+    "515920.3/solution-02.png"
+   ],
+   "expected": "515920.3/expected.json"
+  }
+ ],
+ "note": "Только работы, где балл эксперта сайта согласуется с критериями ФИПИ-2026 (verification.md, keep)."
+}
