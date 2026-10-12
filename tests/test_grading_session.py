@@ -157,9 +157,9 @@ class RecordingMock(MockProvider):
         self.inputs = []
         self.closed = False
 
-    async def chat(self, messages, tools=None):
+    async def chat(self, messages, tools=None, **kwargs):
         self.inputs.append(deepcopy(messages))
-        return await super().chat(messages, tools)
+        return await super().chat(messages, tools, **kwargs)
 
     async def close(self):
         self.closed = True
@@ -363,16 +363,14 @@ async def test_unvalidated_final_exhausts_budget_without_score(tmp_path):
     assert provider.closed
 
 
-async def test_reasoning_preserved_in_repaired_final_and_all_tool_turns(tmp_path):
+async def test_reasoning_is_not_sent_back_in_repaired_final_or_tool_turns(tmp_path):
     class ReasoningMock(RecordingMock):
         async def chat(self, messages, tools=None):
             if tools and len(messages) == 2:
                 return {'role': 'assistant', 'content': '{}', 'reasoning_content': 'premature-final'}
             if tools:
                 assistant_messages = [m for m in messages if m['role'] == 'assistant']
-                assert assistant_messages[0]['reasoning_content'] == 'premature-final'
-                assert all(m.get('reasoning_content') == 'tool-reasoning'
-                           for m in assistant_messages[1:])
+                assert assistant_messages and all('reasoning_content' not in m for m in assistant_messages)
             answer = await super().chat(messages, tools)
             if tools:
                 answer['reasoning_content'] = 'tool-reasoning'
@@ -455,3 +453,178 @@ async def test_summary_must_preserve_review_except_internal_error_markers(tmp_pa
         else:
             with pytest.raises(ValueError):
                 s.finalize(candidate)
+
+
+@pytest.mark.parametrize('number, max_score', [(14, 2), (15, 3), (18, 3)])
+async def test_service_grades_selected_task_with_its_package(tmp_path, number, max_score):
+    provider = RecordingMock()
+    result = json.loads(await service(tmp_path, provider).run(
+        SafeImage(b'task'), [SafeImage(b'student')], 'test-user', number))
+    assert result['is_graded']
+    assert result['task']['task_number'] == number and result['task']['max_score'] == max_score
+    reads = [m['content'] for m in provider.inputs[-1] if m['role'] == 'tool']
+    assert any(f'задания {number}' in r for r in reads)
+
+
+@pytest.mark.parametrize('number', [17, '15', True, None])
+async def test_service_rejects_unsupported_task(tmp_path, number):
+    provider = RecordingMock()
+    with pytest.raises(ValueError):
+        await service(tmp_path, provider).run(SafeImage(b'task'), [SafeImage(b'student')], 'test-user', number)
+    assert provider.inputs == []
+
+
+def png(width=400, height=300):
+    from io import BytesIO
+    from PIL import Image
+    output = BytesIO()
+    Image.new('RGB', (width, height), 'white').save(output, format='PNG')
+    return SafeImage(output.getvalue())
+
+
+async def test_task_14_runs_reader_then_isolated_stages(tmp_path):
+    provider = RecordingMock()
+    provider.transcribe = AsyncMock(side_effect=['x = π + πn'] * 3 + ['x = π + πn, n ∈ Z'])
+    result = json.loads(await service(tmp_path, provider).run(png(), [png()], 'test-user', 14))
+    assert result['is_graded']
+    package = __import__('app.grading.package', fromlist=['load_package']).load_package(14)
+    calls = provider.transcribe.call_args_list
+    assert len(calls) == 4  # three strips, then joining and settling doubts on the whole photo
+    strip_prompt, resolve = calls[0].args[0], calls[3].args
+    assert package['ocr.md'] in strip_prompt and package['ocr_biases.md'] in strip_prompt
+    assert 'Демонстрационный пример' not in strip_prompt + resolve[0]  # the statement never reaches the reader
+    assert '## Фото 1, полоса 1 из 3\nx = π + πn' in resolve[0] and len(resolve) == 2  # text and the whole photo
+    # The final transcript becomes ocr; notes become the summary.
+    assert result['ocr'] == 'x = π + πn, n ∈ Z'
+    assert result['analysis']['summary'] == 'Описание: тест интерфейса. Ошибки: нет. Точки роста: нет.'
+    # Preparation, analysis and grading: three plain calls, no tools, no photos after preparation.
+    analysis, grading = provider.inputs[1], provider.inputs[2]
+    assert len(provider.inputs) == 3
+    for messages in (analysis, grading):
+        assert all(type(m['content']) is str for m in messages)
+    assert '## ocr_result.md\nx = π + πn, n ∈ Z' in analysis[1]['content']
+    assert 'Правильный ответ' in analysis[1]['content']
+    assert '## notes.md\nОписание: тест интерфейса' in grading[1]['content']
+
+
+async def test_isolated_stage_rejection_and_attack(tmp_path):
+    from app.grading.session import ATTACK_REASON
+
+    class Rejecting(RecordingMock):
+        def __init__(self, status):
+            super().__init__()
+            self.status = status
+
+        async def chat(self, messages, tools=None, **kwargs):
+            if not tools and 'составь notes.md' in messages[0]['content']:
+                self.inputs.append(deepcopy(messages))
+                return {'role': 'assistant',
+                        'content': f'СТАТУС: отказ {self.status}: На фотографиях решение другого задания'}
+            return await super().chat(messages, tools, **kwargs)
+
+    for status, reason in (('other_task', 'На фотографиях решение другого задания'), ('attack', ATTACK_REASON)):
+        provider = Rejecting(status)
+        provider.transcribe = AsyncMock(return_value='text')
+        result = json.loads(await service(tmp_path, provider).run(png(), [png()], 'test-user', 14))
+        assert not result['is_graded'] and result['rejection_reason'] == reason
+        assert result['ocr'] is None and result['grading'] is None
+
+
+async def test_isolated_grading_is_repaired_from_validator_errors(tmp_path):
+    class BadThenGood(RecordingMock):
+        async def chat(self, messages, tools=None, **kwargs):
+            answer = await super().chat(messages, tools, **kwargs)
+            if not tools and 'Анализ завершён: notes.md' in messages[0]['content'] and len(messages) == 2:
+                data = json.loads(answer['content'])
+                data['grading']['score'] = 7
+                answer = {'role': 'assistant', 'content': json.dumps(data, ensure_ascii=False)}
+            return answer
+
+    provider = BadThenGood()
+    provider.transcribe = AsyncMock(return_value='text')
+    result = json.loads(await service(tmp_path, provider).run(png(), [png()], 'test-user', 14))
+    assert result['grading']['score'] == 2
+    repair = provider.inputs[-1]
+    assert repair[-1]['content'].startswith('Сервер не принял ответ') and 'score' in repair[-1]['content']
+    assert all('reasoning_content' not in m for m in repair)
+
+
+async def test_reader_failure_falls_back_to_model_ocr(tmp_path):
+    provider = RecordingMock()
+    provider.transcribe = AsyncMock(side_effect=LLMError('down'))
+    result = json.loads(await service(tmp_path, provider).run(png(), [png()], 'test-user', 14))
+    assert result['is_graded']
+    writes = [json.loads(m['tool_calls'][0]['function']['arguments']).get('path')
+              for m in provider.inputs[-1]
+              if m.get('tool_calls') and m['tool_calls'][0]['function']['name'] == 'write_file']
+    assert 'ocr_result.md' in writes
+
+
+@pytest.mark.parametrize('number', [15, 16, 18])
+async def test_other_tasks_do_not_use_the_reader(tmp_path, number):
+    provider = RecordingMock()
+    provider.transcribe = AsyncMock(return_value='text')
+    await service(tmp_path, provider).run(png(), [png()], 'test-user', number)
+    provider.transcribe.assert_not_called()
+
+
+def test_prepared_ocr_result_is_read_first_and_never_rewritten():
+    task = {'id': 't', 'task_number': 14, 'max_score': 2, 'statement': 'S',
+            'reference_answer': 'A', 'reference_solution': None}
+    s = Session(task, ['i1'], reading='## Фото 1\nx = π + πn')
+    s.execute('read_file', {'path': 'Statement.md'})
+    s.execute('read_file', {'path': 'ocr.md'})
+    with pytest.raises(ValueError, match='prepared by the server'):
+        s.execute('write_file', {'path': 'ocr_result.md', 'content': 'x = π + 2πn'})
+    with pytest.raises(ValueError, match='Read ocr_result.md'):
+        s.execute('read_file', {'path': 'analysis.md'})
+    assert s.execute('read_file', {'path': 'ocr_result.md'})['content'].endswith('πn')
+    s.execute('read_file', {'path': 'analysis.md'})
+
+
+def test_reader_strips_keep_full_width_and_enlarge_small_scans():
+    from io import BytesIO
+    from PIL import Image
+    from app.grading.reader import strips
+    small = [Image.open(BytesIO(s.data)).size for s in strips(png(545, 353))]
+    large = [Image.open(BytesIO(s.data)).size for s in strips(png(4000, 300))]
+    assert len(small) == 3 and all(w == 2180 for w, _ in small)  # four times, not more
+    assert all(w == 4000 for w, _ in large)
+
+
+def test_prepared_adapter_forbids_reading_by_consistency():
+    from app.grading.session import PREPARED_ADAPTER
+    assert 'ocr_result.md подготовил сервер' in PREPARED_ADAPTER
+    assert 'согласуется с дальнейшими строками' in PREPARED_ADAPTER
+    assert 'сохрани ocr_result.md' not in PREPARED_ADAPTER
+
+
+async def test_provider_logs_token_usage_without_content(monkeypatch, caplog):
+    import logging
+    from types import SimpleNamespace as NS
+    usage = NS(prompt_tokens=100, completion_tokens=32000,
+               completion_tokens_details=NS(reasoning_tokens=31000))
+    completion = NS(choices=[NS(finish_reason='length', message=None)], usage=usage)
+
+    class Client:
+        def __init__(self, **kwargs):
+            self.chat = NS(completions=NS(create=AsyncMock(return_value=completion)))
+    monkeypatch.setattr('app.grading.provider.AsyncOpenAI', Client)
+    provider = Provider(SimpleNamespace(api_key='k', base_url='https://provider.invalid', timeout_s=60,
+                                        model='m', max_output_tokens=32000, extra_body=None))
+    with caplog.at_level(logging.INFO, logger='app.grading.provider'):
+        with pytest.raises(LLMResponseFormatError):
+            await provider.chat([{'role': 'user', 'content': 'secret text'}], tools=[{'type': 'function'}])
+    record = next(r for r in caplog.records if r.getMessage() == 'llm call')
+    assert (record.llm_kind, record.finish_reason, record.completion_tokens, record.reasoning_tokens) == \
+        ('tools', 'length', 32000, 31000)
+    assert 'secret text' not in caplog.text
+
+
+def test_analysis_status_line_is_parsed_strictly():
+    from app.grading.staged import parse_analysis
+    assert parse_analysis('СТАТУС: подходит\nРазбор') == ('ok', '', 'Разбор')
+    assert parse_analysis('СТАТУС: отказ unreadable: Не читается') == ('unreadable', 'Не читается', '')
+    assert parse_analysis('СТАТУС: подходит') is None  # notes.md is required when the work fits
+    assert parse_analysis('{"status": "ok"}') is None
+    assert parse_analysis('СТАТУС: отказ maybe: что-то') is None

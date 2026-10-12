@@ -35,7 +35,7 @@ def test_runtime_package_wins_without_mixing_checkout_files(tmp_path):
         load_package(root=tmp_path)
 
 
-@pytest.mark.parametrize('task_number', [14, 15, 17, 18, 19, 20, '16', True])
+@pytest.mark.parametrize('task_number', [13, 17, 19, 20, '16', True])
 def test_unsupported_task_does_not_fall_back_to_16(tmp_path, task_number):
     populate(tmp_path, 'tasks/16/prompts', 'approved')
     with pytest.raises(ValueError, match='Unsupported grading task'):
@@ -50,3 +50,17 @@ def test_missing_runtime_common_does_not_fall_back_to_checkout(tmp_path):
     (tmp_path / 'prompts/common/main.md').unlink()
     with pytest.raises(FileNotFoundError):
         load_package(root=tmp_path)
+
+
+def test_max_scores_follow_fipi_2026():
+    from app.grading.package import MAX_SCORES
+    assert MAX_SCORES == {14: 2, 15: 3, 16: 2, 18: 3}
+
+
+@pytest.mark.parametrize('task_number', [14, 15, 16, 18])
+def test_every_task_shares_common_files_and_keeps_its_own(task_number):
+    package = load_package(task_number)
+    common = load_package(16)
+    for name in COMMON_NAMES:
+        assert package[name] == common[name]
+    assert f'задания {task_number}' in package['criteria.md']

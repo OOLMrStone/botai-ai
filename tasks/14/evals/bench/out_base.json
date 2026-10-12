@@ -1,0 +1,1255 @@
+{
+ "13.1.1": {
+  "text": "a) №13\n1 - cos2x + √2 sinx = √2 - 2 sin(x + π)\n1 - cos²x + sin²x + √2 sinx = √2 - 2·(sinx·cosπ + sinx·cosx)\n1 - 1 + 2sin²x + √2 sinx = √2 + 2 sinx\n2sin²x + √2 sinx - √2 - 2sinx = 0\n2sinx(sinx - 1) + √2(sinx - 1) = 0\n(2sinx + √2)(sinx - 1) = 0\n[ 2sinx + √2 = 0    [ sinx = -√2/2    [ x = (-1)ᵏ · (-π/4) + πk; k ∈ z\n[ sinx - 1 = 0      [ sinx = 1       [ x = π/2 + 2πn; n ∈ z\nб). найдём корни с помощью тригонометрической\nокружности\n\n[тригонометрическая окружность: сверху подпись -3π, слева подпись -3π, отмечены точки: сверху точка с подписью x_3, слева точка с подписью x_1, справа точка с подписью x_2; дуга выделена волнистой линией]\n\nx_1 = -3π + π/4 = -11π/4\n\nx_2 = -2π - π/4 = -9π/4\n\nx_3 = -3π/2",
+  "seconds": 8,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3551,
+    "completion_tokens": 137,
+    "duration_ms": 1911
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3659,
+    "completion_tokens": 155,
+    "duration_ms": 1907
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3551,
+    "completion_tokens": 137,
+    "duration_ms": 1554
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2331,
+    "completion_tokens": 360,
+    "duration_ms": 2369
+   }
+  ]
+ },
+ "13.1.2": {
+  "text": "13. a) 1 - cos2x + √2 sinx = √2 - 2sinx (x≠π/1\n1 - (1 - 2sin²x) + √2 sinx = √2 - 2sinx)\n2sin²x - 2sinx + √2 sinx - √2 = 0\n2sinx(sinx - 1) + √2(sinx - 1) = 0\n(2sinx + √2)(sinx - 1) = 0\n2sinx + √2 = 0 или sinx - 1 = 0\nsinx = -√2/2 sinx = 1\nx = -π/4 + 2πk, k∈Z x = π/2 + 2πk, k∈Z\nx = -3π/4 + 2πk, k∈Z\nб) Произведём отбор корней на окружности [-3π; -3π/2] с помощью\nединичной окружности:\n\n[Рисунок: тригонометрическая окружность; отмечены точки -3π (слева) и -3π/2 (сверху); дуга от -3π до -3π/2 выделена; внутри окружности изображена спираль]\n\n(1): -π/4 - 2π = -9π/4\n(2): -3π/4 - 2π = -11π/4\n(3): -3π/2\n\n[Слева изображена тригонометрическая окружность. Горизонтальная ось направлена вправо, вертикальная — вверх. Слева на окружности отмечена точка с подписью «-3π». Внутри окружности проведена дуга, соединяющая точку на верхней verticale оси с точкой на окружности слева. На нижней левой части окружности отмечена точка с подписью «(1)». На нижней правой части окружности отмечена точка с подписью «(2)». Справа от окружности написано: «(3): - 3π/2».]\n\nОтвет: а) π/2 + 2πk; -π/4 + 2πk; -3π/4 + 2πk, k ∈ Z\nб) -3π/2; -11π/4; -9π/4",
+  "seconds": 9,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3677,
+    "completion_tokens": 195,
+    "duration_ms": 1925
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3656,
+    "completion_tokens": 171,
+    "duration_ms": 1771
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3677,
+    "completion_tokens": 200,
+    "duration_ms": 1875
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2482,
+    "completion_tokens": 533,
+    "duration_ms": 2766
+   }
+  ]
+ },
+ "13.1.3": {
+  "text": "13. a) 1 - cos 2x + √2 sin x = √2 - 2 sin(x + π/4)\n1 - cos²x + sin²x + √2 sin x = √2 - 2 sin π/4 cos x - 2 cos π/4 sin x\n2 sin²x + √2 sin x - √2 + 2 · 0 · cos x + 2 · (-1) · sin x = 0\n2 sin²x - 2 sin x + √2 sin x - √2 = 0\n2 sin x (sin x - 1) + √2 (sin x - 1) = 0\n(2 sin x + √2)(sin x - 1) = 0\n[ 2 sin x + √2 = 0\n[ sin x - 1 = 0\n[ sin x = -√2/2\n[ sin x = 1\nx = π/2 + 2πn, n ∈ Z  ①\nx = -π/4 + 2πn, n ∈ Z  ②\nx = -3π/4 + 2πn, n ∈ Z  ③\n\n[На рисунке: тригонометрическая окружность; ось y направлена вверх, ось x направлена вправо с подписью 0 в начале; отмечена точка ① на верхней точке окружности (на оси y); подпись -3π/2 справа от верхней точки; на оси x отмечены точки -3π и π; на оси y отмечена подпись -√2/2, внизу слева от оси y; отмечены точки ③ (слева, с подписью 3π/2 внизу) и ② (справа, с подписью -5π/2 внизу), проведена горизонтальная пунктирная линия от точки -√2/2 к точкам ③ и ②]\n\nб) В промежуток [-3π; -3π/2] входят корни {-11π/4; -9π/4; -3π/2}",
+  "seconds": 9,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3656,
+    "completion_tokens": 162,
+    "duration_ms": 1500
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3677,
+    "completion_tokens": 204,
+    "duration_ms": 2046
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3656,
+    "completion_tokens": 225,
+    "duration_ms": 2353
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2491,
+    "completion_tokens": 471,
+    "duration_ms": 2780
+   }
+  ]
+ },
+ "13.1.4": {
+  "text": "√13\na) 1 - cos2x + √2 sinx = √2 - 2sin(x + π)\n1 - 1 + 2sin²x + √2 sinx = √2 - 2sin(π + x)\n2sin²x + √2 sinx = √2 + 2sinx\n2sin²x - 2sinx + √2 sinx - √2 = 0\n2sinx(sinx - 1) + √2(sinx - 1) = 0\n(sinx - 1)(2sinx + √2) = 0\nsinx - 1 = 0 или 2sinx + √2 = 0\n\nsinx = 1\nx = π/2 + πn, n ∈ Z\n\nsinx = - √2/2\nx = - π/4 + 2πk, k ∈ Z\nx = - 3π/4 + 2πk, k ∈ Z\n\nб) [-3π; - 3π/2]\n\n1) -3π ≤ π/2 + πn ≤ - 3π/2   | : π\n   -3 ≤ 1/2 + n ≤ - 3/2\n   -6 ≤ 1 + 2n ≤ -3\n   -7/2 ≤ n ≤ -4/2\n   -3 1/2 ≤ n ≤ -2\nn = -2    x = π/2 - 2π = -3π/2\nn = -3    x = π/2 - 3π = -5π/2\n\n2) -3π ≤ - π/4 + 2πk ≤ - 3π/2   | : π\n   -3 ≤ - 1/4 + 2k ≤ - 3/2\n   -12 ≤ -1 + 8k ≤ -6\n   -11/8 ≤ k ≤ -5/8\nk = -1    x = - π/4 - 2π = - 9π/4\n\n3) -3π ≤ -3π/4 + 2πk ≤ -3π/2   | : π\n   -3 ≤ - 3/4 + 2k ≤ - 3/2\n   -12 ≤ -3 + 8k ≤ -6\n   -9/8 ≤ k ≤ -3/8\n\nk = -1    x = - 3π/4 - 2π = - 11π/4\n\nОтвет: а) π/2 + πn, n ∈ Z\n- π/4 + 2πk, k ∈ Z\n- 3π/4 + 2πk, k ∈ Z\nб) - 11π/4 ; - 9π/4 ; - 3π/2 ; - 5π/2",
+  "seconds": 13,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3647,
+    "completion_tokens": 151,
+    "duration_ms": 1533
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3632,
+    "completion_tokens": 228,
+    "duration_ms": 1939
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3647,
+    "completion_tokens": 273,
+    "duration_ms": 2169
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2952,
+    "completion_tokens": 24,
+    "duration_ms": 1032
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3005,
+    "completion_tokens": 74,
+    "duration_ms": 1106
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2952,
+    "completion_tokens": 29,
+    "duration_ms": 982
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3434,
+    "completion_tokens": 620,
+    "duration_ms": 3611
+   }
+  ]
+ },
+ "13.2.1": {
+  "text": "№13. cos2x - √2 sin(x+π) - 1 = 0\na) (1 - 2sin²x) + √2 sinx - 1 = 0          sinx = t\n   1 - 2t² + √2 t - 1 = 0\n   -2t² + √2 t = 0\n   -t (2t - √2) = 0\n   -t (t - √2/2) = 0\n1) t = 0                2) t = √2/2\n   sinx = 0                 sinx = √2/2\n   x = πn; n ∈ Z           x = π/4 + 2πk\n                           x = 3π/4 + 2πk\n                           k ∈ Z\na) x = πn;\n   x = π/4 + 2πn;\n   x = 3π/4 + 2πn; n ∈ Z\nd) отобрать на [-7π/2 ; -2π] ; πn; π/4 + 2πn; 3π/4 + 2πn.\n\n[Тригонометрическая окружность: отмечены точки -3π (слева), -2π (справа), -13π/4 (во второй четверти, сверху слева) и -7π/2 (сверху, подпись -7π/2). Дуга выделена между -3π и -13π/4.]\n\n-13π/4 ; -3π ; -2π\n\nОтвет: -13π/4 ; -3π ; -2π",
+  "seconds": 8,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3653,
+    "completion_tokens": 186,
+    "duration_ms": 1774
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3633,
+    "completion_tokens": 168,
+    "duration_ms": 1888
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3653,
+    "completion_tokens": 153,
+    "duration_ms": 1787
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2421,
+    "completion_tokens": 366,
+    "duration_ms": 2311
+   }
+  ]
+ },
+ "13.2.2": {
+  "text": "N.13\na) cos2x - √2 sin(x+π) - 1 = 0\nЗ-у, это sin(x+π) = -sin(x)., тогда ур-нение будет:\ncos2x - √2(-sin(x)) - 1 = 0\ncos2x + √2 sin(x) - 1 = 0\nЗ-у, это cos2x = [зачёркнуто: cos²x - sin²x] 1 - 2sin²x., тогда\n1 - 2sin²x + √2 sin(x) - 1 = 0\n√2 sin(x) - 2sin²x = 0\nsin(x)(√2 - 2sin(x)) = 0\n    ⇓\n[ sin(x) = 0        ①\n[ √2 = 2sin(x)      ②\n\n① sin(x) = 0\nx = πk₁, k₁ ∈ ℤ\n\n② √2 = 2sin(x)\nsin(x) = √2/2 → ⎧ x = π/4 + 2πk₂, k₂ ∈ ℤ\n                ⎩ x = 3π/4 + 2πk₃, k₃ ∈ ℤ\n\nОтвет\nx = πk₁, k₁ ∈ ℤ  I\nx = π/4 + 2πk₂, k₂ ∈ ℤ  II\nx = 3π/4 + 2πk₃, k₃ ∈ ℤ  III\n\nб) Буду решать с помощью gd-ного пер-та. т.е.\nесли x₀ ∈ [ -7π/2 ; -2π ] => -7π/2 ≤ x₀ ≤ -2π.\nИз п.а } 3 серии решений:\nI  x = πk₁, k₁ ∈ ℤ\nII  x = π/4 + 2πk₂, k₂ ∈ ℤ\nIII  x = 3π/4 + 2πk₃, k₃ ∈ ℤ\n① x = πk₁, k₁ ∈ ℤ\n-7π/2 ≤ πk₁ ≤ -2π | : π/4 ; З.у. что π/4 > 0 => знак нер-ва не\n[неразборчиво: меняется]\n-7 ≤ 2k₁ ≤ -9. | : 2\n-3 ≤ k₁ ≤ -2   3-у, что k₁ ∈ ℤ ⇒ k₁ ∈ {-2; -3} ⇒\n                                                     ⎧x = -2π\n                                                     ⎩x = -3π\n② x = π/4 + 2πk₂, k₂ ∈ ℤ\n-7π/2 ≤ π/4 + 2πk₂ ≤ -2π | ·4/π ; 3-у, что 4/π > 0 ⇒ знак пер-ва\n                                                              не меняется\n-14 ≤ 1 + 8k₂ ≤ -8 | -1\n-15 ≤ 8k₂ ≤ -9 | : 8\n-15/8 ≤ k₂ ≤ -9/8  . 3-4, что   k₂ ∈ ∅  т.к  -1 > -9/8, а -2 < -15/8 ⇒\nтаких k₂ не существует\n\n① x = 3π/4 + 2πk₃\n-7π/2 ≤ 3π/4 + 2πk₃ ≤ -2π | · 4/π\n-14 ≤ 3 + 8k₃ ≤ -8\n-17 ≤ 8k₃ ≤ -11 | : 8\n-17/8 ≤ k₃ ≤ -11/8  т.к  k₃ ∈ ∅ ⇒ k₃ = -3 ⇒ x = 3π/4 - 6π = -21π/4\n\nОтвет: x = -2π,\n           x = -3π,\n           x = -21π/4",
+  "seconds": 17,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3623,
+    "completion_tokens": 133,
+    "duration_ms": 2052
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3707,
+    "completion_tokens": 159,
+    "duration_ms": 1969
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3623,
+    "completion_tokens": 223,
+    "duration_ms": 1802
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3667,
+    "completion_tokens": 184,
+    "duration_ms": 1986
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3653,
+    "completion_tokens": 219,
+    "duration_ms": 2204
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3667,
+    "completion_tokens": 248,
+    "duration_ms": 2193
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 4124,
+    "completion_tokens": 887,
+    "duration_ms": 4461
+   }
+  ]
+ },
+ "13.2.3": {
+  "text": "√13. a) cos 2x - √2 sin(x + π/4) - 1 = 0\n1 - 2sin²x + √2 sin x - 1 = 0\n- 2sin²x + √2 sin x = 0\n2sin²x - √2 sin x = 0\nsin x (2sin x - √2) = 0\nI. sin x = 0\nx = πn, n ∈ ℤ\nII. 2sin x - √2 = 0\nsin x = √2/2\nx = π/4 + 2πk; k ∈ ℤ          x = 3π/4 + 2πl, l ∈ ℤ\nб) Найдём корни с помощью тригонометрической окружности на отрезке [-π/2; -2π]\n[Изображена тригонометрическая окружность. Верхняя точка пересечения с осью ординат подписана как π/2. Стрелка вверх вдоль оси ординат подписана sinx. Точка в левой части окружности подписана x₂. Точка в верхней левой части окружности подписана x₁. Точка в нижней части окружности подписана x₃. В правой части окружности отмечена точка, рядом с ней стоит галочка. Горизонтальная ось направлена вправо и подписана -2πcosx. В центре окружности стоит 0.]\nx₁ = -7π/2 + π/4 = -13π/4\nx₂ = -π\nx₃ = -2π\nОтвет а) x = πn, n ∈ ℤ; x = π/4 + 2πk, k ∈ ℤ, x = 5π/4 + 2πl, l ∈ ℤ\nб) x = -13π/4 x = -π x = -2π",
+  "seconds": 9,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3659,
+    "completion_tokens": 94,
+    "duration_ms": 1834
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3637,
+    "completion_tokens": 151,
+    "duration_ms": 2099
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3659,
+    "completion_tokens": 276,
+    "duration_ms": 2375
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2436,
+    "completion_tokens": 436,
+    "duration_ms": 2491
+   }
+  ]
+ },
+ "13.2.4": {
+  "text": "N13.\n\na) cos 2x - √2 sin (x+π) - 1 = 0          cos 2x = 1 - 2 sin²x          sin(x+π) = -sinx\n\n1 - 2 sin²x + √2 sin x - 1 = 0          б) x ∈ [-7π/2; -2π]\n\n1 - 2 sin²x + √2 sin x - 1 = 0\nsin x (-2 sin x + √2) = 0\n[sin x = 0\n[ x = πk, k ∈ Z\nб) x ∈ [-7π/2; -2π]\nx = -2π; x = -3π; x = -13/4 π\n\n[слева фигурная скобка]\nsin x = 0\nsin x = √2/2\n[справа стрелка ⇒]\n[слева фигурная скобка]\nx = πk, k ∈ Z\nx = π/4 + πn, n ∈ Z\nx = 3π/4 + πm, m ∈ Z\nОтвет: а) x = πk, k ∈ Z; x = π/4 + πn, n ∈ Z;\nx = 3π/4 + πm, m ∈ Z; б) x = -2π; x = -3π; x = -13π/4.",
+  "seconds": 6,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3151,
+    "completion_tokens": 98,
+    "duration_ms": 1527
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3151,
+    "completion_tokens": 83,
+    "duration_ms": 1272
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3151,
+    "completion_tokens": 146,
+    "duration_ms": 1477
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2263,
+    "completion_tokens": 312,
+    "duration_ms": 2096
+   }
+  ]
+ },
+ "13.3.1": {
+  "text": "a) sin x · cos 2x + √2 cos²x + sin x = 0\nsin x · (cos²x - sin²x) + √2 (1 - sin²x) + sin x = 0\nsin x (1 - sin²x - sin²x) + √2 (1 - sin²x) + sin x = 0\nsin x (1 - 2sin²x) + √2 (1 - sin²x) + sin x = 0\nsin x + sin x - 2 sin³x + √2 (1 - sin²x) = 0\n2 sin x - 2 sin³x + √2 (1 - sin²x) = 0\n2 sin x (1 - sin²x) + √2 (1 - sin²x) = 0\n(1 - sin²x)(2 sin x + √2) = 0\n1 - sin²x = 0 или 2 sin x + √2 = 0\ncos²x = 0 2 sin x = -√2\nx = ± π/2 + πn, n ∈ Z. sin x = -√2/2\n[ x = -π/4 + 2πn, n ∈ Z\n[ x = -3π/4 + 2πn, n ∈ Z\nб) [3π/2 ; 3π] Отберём корни уравнения при помощи окружности;\n\n[рисунок: тригонометрическая окружность; отмечены точки: вертикальная ось сверху подписана 5π/2, справа на окружности точка с подписью 7π/4, снизу точка с подписью 3π/2, слева на горизонтальной оси подпись 3π; выделена дуга окружности от точки 3π/2 до точки 3π (нижняя левая четверть), на дуге отмечены точки с подписями x₁ (ниже точки 3π/2), x₂ (правее x₁), x₃ (выше точки 3π/2)]\nx₁ = 3π/2\nx₂ = 7π/4\nx₃ = 5π/2\n\nОтвет: а) ± π/2 + πn, n ∈ Z;\n- π/4 + 2πn, n ∈ Z;\n- 3π/4 + 2πh, n ∈ Z.\nб) 3π/2 ; 7π/4 ; 5π/2.",
+  "seconds": 10,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3618,
+    "completion_tokens": 198,
+    "duration_ms": 1600
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3695,
+    "completion_tokens": 159,
+    "duration_ms": 2284
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3618,
+    "completion_tokens": 334,
+    "duration_ms": 2495
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2580,
+    "completion_tokens": 557,
+    "duration_ms": 2921
+   }
+  ]
+ },
+ "13.3.2": {
+  "text": "a) $\\sin x \\cdot \\cos 2x + \\sqrt{2} \\cos^2 x + \\sin x = 0$.\n\n$\\sin x (2\\cos^2 x - 1 + 1) + \\sqrt{2} \\cos^2 x = 0$.\n\n$\\sin x \\cdot 2\\cos^2 x + \\sqrt{2} \\cos^2 x = 0$.\n\n$\\cos^2 x (2\\sin x + \\sqrt{2}) = 0$\n\n[под записью поставлена галочка]\n\n$\\cos^2 x = 0$ или $2\\sin x = -\\sqrt{2}$.\n\n$\\cos x = 0 \\Rightarrow x = \\frac{\\pi}{2} + \\pi k, k \\in \\mathbb{Z}$ или $\\sin x = -\\frac{1}{\\sqrt{2}}$.\n\n$x = \\begin{bmatrix} -\\frac{\\pi}{4} + 2\\pi n, n \\in \\mathbb{Z} \\\\ -\\frac{3\\pi}{4} + 2\\pi m, m \\in \\mathbb{Z} \\end{bmatrix}$\n\n$x = \\frac{\\pi}{2} + \\pi k, k \\in \\mathbb{Z}$ или $x = -\\frac{\\pi}{4} + 2\\pi n, n \\in \\mathbb{Z}$ или $x = -\\frac{3\\pi}{4} + 2\\pi m, m \\in \\mathbb{Z}$.\n\nб) 1) $x = \\frac{\\pi}{2} + \\pi k, k \\in \\mathbb{Z}$, $x \\in [\\frac{3\\pi}{2}; 3\\pi]$\n\n$\\frac{3\\pi}{2} \\leq \\frac{\\pi}{2} + \\pi k \\leq 3\\pi$ $(k \\in \\mathbb{Z})$.\n\n$\\pi \\leq k \\leq \\frac{5\\pi}{2}$ $(k \\in \\mathbb{Z})$ $\\Rightarrow k = 1$ $(x = \\frac{3\\pi}{2})$ или $k = 2$ $(x = \\frac{5\\pi}{2})$.\n\n2) $x = -\\frac{\\pi}{4} + 2\\pi n, n \\in \\mathbb{Z}$, $x \\in [\\frac{3\\pi}{2}; 3\\pi]$.\n\n$\\frac{3\\pi}{2} \\leq -\\frac{\\pi}{4} + 2\\pi n \\leq 3\\pi$ $(n \\in \\mathbb{Z})$.\n\n$\\frac{7}{8} \\leq n \\leq \\frac{13}{8}$ $(n \\in \\mathbb{Z})$ $\\Rightarrow n = 1$ $(x = \\frac{7\\pi}{4})$.\n\n3) $x = -\\frac{3\\pi}{4} + 2\\pi m, m \\in \\mathbb{Z}$, $x \\in [\\frac{3\\pi}{2}; 3\\pi]$.\n\n$\\frac{3\\pi}{2} \\leq -\\frac{3\\pi}{4} + 2\\pi m \\leq 3\\pi$ $(m \\in \\mathbb{Z})$\n\n$\\frac{9}{8} \\leq m \\leq \\frac{15}{8}$ $(m \\in \\mathbb{Z})$ – нет реш.\n\nОтвет: а) $x = \\frac{\\pi}{2} + \\pi k, k \\in \\mathbb{Z}$ или $x = -\\frac{\\pi}{4} + 2\\pi n, n \\in \\mathbb{Z}$ или $x = -\\frac{3\\pi}{4} + 2\\pi m, m \\in \\mathbb{Z}$\n\nб) $x = \\frac{3\\pi}{2}, x = \\frac{5\\pi}{2}; x = \\frac{7\\pi}{4}$.",
+  "seconds": 9,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3667,
+    "completion_tokens": 223,
+    "duration_ms": 1832
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3653,
+    "completion_tokens": 255,
+    "duration_ms": 2068
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3667,
+    "completion_tokens": 234,
+    "duration_ms": 1880
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2631,
+    "completion_tokens": 795,
+    "duration_ms": 3494
+   }
+  ]
+ },
+ "13.3.3": {
+  "text": "ω13\nsin x · cos 2x + √2 cos²x + sin x = 0\nsin x (1 - 2 sin²x) + √2 cos²x + sin x = 0\nsin x - [неразборчиво: 2 | 8] 2 sin³x + √2 cos²x + sin x = 0\n2 sin x - 2 sin³x + √2 cos²x = 0\n2 sin x (1 - sin²x) + √2 cos²x = 0\n2 sin x · cos²x + √2 cos²x = 0\ncos²x ( 2 sinx + √2 ) = 0\n[ cos²x = 0\n[ 2 sinx = -√2\n=> [ cosx = 0\n    [ sinx = -√2/2\n=> [ x = π/2 + πn, n ∈ Z\n    [ x = -π/4 + 2πn, n ∈ Z\n    [ x = -3π/4 + 2πn, n ∈ Z\nб) Отберем корни с помощью триг. Окр-ти, кот ∈ [ 3π/2 , 3π ]\nt₁ = 2π - π/4 = 8π/4 - π/4 = 7π/4\n=> наид. корн. 3π/2 ; 7π/4 ; 5π/2\n\n[В центре — фрагмент тригонометрической окружности с осями sinx (вертикальная стрелка вверх) и π/2 (горизонтальная вправо)]\n\nt₁ = 2π - π/4 = (8π-π)/4 = 7π/4\n=> нам подх. 3π/2 ; 7π/4 ; π/2\n\nОтвет: a) x = π/2 + πn, n ∈ Z\nx = -π/4 + 2πn, n ∈ Z , x = -3π/4 + 2πn, n ∈ Z\n\nб) 3π/2 ; 7π/4 ; π/2\n\n[Рисунок: тригонометрическая окружность с осями sin x (вертикальная) и cos x (горизонтальная). Отмечены подписи: π/2 у верхнего конца вертикальной оси, 3π/2 у нижнего конца вертикальной оси, π у левого конца горизонтальной оси, 2π у правого конца горизонтальной оси, -π/2 внутри окружности около нижней точки. Вдоль окружности по часовой стрелке от π/2 до 3π/2 и далее к 2π нанесена штриховка (выделенная дуга). На дуге отмечена точка t₁ около 7π/4. Справа вверху фрагмент: 2 x, 3π/2]",
+  "seconds": 10,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3675,
+    "completion_tokens": 136,
+    "duration_ms": 1800
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3667,
+    "completion_tokens": 268,
+    "duration_ms": 2273
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3675,
+    "completion_tokens": 285,
+    "duration_ms": 2347
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2577,
+    "completion_tokens": 652,
+    "duration_ms": 3454
+   }
+  ]
+ },
+ "13.3.4": {
+  "text": "sinx cos2x + √2 cos⁴x + sinx = 0 , [ 3π/2 ; 3π ]\n\na) sinx ( 1 - 2sin²x ) + √2 ( 1 - sin⁴x ) + sinx = 0\n\nsinx - 2sin³x + √2 - √2 sin⁴x + sinx = 0\n\n- 2sin³x + √2 - √2 sin²x + 2sinx = 0\n\n- 2sinx ( sin²x - 1 ) - √2 ( sin²x - 1 ) = 0\n\n( sin²x - 1 ) ( -2sinx - √2 ) = 0\n\nsin²x - 1 = 0 или -2sinx - √2 = 0\nsin²x = 1 -2sinx = √2\nsinx = ±1 sinx = -√2/2\nx = πk, k ∈ Z\n[x = -π/4 + 2πn, n ∈ Z\n[x = -3π/4 + 2πn, n ∈ Z\nб) Отберем корни с помощью тригонометрической окружности на промежутке [3π/2; 3π]\nПолучаем корни:\nx₁ = 3π/2 + π/4 = 7π/4\n[Рисунок: тригонометрическая окружность; отмечены точки: слева подписано «3π» и ниже «x₃», справа подписано «x₂», снизу подписано «3π/2», справа снизу подписано «y₁»; дуга выделена волнистой линией]\n\nПолучим корни:\nx₁ = 3π/2 + π/4 = 7π/4\nx₂ = 3π/2 + π/2 = 4π/2 = 2π\nx₃ = 2π + π = 3π\n\nОтвет: а) x = πk, k ∈ z, x = -π/4 + 2πn, n ∈ z; x = -3π/4 + 2πn, n ∈ z\nб) 7π/4; 2π; 3π",
+  "seconds": 9,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3667,
+    "completion_tokens": 195,
+    "duration_ms": 1767
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3653,
+    "completion_tokens": 202,
+    "duration_ms": 2032
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3667,
+    "completion_tokens": 203,
+    "duration_ms": 1938
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2521,
+    "completion_tokens": 509,
+    "duration_ms": 2769
+   }
+  ]
+ },
+ "13.4.1": {
+  "text": "sin(2x) + 2 sin(-x) + cos(-x) - 1 = 0    [2π; 7π/2]\n2 · sin(x) · cos(x) - 2 · sin(x) + cos(x) - 1 = 0\n2 · sin(x) · (cos(x) - 1) + cos(x) - 1 = 0\n(cos(x) - 1) · (2 · sin(x) + 1) = 0    Произведение равно нулю, когда\n                                     хотя бы один из множителей\n                                     равен нулю, а второй при этом\n                                     не теряет смысла.\ncos(x) - 1 = 0        2 · sin(x) + 1 = 0\ncos(x) = 1            sin(x) = -1/2\nx = 2πk; k ∈ Z        x = [ -π/6 + 2πk\n                            -5π/6 + 2πk, k ∈ Z\n\nОтбор корней:\n2π ≤ 2πk ≤ 7π/2 | : 2π          2π ≤ -π/6 + 2πk ≤ 7π/2 | · 6/π          2π ≤ -5π/6 + 2πk ≤ 7π/2 | · 6/π\n1 ≤ k ≤ 7/4                     12 ≤ -1 + 12k ≤ 21                      12 ≤ -5 + 12k ≤ 21\n2π ≤ 2πk ≤ 2π + 2π\n1 ≤ k ≤ 7/4\nk = 1    x = 2π\n12 ≤ -π/6 + 12k ≤ 21\n13 ≤ 12k ≤ 21 1/2\n13/12 ≤ k ≤ 25/6\nk ∈ Z\n12 ≤ -5π/6 + 12k ≤ 21\n17 ≤ 12k ≤ 26\n17/12 ≤ k ≤ 13/6\nk = 2    x = 19π/6\n\nОтвет: а) 2πk; -π/6 + 2πk; -5π/6 + 2πk; k ∈ Z; б) 2π; 19π/6.",
+  "seconds": 9,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3371,
+    "completion_tokens": 201,
+    "duration_ms": 2153
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3428,
+    "completion_tokens": 176,
+    "duration_ms": 1735
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3371,
+    "completion_tokens": 172,
+    "duration_ms": 1862
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2489,
+    "completion_tokens": 503,
+    "duration_ms": 2681
+   }
+  ]
+ },
+ "13.4.2": {
+  "text": "а) sin 2x + 2 sin(-x) + cos(-x) - 7 = 0\n\n2 sin x · cos x - 2 sin x + cos x - 7 = 0\n\n(2 sin x + 1)(cos x - 1) = 0\n\n[\n2 sin x = -1\ncos x = 1\n\nб) [рисунок: тригонометрическая окружность; вертикальная ось (ось синусов) со стрелкой вверх, около неё сверху справа подпись «sin»; горизонтальная ось (ось косинусов) со стрелкой вправо, около неё справа подпись «cos»; начало координат подписано «0»; на окружности выделена жирной линией дуга в верхней полусфере; на дуге отмечены точки; около правой точки на дуге стоит подпись «2π», рядом с ней стрелка с подписью «x₁ = 2π»; внизу отмечена точка с подписью «7π/2»; слева на окружности отмечена точка, из неё стрелка с подписью «x₂ = 19π/6»]\n\n[\ncos x = 1\nx = -π/6 + 2πk, k ∈ Z\nx = -5π/6 + 2πn, n ∈ Z\nx = 2πw, w ∈ Z\n\nx = 2πn ; n ∈ Z\nОтв: а)\nt = -π/6 + 2πk ; k ∈ Z\nt = -5π/6 + 2πn ; n ∈ Z\nx = 2πn ; n ∈ Z .\nб)\nx₁ = 2π ; x₂ = 19π/6",
+  "seconds": 9,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3527,
+    "completion_tokens": 263,
+    "duration_ms": 2294
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3639,
+    "completion_tokens": 274,
+    "duration_ms": 2425
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3527,
+    "completion_tokens": 102,
+    "duration_ms": 1445
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2555,
+    "completion_tokens": 404,
+    "duration_ms": 2686
+   }
+  ]
+ },
+ "13.4.3": {
+  "text": "a) sin 2x + 2 sin (-x) + cos (-x) - 1 = 0\n2 sin x · cos x [неразборчиво: зачёркнуто] - 2 sin x + cos x - 1 = 0\n2 sin x ( cos x - 1 ) + ( cos x - 1 ) = 0\n( cos x - 1 ) ( 2 sin x + 1 ) = 0 =>\n[ cos x = 1  =>\n[ 2 sin x = -1\n=>  [ cos x = 1 =>\n    [ sin x = -1/2\n=> [ x = 2πn , n ∈ Z\n   [ x = -π/6 + 2πk\n=> {\nx = 2πn , n ∈ Z\nx = -π/6 + 2πk\nx = -5π/6 + 2πk , k ∈ Z\n\nб)\n[тригонометрическая окружность; на ней отмечены: точка справа с подписью 2π, точка слева снизу перечёркнута крестом]\n\n√(2π - 5π/6) = (12π - 5π)/6 = 7π/6\n\n[Слева фрагмент тригонометрической окружности: сверху горизонтальная линия с двумя отмеченными точками; слева отмечена точка с подписью \\(\\frac{7\\pi}{6}\\) (крестик); справа отмечена точка с подписью \\(\\frac{7\\pi}{2}\\); дуга между ними с штриховкой; внизу от точки \\(\\frac{7\\pi}{2}\\) идёт линия к точке соединения.]\n\nОтвет: а) \\(\\{2\\pi n; -\\frac{\\pi}{6} + 2\\pi k; -\\frac{5\\pi}{6} + 2\\pi k\\}\\)\n\\(n, k \\in \\mathbb{Z}\\)\nб) \\(\\{2\\pi; \\frac{7\\pi}{6}\\}\\)",
+  "seconds": 8,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3263,
+    "completion_tokens": 163,
+    "duration_ms": 1828
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3311,
+    "completion_tokens": 109,
+    "duration_ms": 1615
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3263,
+    "completion_tokens": 165,
+    "duration_ms": 1744
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2342,
+    "completion_tokens": 439,
+    "duration_ms": 2894
+   }
+  ]
+ },
+ "13.4.4": {
+  "text": "a) sin 2x + 2sin(-x) + cos(-x) - 1 = 0\nsin 2x = 2sin x cos x, sin(-x) = -sin x, cos(-x) = cos x, тогда:\n2sin x cos x - 2sin x + cos x - 1 = 0\n2sin x (cos x - 1) + cos x - 1 = 0\n(2sin x - 1)(cos x - 1) = 0\n[ 2sin x - 1 = 0        [ sin x = 0,5          [ x = π/6 + 2πn, n ∈ Z\n[ cos x - 1 = 0     => [ cos x = 1        => [ x = 5π/6 + 2πn, n ∈ Z\n[Слева:] [зачёркнуто: L] cos x - 1 = 0\ncos x = 1\n[Справа система:]\n{ x = 5π/6 + 2πn₁, n₁ ∈ Z\n{ x = 2πn₃, n₃ ∈ Z\n\nб) Отберём подходящие корни, используя единичную окружность\n\n[Рисунок: тригонометрическая окружность; отмечены точки 13π/6 (верхняя левая), 17π/6 (нижняя левая), 2π (правая нижняя); подписи осей y и x; выделена дуга]\n[Схематический чертёж: горизонтальная числовая ось со стрелкой вправо и подписью «x»; окружность с центром в начале координат; на нижней точке окружности подпись «7π/2»]\nПодходят 2π, 13π/6, 13π/6\nОтвет: а) x = π/6 + 2πn₁, x = 5π/6 + 2πn₂, x = 2πn₃, n₁, n₂, n₃ ∈ Z\nб) x = 2π, x = 13π/6, x = 13π/6",
+  "seconds": 8,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3647,
+    "completion_tokens": 187,
+    "duration_ms": 1669
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3632,
+    "completion_tokens": 152,
+    "duration_ms": 1770
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3647,
+    "completion_tokens": 151,
+    "duration_ms": 1545
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2379,
+    "completion_tokens": 491,
+    "duration_ms": 2803
+   }
+  ]
+ },
+ "13.5.1": {
+  "text": "9 81^{cosx} - 28 9^{cosx} + 3 = 0\n9 · (9^{cosx})^2 - 28 9^{cosx} + 3 = 0\n9^{cosx} = t , тогда\n9t^2 - 28t + 3 = 0\nD = 784 - 108 = 676\nt = (28 ± 26)/18     t₁ = 1/9     t₂ = 3\n9^{cos x} = 1/9                   9^{cos x} = 3\n9^{cos x} = 9^{-1}                3^{2cos x} = 3^1\ncos x = -1                     2cos x = 1               cos x = 1/2\nx₁ = π + 2πn, n ∈ z      x₂ = ± π/3 + 2πk, k ∈ z, объединяя\nx₁ и x₂  получаем       x = π/3 + 2πk/3, k ∈ z\nб)  11π/3 ; 3π ; 4π   ∈ [5π/2 ; 4π]\nОтвет: а) π/3 + 2πk/3, k ∈ z, б) 3π, 11π/3; 4π.",
+  "seconds": 8,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3599,
+    "completion_tokens": 102,
+    "duration_ms": 1506
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3605,
+    "completion_tokens": 184,
+    "duration_ms": 1662
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3599,
+    "completion_tokens": 154,
+    "duration_ms": 1928
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2366,
+    "completion_tokens": 297,
+    "duration_ms": 2399
+   }
+  ]
+ },
+ "13.5.2": {
+  "text": "a) 9 · 81^{cos x} - 28 · 9^{cos x} + 3 = 0\n\n9 · 9^{2 cos x} - 28 · 9^{cos x} + 3 = 0\n\nПусть 9^{cos x} = t, то     9 · t² - 28 · t + 3 = 0\n\nD = 784 - 4 · 9 · 3 = 676\n\nt₁ = (28 - 26) / 18 = 1/9\n\nt₂ = (28 + 26) / 18 = 3\n\n9^{cos x} = 1/9                  9^{cos x} = 3\n\n9^{cos x} = 9^{-2}               9^{cos x} = 9^{1/2}\n\ncos x = -2                      cos x = 1/2\n\nx = ±π + 2πk, k ∈ Z              x = ±π/3 + 2πk, k ∈ Z\n\n[Тригонометрическая окружность: горизонтальная и вертикальная оси со стрелками; выделена дуга волнистой линией от точки -π (слева, отмечена подписью -π) вверх через верхнюю точку и далее до точки -π/3 (справа, отмечена подписью -π/3); отмечена верхняя точка π/2; также справа отмечена точка с подписью π/3]\n\n5^{2\\cos x} = 5^{-2}\n\\cos x = -1\nx = \\pi + 2\\pi k, k \\in \\mathbb{Z}.\n\n\\cos x = \\frac{1}{2}\nx = \\pm \\frac{\\pi}{3} + 2\\pi k, k \\in \\mathbb{Z}.\n\nб) \\left[ \\frac{5\\pi}{2}; 4\\pi \\right]\n\nx = \\frac{\\pi}{3} + 2\\pi k, не подходит.\n\n1. x = -\\frac{\\pi}{3} + 2\\pi k, k \\in \\mathbb{Z}\n\n2,5\\pi < -\\frac{\\pi}{3} + 2\\pi k < 4\\pi \\quad | :\\pi\n\n2,5 < -\\frac{1}{3} + 2k < 4\n\n2\\frac{5}{6} + \\frac{2}{6} < 2k < 4\\frac{1}{3} \\quad | :2\n\n1\\frac{5}{6} < k < 2\\frac{1}{3}\n\n2. x = \\pi + 2\\pi k, k \\in \\mathbb{Z}.\n\n2,5\\pi < \\pi + 2\\pi k < 4\\pi \\quad | :\\pi \\ -1\n\n2,5 - 1 < 2k < 4 - 1 \\quad | :2\n\n1,5 < k < 1,5\n\\Rightarrow k = 1,\nx = \\pi + 2\\pi = 3\\pi.\n\n[зачёркнуто: 0,75 < k < 1,5]\n⇒ k = 1.\nx = π + 2π = 3π.\n\n2 5/6 + 2/6 < 2k < 4 1/3 | :2\n1 5/6 < k < 2 1/3\n⇒ k = 2          x = -π/3 + 4π = 11π/3\n\n5. x = -π + 2πk\n2,5π < -π + 2πk < 4π | :2π\n1,75 < k < 2,5\n⇒ k = 2.\nx = -π + 4π = 3π.\n\nОтвет: x = 3π, x = 11π/3",
+  "seconds": 11,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3695,
+    "completion_tokens": 327,
+    "duration_ms": 2445
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3662,
+    "completion_tokens": 328,
+    "duration_ms": 2280
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3671,
+    "completion_tokens": 178,
+    "duration_ms": 2130
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2749,
+    "completion_tokens": 833,
+    "duration_ms": 3688
+   }
+  ]
+ },
+ "13.5.3": {
+  "text": "a)\n9 · 81^{cos x} - 28 · 9^{cos x} + 3 = 0\n9 · (9^2)^{cos x} - 28 · 9^{cos x} + 3 = 0\nПусть 9^{cos x} = t, тогда:\n9t^2 - 28t + 3 = 0\nD = (-28)^2 - 4 · 9 · 3 = 784 - 108 = 676\nt_1 = \\frac{28 - 26}{2 · 9} = \\frac{2}{18} = \\frac{1}{9} ; t_2 = \\frac{28 + 26}{2 · 9} = \\frac{54}{18} = 3\nВернемся к замене: 9^{cos x} = \\frac{1}{9} или 9^{cos x} = 3\n\ncos x = -1\nx = π + πd, d ∈ Z\n\n(3^2)^{cos x} = 3^1\n2 cos x = 1\ncos x = \\frac{1}{2}\nx = ±\\frac{π}{3} + 2πn, n ∈ Z\n\nб) [\\frac{5π}{2} ; 4π]\n\n\\frac{5π}{2} \\leqslant \\frac{π}{3} + 2πn \\leqslant 4π \\quad ; \\quad \\frac{5π}{2} \\leqslant -\\frac{π}{3} + 2πk \\leqslant 4π\n\\frac{5}{2} \\leqslant \\frac{1}{3} + 2n \\leqslant 4, n ∈ Z \\quad ; \\quad \\frac{5}{2} \\leqslant -\\frac{1}{3} + 2k \\leqslant 4, k ∈ Z\n\\frac{13}{6} \\leqslant 2n \\leqslant 3\\frac{2}{3}, n ∈ Z \\quad ; \\quad 2\\frac{5}{6} \\leqslant 2k \\leqslant 4\\frac{1}{3}, k ∈ Z\n\n[Рисунок: рукописный текст в три колонки, без чертежа.]\n\nЛевая колонка:\n5/2 ≤ 1/3 + 2n ≤ 4, n ∈ Z\n2 1/6 ≤ 2n ≤ 3 2/3, n ∈ Z\n1 1/12 ≤ n ≤ 1 5/6, n ∈ Z\nn - нет чисел\n\nСредняя колонка:\n5/2 ≤ -1/3 + 2k ≤ 4, k ∈ Z\n2 5/6 ≤ 2k ≤ 4 1/3, k ∈ Z\n1 5/12 ≤ k ≤ 2 1/6, k ∈ Z\nk = 2\nx₁ = -π/3 + 2·2π = 11π/3\n\nПравая колонка:\n5/2 ≤ 1 + d ≤ 4, d ∈ Z\n1 1/2 ≤ d ≤ 3, d ∈ Z\nd = 2, 3\nx₂ = π + 2π = 3π\nx₃ = π + 4π = 5π\n\nОтвет: a) x = π + πd, d ∈ Z; x = ±π/3 + 2πn, n ∈ Z;\nб) x₁ = 11π/3; x₂ = 3π; x₃ = 5π",
+  "seconds": 9,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3623,
+    "completion_tokens": 212,
+    "duration_ms": 1740
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3618,
+    "completion_tokens": 441,
+    "duration_ms": 2329
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3623,
+    "completion_tokens": 313,
+    "duration_ms": 1944
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2885,
+    "completion_tokens": 776,
+    "duration_ms": 3210
+   }
+  ]
+ },
+ "13.6.1": {
+  "text": "a) 2 Log²₄(4 sin x) - 5 Log₄(4 sin x) + 2 = 0, Log₄(4 sin x) = t,\n2 t² - 5 t + 2 = 0; D = 25 - 16 = 9 = 3², t₁ = (5 - 3)/4 = 1/2; t₂ = (5 + 3)/4 = 1;\nLog₄(4 sin x) = t₁ = 1/2; Log₄(4 sin x) = Log₄ 2, 4 sin x = 2; sin x = 1/2;\nx ∈ π/6 + 2πk, k ∈ Z; x = 5π/6 + 2πk, k ∈ Z;\n\nLog₄(4sinx)=t₂=1; Log₄(4sinx)=Log₄4; 4sinx=4; sinx=1;\nx = π/2 + 2πk, k ∈ Z   Ответ: x = π/6 + 2πk, π/2 + 2πk, 5π/6 + 2πk, k ∈ Z\n\nб) [изображена тригонометрическая окружность: отмечена точка -3π/2 (сверху, подпись -3π/2), отмечена точка -7π/6 (слева, подпись -7π/6), отмечена точка 0 (справа, подпись 0), выделена дуга]   Ответ: -3π/2, -7π/6.",
+  "seconds": 7,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3164,
+    "completion_tokens": 149,
+    "duration_ms": 1642
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3217,
+    "completion_tokens": 153,
+    "duration_ms": 1648
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3164,
+    "completion_tokens": 122,
+    "duration_ms": 1557
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2292,
+    "completion_tokens": 367,
+    "duration_ms": 2491
+   }
+  ]
+ },
+ "13.6.2": {
+  "text": "а) ОДЗ:     4 sin x > 0\n            sin x > 0\n\nДля логах x решим методом интервалов\nПусть log₄(4 sin x) = t ;  t > 0\n2t² - 5 t + 2 = 0\nD = 25 - 4·2·2\nD = 25 - 16\nD = 9\nt₁ = (5 + 3) / 2        t₁ = 4\nt₂ = (5 - 3) / 2        t₂ = 1\n\nОбратная замена\n\nlog₄(4sinx) = 1        или        log₄(4sinx) = 4\n4sinx = 4                          4sinx = 256\nsin x = 1                          sinx = 64\nx = π/2 + 2πn, n ∈ Z          нет решений.\n\nБ) Произведём отбор на единичной окружности\n\n[окружность с отмеченными точками: верхняя точка окружности подписана -3π/2, правая точка окружности подписана 0; дуга на окружности выделена волнистой линией от точки -3π/2 против часовой стрелки до точки 0]\n\n-3π/2\n\nОтвет: а) x = π/2 + 2πn, n ∈ Z  б) -3π/2",
+  "seconds": 8,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3687,
+    "completion_tokens": 92,
+    "duration_ms": 1563
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3674,
+    "completion_tokens": 152,
+    "duration_ms": 2004
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3687,
+    "completion_tokens": 185,
+    "duration_ms": 1961
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2350,
+    "completion_tokens": 323,
+    "duration_ms": 2301
+   }
+  ]
+ },
+ "13.6.3": {
+  "text": "2 log₄² (4 sin x) - 5 log₄ (4 sin x) + 2 = 0\n2t² - 5t + 2 = 0          D = 25 - 16 = 9\nlog₄ (4 sin x) = 2        [ 8 = 4 sin x        [ sin x = ②\nlog₄ (4 sin x) = 1/2      [ 2 = 4 sin x        [ sin x = 1/2\n\nlog₄ (4 sin x) = t        ОДЗ\n                          4 sin x > 0\n                          sin x > 0\n                          x ≠ πn          n ∈ Z\n\nt₁ = (5 - 3) / 4 = 1/2\nt₂ = (5 + 3) / 4 = 2\n\nlog₄ (4sinx) = 1/2\n2 = 4sinx   sinx = 1/2\nx = π/6 + 2πn; 5π/6 + 2πn, n ∈ Z\n[-3π/2; 0]\nt₂ = 5+3/4 = 2\nне подходит т.к. -1 ≤ sinx ≤ 1\n[в центре внизу: график — полуокружность с горизонтальной осью, отмечены точки; подписи: -3π/2, -π/2; на дуге отмечена точка -π/2]\n[Слева: тригонометрическая окружность. Сверху подпись: 2. Слева подпись: -π. Справа подпись: 0. Снизу подпись: -π/2. Горизонтальная ось со стрелкой вправо, вертикальная ось.]\nОтвет: a) x = π/6 + 2πn, 5π/6 + 2πn\nб) x ∈ -7π/6              n ∈ Z\nОтвет; а) 11/6 + 2πn; 5π/6 + 2πn; б) -3π/6.\n[неразборчиво: π/4 + πn, | π/4 + 2πn], n ∈ Z, [неразборчиво: x = π/4 + πn, | x = π/4 + 2πn], n ∈ Z, [неразборчиво: x = 5π/4 + 2πn, | x = 5π/4 + πn], n ∈ Z, [неразборчиво: 0), | 0], [неразборчиво: 6. | 6]",
+  "seconds": 13,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3376,
+    "completion_tokens": 222,
+    "duration_ms": 2171
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3482,
+    "completion_tokens": 219,
+    "duration_ms": 2110
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3376,
+    "completion_tokens": 112,
+    "duration_ms": 1402
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2907,
+    "completion_tokens": 107,
+    "duration_ms": 1552
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2895,
+    "completion_tokens": 44,
+    "duration_ms": 915
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2907,
+    "completion_tokens": 124,
+    "duration_ms": 1285
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3048,
+    "completion_tokens": 603,
+    "duration_ms": 2948
+   }
+  ]
+ },
+ "500131.1": {
+  "text": "C1.\ncos 2x + 0,5 = cos²x\ncos²x - sin²x + 0,5 = cos²x\nsin²x = 0,5\n|sinx| = 1/√2\n[sinx = -1/√2\n[sinx = 1/√2\nx = π/4 + πn, n ∈ Z\nб) [-2π; -π/2]\n-7π/4; -5π/4; -3π/4.\n\nОтвет: а) x = π/4 + πn, n ∈ Z\nб) -7π/4; -5π/4; -3π/4.",
+  "seconds": 6,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3363,
+    "completion_tokens": 53,
+    "duration_ms": 1058
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3467,
+    "completion_tokens": 100,
+    "duration_ms": 1506
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3363,
+    "completion_tokens": 67,
+    "duration_ms": 1363
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2149,
+    "completion_tokens": 153,
+    "duration_ms": 1509
+   }
+  ]
+ },
+ "500366.1": {
+  "text": "C1.\na) cos2x + sin²x = 0,5\ncos²x - sin²x + sin²x = 0,5\ncos²x = 1/2\ncos x = ±1/√2\n\ncos x = ± 1/4\nx = ± arccos 1/4 + 2πk, или x = π - arccos 1/4 + 2πk\nили x = -π + arccos 1/4 + 2πk\nk ∈ Z.\nб) [-2π; -π/2]\n[Фрагмент тригонометрической окружности; отмечены точки с подписями: arccos 1/4, -arccos 1/4, -3π/2]\n\n[Сверху обрезанная запись: б) [ 2π | 2π ]]  \n1) (π - arccos 1/4) - 2π = - arccos 1/4 - π  \n2) -π + arccos 1/4 - 2π = arccos 1/4 - 3π  \n3) - arcsin 1/4 - 2π  \n\n[Рисунок: тригонометрическая окружность, штриховкой выделена дуга в левой части; отмечены точки с подписями: сверху справа «arccos 1/4», сверху слева «-arccos 1/4», справа «-2π», слева «-3π», внутри около вертикальной оси «-1/4» и «1/4», снизу справа «-arccos 1/4», снизу слева «-π + arccos 1/4»; также присутствуют несколько точек без подписей и штриховые линии.]",
+  "seconds": 7,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3337,
+    "completion_tokens": 52,
+    "duration_ms": 1256
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3437,
+    "completion_tokens": 121,
+    "duration_ms": 1573
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3337,
+    "completion_tokens": 234,
+    "duration_ms": 1951
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2285,
+    "completion_tokens": 408,
+    "duration_ms": 2474
+   }
+  ]
+ },
+ "500366.2": {
+  "text": "C1. a) cos2x + sin²x = 0,5\n[стрелка вверх от cos2x] по формуле двойного аргумента\n1 - 2sin²x + sin²x = 0,5\n[стрелка вверх от 1 - 2sin²x + sin²x]\nsin²x = 0,5\n[стрелка вверх от sin²x]\nsinx = ± √2/2\n[в правом нижнем углу стрелка вверх, подпись: sinx]\nx = π/4 + πk/2 , k ∈ ℤ\nОтвет: x ∈ { π/4 + πk/2 | k ∈ ℤ }\nБ) Заметим, что при k ≤ -8   π/4 + πk/2 ≤ π/4 ⇔ πk/2 ≤ -π/2\nпри k ≥ -6   π/4 + πk/2 ≥ π/4 ⇔ πk/2 ≥ -π/2\n\n[Справа изображена тригонометрическая окружность с осями sin x (вертикальная) и cos x (горизонтальная). На окружности отмечены 4 точки: верхняя правая с подписью \"π/4 + 2πk\", нижняя правая с подписью \"-π/4 + 2πk\", верхняя левая с подписью \"3π/4 + 2πk\", нижняя левая с подписью \"-3π/4 + 2πk\". В центре окружности точка с подписью \"0\".]\n\nа) Заметим, что при k ≤ -8   π/4 + πk/2 ≤ π/4 → πk/2 < -7π/2\nпри k ≥ -6   π/4 + πk/2 ≥ π/4 - 6π/2 > -6π/2 = -3π\nпри k = -4   [зачёркнуто: π/4 + πk/2 = π/4 - 4π/2] > π/4 - 4π/2\nπ/4 + πk/2 = π/4 - 4π/2 , т -4π/2 < π/4 - πk/2 < -3π\nОтвет: [зачёркнуто: x = π/4] x = -13π/4",
+  "seconds": 9,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3485,
+    "completion_tokens": 121,
+    "duration_ms": 1477
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3599,
+    "completion_tokens": 244,
+    "duration_ms": 2141
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3485,
+    "completion_tokens": 191,
+    "duration_ms": 1752
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2459,
+    "completion_tokens": 529,
+    "duration_ms": 3091
+   }
+  ]
+ },
+ "500366.3": {
+  "text": "C1\na) cos2x + sin²x = 0,5 ;  cos²x - sin²x + sin²x = 0,5 ;  cos²x = 1/2\ncosx = 1/√2  или  cosx = -1/√2\nx = ± π/4 + 2πk  или  x = ± 3π/4 + 2πk , k ∈ Z\nЭти решения можно объединить:\nx = π/4 + πk/2 ; k ∈ Z\n\n[рисунок: тригонометрическая окружность; отмечены точки π/4, -π/4, 3π/4, -3π/4, π/4, -π/4; подписи осей x и y]\n\nб) x ∈ [-7π/2 ; -2π]\n-7π/2 ≤ π/4 + πk/2 ≤ -2π | ·4\n-14 ≤ 1 + 2k ≤ -8\n-15 ≤ 2k ≤ -9 ; -15/2 ≤ k ≤ -9/2 ; -7,5 ≤ k ≤ -4,5\nт.к. k ∈ ℤ, то k = -7 ; -6 ; -5.\nx = π/4 - 6π/2 = π/4 - 12π/4 = -11π/4\nx = π/4 - [зачёркнуто: 6π/2 | 5π/2] = π/4 - 10π/4 = -9π/4\nx = π/4 - 5π/2 = π/4 - 10π/4 = -9π/4\nx = π/4 - 4π/2 = π/4 - 8π/4 = -7π/4\nОтвет: а) π/4 + πk/2, k ∈ Z  б) -9π/4; -11π/4; -13π/4",
+  "seconds": 9,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3551,
+    "completion_tokens": 169,
+    "duration_ms": 1807
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3659,
+    "completion_tokens": 216,
+    "duration_ms": 2255
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3551,
+    "completion_tokens": 195,
+    "duration_ms": 1931
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2508,
+    "completion_tokens": 442,
+    "duration_ms": 2549
+   }
+  ]
+ },
+ "505470.1": {
+  "text": "e1. 2√3 cos² (3π/2 + x) - sin 2x = 0               [3π/2 ; 3π]\na) cos (3π/2 + x) = sin x\n   sin 2x = 2 sin x cos x\n   2√3 sin² x - 2 sin x cos x = 0\n   2 sin x (√3 sin x - cos x) = 0\n   2 sin x = 0                     √3 sin x - cos x = 0      / : cos x ≠ 0\n   sin x = 0                       [зачёркнуто: √3 sin x] / cos x - [зачёркнуто: cos x] / cos x\n                                   √3 tg x - 1 = 0\n2 sinx = 0\nsinx = 0\nx = πk; k ∈ Z\n[слева схематичный чертёж: окружность с горизонтальной и вертикальной осями, штриховка вдоль окружности, отмечены точки на пересечении с осями; слева от чертежа стоит цифра 1)]\nx = 2π\nx = 3π\n√3 sinx - cosx = 0   | : cosx ≠ 0\n[зачёркнуто: (√3 sinx)/cosx - cosx/cosx]\n√3 tgx - 1 = 0\n√3 tgx = 1\ntgx = 1/√3\nx = π/6 + πk; k ∈ Z\n[снизу схематичный чертёж: окружность с горизонтальной и вертикальной осями, штриховка вдоль окружности, отмечена точка в первой четверти; слева от чертежа стоит цифра 1)]\nx = π/6 + 2π = 4π/3\n[В верхней части листа — фрагмент тригонометрической окружности с осями; на окружности отмечена выделенная дуга и точка в первой четверти; справа от рисунка запись:]\nб) x = π/3 + 2π = 4π/3\nОтвет: а) x = πk; k ∈ Z\nx = π/3 + πk; k ∈ Z\nб) x = 2π\nx = 3π\nx = 4π/3\n[В правом нижнем углу — печатный текст: РЕШУЕГЭ.РФ]",
+  "seconds": 9,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3425,
+    "completion_tokens": 174,
+    "duration_ms": 1899
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3507,
+    "completion_tokens": 244,
+    "duration_ms": 2325
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3425,
+    "completion_tokens": 137,
+    "duration_ms": 1581
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2474,
+    "completion_tokens": 557,
+    "duration_ms": 2899
+   }
+  ]
+ },
+ "513071.1": {
+  "text": "C1\na) cos 2x - √2 cos (3π/2 + x) - 1 = 0\ncos²x - sin²x - √2 sin x - 1 = 0\n1 - sin²x - sin²x - √2 sin x - 1 = 0\n-2sin²x - √2 sin x = 0\n- sin x (2sin x + √2) = 0\n\nб) [тригонометрическая окружность: вертикальная ось с подписью \"sin\" и стрелкой вверх; горизонтальная ось с подписью \"cos\" и стрелкой вправо; отмечены точки: 2π (правый конец горизонтального диаметра), 3π (левый конец горизонтального диаметра), 3π/2 (нижний конец вертикального диаметра), 7π/4 (точка в четвёртой четверти); дуга от 3π до 2π (через нижнюю полуокружность) выделена волнистой линией; на дуге отмечена точка 7π/4; на дуге от 3π/2 до 7π/4 отмечена точка]\n\n- sinx (2sinx + √2) = 0\n\nsinx = 0                   2sinx + √2 = 0\n\nx₁ = πn, n∈Z               2sinx = -√2\n\n                           sinx = - √2/2\n\n                           x₂ = - π/4 + πk, k∈Z\n\n                           x₃ = - 3π/4 + πm, m∈Z\n\n[в правом верхнем углу фрагмент окружности с подписью 3π/2]\n\nX₃ = -3π/4 + πm, m ∈ Z\n\nОтвет: a) X₁ = πn, n ∈ Z\nX₂ = -π/4 + πk, k ∈ Z\nX₃ = -3π/4 + πm, m ∈ Z\nб) 7π/4 ; 2π ; 3π",
+  "seconds": 8,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3690,
+    "completion_tokens": 269,
+    "duration_ms": 2248
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3677,
+    "completion_tokens": 117,
+    "duration_ms": 1547
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3690,
+    "completion_tokens": 116,
+    "duration_ms": 1460
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2401,
+    "completion_tokens": 464,
+    "duration_ms": 2924
+   }
+  ]
+ },
+ "513092.1": {
+  "text": "15. а) 2cos2x + 4cos(3π/2 - x) + 1 = 0\n2cos2x - 4sinx + 1 = 0\n2(cos²x - sin²x) - 4sinx + sin²x + cos²x = 0\n2cos²x - 2sin²x + sin²x + cos²x - 4sinx = 0\n3cos²x - sin²x - 4sinx = 0\n3cos²x - sinx(sinx + 4) = 0\n3(1 - sin²x) - sin²x - 4sinx = 0\n3 - 3sin²x - sin²x - 4sinx = 0\n-4sin²x - 4sinx + 3 = 0 | · (-1)\n4sin²x + 4sinx - 3 = 0\nПусть sinx = t,   -1 ≤ t ≤ 1\n4t² - 4t - 3 = 0\nD = 16 + 4·4·3 = 16 + 48 = 64\nt₁,₂ = (4 ± 8) / 8 = → 12/8 = не уд.\n                  → -4/8 = -1/2\nВернемся к исходной переменной\nsinx = -1/2\nx = (-1)^k arcsin(-1/2) + πk, k ∈ ℤ\nx = (-1)^k π/6 + πk, k ∈ ℤ\n[ x = π/6 + 2πk, k ∈ ℤ\n[ x = 5π/6 + 2πk, k ∈ ℤ\nб) Отберем корни на [ 3π/2 ; 3π ]\n3π/2 ≤ π/6 + 2πk ≤ 3π\n9π/6 - π/6 ≤ 2πk ≤ 18π/6 - π/6\n4π/3 ≤ 2πk ≤ 17π/6\n2/3 ≤ k ≤ 17/12\nk = 1 : x = 9π/4\n3π/2 ≤ 5π/6 + 2πk ≤ 3π\n3/4 ≤ 2k ≤ 9/6\n3/8 ≤ k ≤ 9/8\nk = 1 : x = 17π/6\nОтвет: а) π/6 + 2πk ; 5π/6 + 2πk\nб) 9π/4 ; 17π/6\nРЕШУЕГЭ.РФ",
+  "seconds": 11,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3637,
+    "completion_tokens": 343,
+    "duration_ms": 2590
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3627,
+    "completion_tokens": 350,
+    "duration_ms": 2465
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3637,
+    "completion_tokens": 257,
+    "duration_ms": 2158
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2872,
+    "completion_tokens": 595,
+    "duration_ms": 3360
+   }
+  ]
+ },
+ "513093.1": {
+  "text": "№ 15\nа)\n8 sin²x + 2√3·cos x + 1 = 0\n8·(1 - cos²x) + 2√3·cos x + 1 = 0\n- 8cos²x + 2√3·cos x + 9 = 0\nПусть cos x = t, тогда\n- 8t² + 2√3·t + 9 = 0\nD = 300\nt₁ = -√3/2\nt₂ = 3√3/4\nобратная замена\n[справа чертёж: тригонометрическая окружность, оси x и y; отмечены точки -7π/6 (слева снизу) и 5π/6 (слева сверху) на дуге; на дуге между ними подпись √3/2]\nобратная замена\ncosx = -√3/2\nx = ±5Π/6 + 2Πk, k∈Z\ncosx = 3√3/4\nx = arccos 3√3/4 + 2Πn, n∈Z\nне уд условию -1≤cosx≤1.\nб) x ∈ [-7Π/2 ; -2Π]\nk=0, x = ±5Π/6\n[Рисунок: тригонометрическая окружность; отмечена дуга штриховкой; отмечены точки с подписями -7Π/2 (сверху) и -2Π (справа)]\nk=0, x = ± 5π/6\nk=-1, x = ± 7π/6\nОтвет: \nа) ± 5π/6 + 2πk, k∈Z.\nб) -5π/6; -7π/6\n\n[Рисунок: тригонометрическая окружность; отмечена точка 2π справа, дуга заштрихована по часовой стрелке от точки примерно 7π/6 (слева внизу) до точки 5π/6 (слева вверху); подписана точка 2π]",
+  "seconds": 9,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3605,
+    "completion_tokens": 194,
+    "duration_ms": 1915
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3623,
+    "completion_tokens": 150,
+    "duration_ms": 2071
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3605,
+    "completion_tokens": 137,
+    "duration_ms": 1651
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2388,
+    "completion_tokens": 481,
+    "duration_ms": 2747
+   }
+  ]
+ },
+ "515919.1": {
+  "text": "√15\na)\ncos2x + sin²x = 0,75\ncos²x - sin²x + sin²x = 0,75\ncos²x = 0,75\ncosx = 0,5√3          cosx = -0,5√3\nx = π/6 + 2πn         x = 5π/6 + 2πk\nx = 11π/6 + 2πm       x = 7π/6 + 2πl\n\nx = π/6 + 2πn          x = 5π/6 + 2πk\n\nx = 11π/6 + 2πm        x = 4π/6 + 2πl\n\n                  Ответ: x = π/6 + 2πn;\n\n                         x = 5π/6 + 2πk;\n\n                         x = 4π/6 + 2πl;\n\n                         x = 11π/6 + 2πm;\n\nx = 11π/6 + 2πm,\nn, k, l, m ∈ Z.\n\nб)\nπ/6 + π = 7π/6\n5π/6 + π = 11π/6\nπ/6 + 2π = 13π/6\nОтвет: x = 7π/6 ; 11π/6 ; 13π/6.",
+  "seconds": 7,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3694,
+    "completion_tokens": 113,
+    "duration_ms": 1476
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3687,
+    "completion_tokens": 106,
+    "duration_ms": 1570
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3694,
+    "completion_tokens": 86,
+    "duration_ms": 1629
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2223,
+    "completion_tokens": 306,
+    "duration_ms": 2325
+   }
+  ]
+ },
+ "515919.2": {
+  "text": "15) a) cos2x + sin²x = 0,75\ncos2x = cos²x - sin²x\ncos²x - sin²x + sin²x = 0,75\ncos²x = 0,75\ncosx = √3/2\n{\ncosx = -√3/2\nx = ±arccos(√3/2) + 2πn, n ∈ Z\nx = ± π/6 + 2πn, n ∈ Z\nx = ± arccos(-√3/2) + 2πn, n ∈ Z\nx = ± 5π/6 + 2πn, n ∈ Z\nб) [ π; 5π/2 ]\n[тригонометрическая окружность: вертикальная ось, горизонтальная ось, точки на концах горизонтального диаметра, на нижней вертикальной полуоси и на дуге в первой четверти; подписи: слева от окружности π, слева снизу 5π/6, справа снизу 11π/6 со стрелкой к точке в первой четверти; дуга выделена волнистой линией]\n[график косинуса: волнообразная кривая, пересекающая горизонтальную ось, подписи точек: 5π/6, 13π/6]\n13π/6 ; 5π/6 ; 11π/6",
+  "seconds": 9,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3673,
+    "completion_tokens": 90,
+    "duration_ms": 1771
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3659,
+    "completion_tokens": 194,
+    "duration_ms": 2035
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3656,
+    "completion_tokens": 195,
+    "duration_ms": 2301
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2415,
+    "completion_tokens": 314,
+    "duration_ms": 2914
+   }
+  ]
+ },
+ "515919.3": {
+  "text": "15 a) cos2x + sin²x = 0,75\ncos²x - sin²x + sin²x = 0,75\ncos²x = 3/4\ncos x = ±√3/4\nx₁ = ±π/6 + 2πk, k ∈ Z   x₂ = ±5π/6 + 2πn, n ∈ Z\nб) подсчет корни, принадлежащие\nотрезку [π; 5π/2], с помощью тригоно-\nметрической окружности\nОтвет: а) x = ± π/6 + 2πk, k ∈ ℤ; x = ± 5π/6 + 2πn, n ∈ ℤ, б) x = 7π/6, 11π/6, 13π/6\n\n[справа график: оси координат; подпись вертикальной оси sinx; отмечена точка на горизонтальной оси с подписью π; отмечена точка на графике с подписью 13π/6; отмечена точка на вертикальной оси с подписью 5π/2]\n\n[справа чертёж: горизонтальная ось с подписью cosx, вертикальная ось; отмечены точки на окружности: π, 7π/6, 11π/6]",
+  "seconds": 7,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3218,
+    "completion_tokens": 120,
+    "duration_ms": 1590
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3277,
+    "completion_tokens": 120,
+    "duration_ms": 1682
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3218,
+    "completion_tokens": 85,
+    "duration_ms": 1421
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2203,
+    "completion_tokens": 299,
+    "duration_ms": 2183
+   }
+  ]
+ },
+ "559481.1": {
+  "text": "№13.\na) cos 2x + 0,5 = cos²x\n2cos²x - 1 + 0,5 - cos²x = 0\ncos²x - 1/2 = 0\n(cos x - 1/√2)(cos x + 1/√2) = 0\n(cos x - √2/2)(cos x + √2/2) = 0\n1. cos x = √2/2\n2. cos x = -√2/2\n[рисунок: тригонометрическая окружность; отмечены точки; подписи у точек: справа сверху — π/4 + 2πn, n∈Z; справа снизу — -π/4 + 2πk, k∈Z; слева сверху — 3π/4 + 2πn, n∈Z; слева снизу — -3π/4 + 2πn, n∈Z; вертикальная ось с подписью Y; горизонтальная ось со стрелкой вправо]\nx = ±π/4 + πk, k∈Z\na) Ответ: ±π/4 + πk, k ∈ Z.\nб) x ∈ [-3π; -3π/2]. Для отбора корней построим единичную окружность.\n[Рисунок: тригонометрическая окружность с осями x и y; на окружности выделена жирная дуга; отмечены точки с подписями: слева — −3π, справа — −2π, сверху — −3π/2, справа сверху — −2π + π/4 = −7π/4, справа снизу — −2π − π/4 = −9π/4; вертикальная пунктирная линия слева с подписью −5π/2; вертикальная пунктирная линия справа без подписи]\n− 3π + π/4 =\n= − 11π/4\nб) Ответ: − 11π/4 ; − 9π/4 ; − 7π/4.\nРЕШУЕГЭ.РФ",
+  "seconds": 10,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3637,
+    "completion_tokens": 190,
+    "duration_ms": 2376
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3627,
+    "completion_tokens": 289,
+    "duration_ms": 2445
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3637,
+    "completion_tokens": 200,
+    "duration_ms": 2149
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2600,
+    "completion_tokens": 481,
+    "duration_ms": 2735
+   }
+  ]
+ },
+ "559481.2": {
+  "text": "✓ 13\na) cos2x + 0,5 = cos²x      cos 2x = 2cos²x - 1\n2cos²x - 1 + 1/2 = cos²x\ncos²x - 1/2 = 0\n(cos x - √2/2)(cos x + √2/2) = 0\ncos x = √2/2      cos x = - √2/2\n[рисунок: тригонометрическая окружность; сверху подписана ось sin y; отмечены точки с подписями 3π/4 и π/4, из центра к ним проведены стрелки]\nx = ± 3π/4 + 2πk, k ∈ z\nx = ± π/4 + 2πn, k ∈ z\nб) [-3π; -3π/2]\n[Рисунок: тригонометрическая окружность с осями sin y (вертикальная) и cos x (горизонтальная); отмечены точки: π/4, 3π/4, -π/4, -3π/4, а также -1 и 1 на оси cos x; показаны углы и направления.]\n-2π + π/4 = -8π+π/4 = -7π/4\n\n[Тригонометрическая окружность: отмечен конец отрезка −3π слева, отмечен конец отрезка 2π справа, дуга выделена штриховкой между −3π и 2π, отмечены точки на дуге с подписями −2π + π/4, −2π − π/4, −3π + π/4]\n−2π + π/4 = −8π + π/4 = −7π/4\n−3π + π/4 = −12π + π/4 = −11π/4 = −11π/4\n−2π − π/4 = −8π − π/4 = −9π/4\nОтвет: а) ± 3π/4 + 2πk, k ∈ z , ± π/4 + 2πn, n ∈ z\nб) − 11π/4 ; − 9π/4 ; − 7π/4",
+  "seconds": 9,
+  "calls": [
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3695,
+    "completion_tokens": 171,
+    "duration_ms": 1780
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3699,
+    "completion_tokens": 212,
+    "duration_ms": 2180
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 3695,
+    "completion_tokens": 228,
+    "duration_ms": 2003
+   },
+   {
+    "llm_kind": "reader",
+    "finish_reason": "stop",
+    "prompt_tokens": 2531,
+    "completion_tokens": 511,
+    "duration_ms": 2874
+   }
+  ]
+ }
+}

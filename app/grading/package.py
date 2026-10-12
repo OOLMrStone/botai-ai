@@ -11,7 +11,15 @@ ROOT = Path(__file__).resolve().parents[2]
 COMMON_NAMES = ('main.md', 'analysis.md', 'grading.md', 'response-format.md')
 PROMPT_NAMES = ('main.md', 'ocr.md', 'analysis.md', 'popular_mistakes.md',
                 'grading.md', 'criteria.md', 'response-format.md')
-SUPPORTED_TASKS = frozenset({16})
+# Project task number -> maximum score of the matching FIPI-2026 task (13, 14, 15, 17).
+MAX_SCORES = {14: 2, 15: 3, 16: 2, 18: 3}
+SUPPORTED_TASKS = frozenset(MAX_SCORES)
+DEFAULT_TASK = 16
+# Tasks whose photos are read by a separate literal call before grading (reader.py).
+READER_TASKS = frozenset({14})
+# Optional per-task files; a task without them keeps its package unchanged.
+OPTIONAL_NAMES = ('ocr_biases.md',)
+TASK_TITLES = {14: 'Уравнение', 15: 'Стереометрия', 16: 'Неравенство', 18: 'Планиметрия'}
 
 
 def task_directory(task_number: int = 16, *, root: Path = ROOT) -> Path:
@@ -29,5 +37,10 @@ def package_paths(task_number: int = 16, *, root: Path = ROOT) -> dict[str, Path
 
 
 def load_package(task_number: int = 16, *, root: Path = ROOT) -> dict[str, str]:
-    return {name: path.read_text(encoding='utf-8')
-            for name, path in package_paths(task_number, root=root).items()}
+    package = {name: path.read_text(encoding='utf-8')
+               for name, path in package_paths(task_number, root=root).items()}
+    for name in OPTIONAL_NAMES:
+        path = task_directory(task_number, root=root) / name
+        if path.exists():
+            package[name] = path.read_text(encoding='utf-8')
+    return package

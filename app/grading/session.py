@@ -57,8 +57,18 @@ write_file(response.json), validate_response. При нечитаемости с
 '''
 
 
+PREPARED_ADAPTER = ADAPTER.replace(
+    'Прочитай Statement.md и ocr.md, затем сохрани ocr_result.md. Его нельзя перезаписывать.\n',
+    'Прочитай Statement.md и ocr.md, затем ocr_result.md: ocr_result.md подготовил сервер — буквальная\n'
+    'расшифровка увеличенных полос фото, сделанная без условия и правильного ответа. Это и есть запись\n'
+    'ученика. Не меняй прочтение потому, что другой вариант согласуется с дальнейшими строками, ответом\n'
+    'ученика или правильным ответом: ученик мог ошибиться в одном месте и верно записать другое.\n'
+    'Расходиться с ней можно, только если на фото однозначно виден другой символ; такое место отметь в notes.md.\n')
+
+
 class Session:
-    def __init__(self, task: dict, image_ids: list[str], package: dict[str, str] | None = None):
+    def __init__(self, task: dict, image_ids: list[str], package: dict[str, str] | None = None,
+                 reading: str | None = None):
         self.task = json.loads(json.dumps(task))
         self.image_ids = list(image_ids)
         self.catalog_path = task_directory(task['task_number']) / 'popular_mistakes.md'
@@ -68,6 +78,9 @@ class Session:
             'Solution.md': '## Эталонное решение\n' + (task['reference_solution'] or 'Отсутствует')
                            + '\n\n## Правильный ответ\n' + task['reference_answer'],
         }
+        self.prepared = reading is not None
+        if self.prepared:
+            self.files['ocr_result.md'] = reading
         self.read: set[str] = set()
         self.rejection: str | None = None
         self.reviewed: set[int] = set()
@@ -118,6 +131,7 @@ class Session:
             raise ValueError('Expected fixed file name')
         if name == 'read_file':
             if path in ('ocr_result.md', 'notes.md') and path in self.files:
+                self.read.add(path)
                 return {'kind': 'untrusted_data', 'content': self.files[path]}
             if path not in READ_ORDER:
                 raise ValueError('File not allowed')
@@ -131,6 +145,8 @@ class Session:
                         raise ValueError('Read preceding files first: ' + ', '.join(sorted(preceding - self.read)))
                     if READ_ORDER.index(path) >= 2 and 'ocr_result.md' not in self.files:
                         raise ValueError('Save ocr_result.md before analysis instructions')
+                    if READ_ORDER.index(path) >= 2 and self.prepared and 'ocr_result.md' not in self.read:
+                        raise ValueError('Read ocr_result.md before analysis instructions')
                     if READ_ORDER.index(path) >= 6 and 'notes.md' not in self.files:
                         raise ValueError('Save notes.md before grading instructions')
                 self.read.add(path)
@@ -147,6 +163,8 @@ class Session:
             if type(content) is not str or not content.strip() or len(content.encode()) > MAX_TEXT:
                 raise ValueError('Nonempty text up to 96 KB required')
             if path == 'ocr_result.md':
+                if self.prepared:
+                    raise ValueError('ocr_result.md is prepared by the server. Note reading errors in notes.md')
                 if self.rejection or not set(READ_ORDER[:2]) <= self.read:
                     raise ValueError('OCR result unavailable before OCR instructions or after rejection')
                 if path in self.files:

@@ -4,9 +4,12 @@ import json
 from uuid import uuid4
 
 from app.core.errors import LLMResponseFormatError, ValidationError
+from app.grading.package import DEFAULT_TASK, MAX_SCORES, READER_TASKS, SUPPORTED_TASKS, task_directory
 from app.grading.provider import PREP_PROMPT, MockProvider, Provider
+from app.grading.reader import read_photos, reader_prompt, resolve_prompt
+from app.grading.staged import run_staged
 from app.grading.reports import ReportStore
-from app.grading.session import ADAPTER, ATTACK_REASON, TOOLS, Session, load_package
+from app.grading.session import ADAPTER, ATTACK_REASON, PREPARED_ADAPTER, TOOLS, Session, load_package
 from app.grading.validator import parse_response
 
 
@@ -19,12 +22,18 @@ class GradingService:
         self.settings = settings
         self.provider = provider
         self.store = ReportStore(settings.photo.reports_dir)
-        self.package = package if package is not None else load_package()
+        # Load every package up front so a missing prompt fails before any paid call.
+        self.packages = {number: load_package(number) for number in sorted(SUPPORTED_TASKS)}
+        # A caller-approved package (the internal API's digested one) replaces the loaded one.
+        self.package = package
 
-    async def run(self, task_image, images, user_id):
+    async def run(self, task_image, images, user_id, task_number=DEFAULT_TASK):
+        if type(task_number) is not int or task_number not in SUPPORTED_TASKS:
+            raise ValueError(f'Unsupported grading task: {task_number!r}')
         provider = self.provider or (MockProvider() if self.settings.llm.provider == 'mock'
                                      else Provider(self.settings.llm))
         image_ids = ['test-image-' + uuid4().hex for _ in images]
+        reading = self._start_reading(provider, task_number, images)
         try:
             prepared = await provider.chat([
                 {'role': 'system', 'content': PREP_PROMPT},
@@ -53,32 +62,53 @@ class GradingService:
                     raise ValueError('Invalid reference solution')
             except (ValueError, TypeError, RecursionError) as exc:
                 raise LLMResponseFormatError('Не удалось подготовить задачу: модель вернула неверный формат. Повтори проверку') from exc
-            task = {'id': 'test-task-' + uuid4().hex, 'task_number': 16, 'max_score': 2,
+            task = {'id': 'test-task-' + uuid4().hex, 'task_number': task_number,
+                    'max_score': MAX_SCORES[task_number],
                     'statement': data['statement'], 'reference_answer': data['reference_answer'],
                     'reference_solution': reference}
             async def report(reason):
                 if reason == 'attack':
                     await asyncio.to_thread(self.store.save, user_id, image_ids, images)
-            return await self._run_session(provider, task, image_ids, images, report)
+            text = await reading if reading else None
+            return await self._run_session(provider, task, image_ids, images, report, text)
         finally:
+            if reading and not reading.done():
+                reading.cancel()
             await provider.close()
 
     async def run_prepared(self, task, image_ids, images, report_sink):
         """Use the server snapshot directly, preserving the bounded session."""
         provider = self.provider or (MockProvider() if self.settings.llm.provider == 'mock'
                                      else Provider(self.settings.llm))
+        reading = self._start_reading(provider, task.get('task_number'), images)
         try:
-            return await self._run_session(provider, task, image_ids, images, report_sink)
+            text = await reading if reading else None
+            return await self._run_session(provider, task, image_ids, images, report_sink, text)
         finally:
+            if reading and not reading.done():
+                reading.cancel()
             await provider.close()
 
-    async def _run_session(self, provider, task, image_ids, images, report_sink):
-        session = Session(task, image_ids, self.package)
+    def _start_reading(self, provider, task_number, images):
+        """Literal reading runs in parallel with task preparation; None falls back to the model's own OCR."""
+        if task_number not in READER_TASKS:
+            return None
+        package = self.package if self.package is not None else self.packages[task_number]
+        return asyncio.create_task(read_photos(provider, images, reader_prompt(package), resolve_prompt(package)))
+
+    async def _run_session(self, provider, task, image_ids, images, report_sink, reading=None):
+        package = self.package if self.package is not None else self.packages[task['task_number']]
+        if reading is not None and task['task_number'] in READER_TASKS:
+            # Isolated stages: analysis and grading see results, not reasoning or photos.
+            return await run_staged(provider, task, image_ids, package, reading, report_sink,
+                                    task_directory(task['task_number']) / 'popular_mistakes.md')
+        session = Session(task, image_ids, package, reading=reading)
         initial_task = {key: value for key, value in task.items()
                         if key not in ('reference_answer', 'reference_solution')}
         payload = json.dumps({'task': initial_task, 'solution_image_ids': image_ids}, ensure_ascii=False)
         messages = [
-            {'role': 'system', 'content': self.package['main.md'] + '\n\n' + ADAPTER},
+            {'role': 'system', 'content': package['main.md'] + '\n\n'
+             + (PREPARED_ADAPTER if session.prepared else ADAPTER)},
             {'role': 'user', 'content': [{'type': 'text', 'text': payload}] + [im.part() for im in images]},
         ]
         reported = False
@@ -98,8 +128,7 @@ class GradingService:
                 try:
                     return session.finalize(message.get('content') or '')
                 except ValueError:
-                    messages.append({k: v for k, v in message.items()
-                                     if k in {'role', 'content', 'reasoning_content'}})
+                    messages.append({k: v for k, v in message.items() if k in {'role', 'content'}})
                     messages.append({'role': 'user', 'content': 'Ответ не прошёл серверную проверку. Выполни обязательные шаги, сохрани и проверь response.json, верни точный проверенный текст.'})
                     continue
             # Malformed envelopes cannot be answered with a valid tool message.
@@ -111,8 +140,9 @@ class GradingService:
                         or type(call.get('function')) is not dict):
                     raise LLMResponseFormatError('Модель вернула неверный вызов инструмента. Повтори проверку')
                 call_ids.add(call['id'])
-            # Preserve reasoning_content for providers requiring it across tool turns.
-            allowed = {'role', 'content', 'tool_calls', 'reasoning_content'}
+            # Only actions and conclusions go back: resending reasoning_content made every step
+            # reread all earlier thinking (input grew to 70-110k tokens, checks hit the 6-minute limit).
+            allowed = {'role', 'content', 'tool_calls'}
             messages.append({k: v for k, v in message.items() if k in allowed})
             reviews = []
             for call in calls:
