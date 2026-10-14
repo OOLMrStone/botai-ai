@@ -4,7 +4,8 @@ import json
 from uuid import uuid4
 
 from app.core.errors import LLMResponseFormatError, ValidationError
-from app.grading.package import DEFAULT_TASK, MAX_SCORES, READER_TASKS, SUPPORTED_TASKS, task_directory
+from app.grading.package import (DEFAULT_TASK, MAX_SCORES, ORIENT_TASKS, READER_TASKS, SUPPORTED_TASKS,
+                                 task_directory)
 from app.grading.provider import PREP_PROMPT, MockProvider, Provider
 from app.grading.reader import read_photos, reader_prompt, resolve_prompt
 from app.grading.staged import run_staged
@@ -94,7 +95,8 @@ class GradingService:
         if task_number not in READER_TASKS:
             return None
         package = self.package if self.package is not None else self.packages[task_number]
-        return asyncio.create_task(read_photos(provider, images, reader_prompt(package), resolve_prompt(package)))
+        return asyncio.create_task(read_photos(provider, images, reader_prompt(package), resolve_prompt(package),
+                                               orient=task_number in ORIENT_TASKS))
 
     async def _run_session(self, provider, task, image_ids, images, report_sink, reading=None):
         package = self.package if self.package is not None else self.packages[task['task_number']]

@@ -8,8 +8,10 @@ fields the model would only copy (task, image ids, ocr, summary) and validates t
 response with the same gate as the tool workflow.
 """
 import json
+import re
 
 from app.core.errors import LLMResponseFormatError
+from app.grading.package import ANSWER_LINE_TASKS
 from app.grading.session import ATTACK_REASON, review_for_frontend
 from app.grading.validator import ValidationGate, parse_response
 
@@ -41,6 +43,83 @@ analysis.summary заполнит сервер.
 
 def block(name: str, text: str) -> str:
     return f'## {name}\n{text}'
+
+
+def answer_line(reading: str) -> str | None:
+    """The student's last «Ответ» line from the transcript, as written."""
+    lines = [line.strip() for line in reading.splitlines() if line.strip()]
+    starts = [i for i, line in enumerate(lines) if line.lower().startswith('ответ')]
+    if not starts:
+        return None
+    answer = [lines[starts[-1]]]
+    # An answer often continues on the next line or two: «Ответ: x = 1;» then «x ∈ (2; +∞)».
+    for line in lines[starts[-1] + 1:starts[-1] + 3]:
+        if not re.match(r'(x|х|\(|\[|\{|∪|\$)', line):
+            break
+        answer.append(line)
+    return ' '.join(answer)
+
+
+def answer_block(task: dict, reading: str) -> list[str]:
+    """For tasks where reviews tend to match the student's answer to the reference, the answer line verbatim."""
+    line = answer_line(reading) if task['task_number'] in ANSWER_LINE_TASKS else None
+    if not line:
+        return []
+    return [block('Ответ ученика из расшифровки', f'«{line}»\nЭто дословная строка ученика. Сравни её с '
+                  'правильным ответом по каждому промежутку, каждой границе (круглая или квадратная скобка) и '
+                  'каждой отдельной точке. Не исправляй её и не считай совпадающей, если хоть одна скобка, '
+                  'граница или точка отличается.')]
+
+
+def answer_parts(text: str) -> list[str]:
+    """Intervals and point sets of an answer as normalised strings, e.g. ['(-∞;0]', '{1}'], in order of writing."""
+    t = text or ''
+    for _ in range(3):
+        t = re.sub(r'\\[dt]?frac\{([^{}]*)\}\{([^{}]*)\}', r'\1/\2', t)
+        t = re.sub(r'\\sqrt\{([^{}]*)\}', r'√\1', t)
+    for a, b in (('\\infty', '∞'), ('\\cup', '∪'), ('\\{', '{'), ('\\}', '}'), ('\\left', ''), ('\\right', ''),
+                 ('−', '-'), ('–', '-'), ('$', ''), ('\\', '')):
+        t = t.replace(a, b)
+    t = t.translate(str.maketrans('₀₁₂₃₄₅₆₇₈₉', '0123456789'))
+    t = re.sub(r'log_?\{?(\d+)\}?', r'log\1', t)
+    t = re.sub(r'\s+', '', t).replace(',', ';').replace('+∞', '∞')
+    t = re.sub(r'^(Ответ|ответ|О)[:.]?', '', t)
+    pattern = r'[\(\[][^\(\)\[\]\{\}]*;[^\(\)\[\]\{\}]*[\)\]]|\{[^{}]*\}'
+    parts = re.findall(pattern, t)
+    # Single points written as a bare number or x = a, as FIPI answers do: «−1; [1; √2)», «x = 1; x ∈ (2; +∞)».
+    for piece in re.split(r'[;∪]', re.sub(pattern, ';', t)):
+        piece = re.sub(r'^[xх]?(∈|=)?', '', piece.strip('.'))
+        if re.fullmatch(r'-?[\d√.π/]+|-?log\d+[\d√.]+', piece):
+            parts.append('{' + piece + '}')
+    return parts
+
+
+def answer_mismatch(student: str | None, reference: str) -> tuple[list[str], list[str]] | None:
+    """(only in the student's answer, only in the reference) when both parse and differ, else None."""
+    mine, right = answer_parts(student or ''), answer_parts(reference)
+    if not mine or not right or sorted(mine) == sorted(right):
+        return None
+    return [p for p in mine if p not in right], [p for p in right if p not in mine]
+
+
+def answer_recheck(task: dict, reading: str, graded: dict) -> str | None:
+    """Server note for a full score given to an answer whose written intervals differ from the reference."""
+    if task['task_number'] not in ANSWER_LINE_TASKS:
+        return None
+    grading = graded.get('grading') if type(graded.get('grading')) is dict else {}
+    if grading.get('score') != task['max_score']:
+        return None
+    line = answer_line(reading)
+    found = answer_mismatch(line, task['reference_answer'])
+    if not found:
+        return None
+    only_student, only_reference = found
+    return ('Сервер сравнил записи ответов по промежуткам и отдельным точкам.\n'
+            f'Ответ ученика: «{line}».\nПравильный ответ: «{task["reference_answer"]}».\n'
+            f'Только у ученика: {", ".join(only_student) or "—"}; только в правильном: {", ".join(only_reference) or "—"}.\n'
+            'Если это одно и то же множество, записанное по-другому (например, x = 1 вместо {1} или log₃4 вместо '
+            '2log₃2), оставь балл и в explanation объясни, почему множества совпадают. Если различаются граница, '
+            'скобка или точка, пересмотри балл по criteria.md. Верни JSON целиком.')
 
 
 def solution_text(task: dict) -> str:
@@ -122,6 +201,7 @@ async def run_staged(provider, task: dict, image_ids: list[str], package: dict[s
         block('Statement.md', task['statement']),
         block('Solution.md', solution_text(task)),
         block('ocr_result.md', reading),
+        *answer_block(task, reading),
     ]))
     if status == 'attack':
         await report_sink('attack')
@@ -140,8 +220,21 @@ async def run_staged(provider, task: dict, image_ids: list[str], package: dict[s
         block('Statement.md', task['statement']),
         block('Solution.md', solution_text(task)),
         block('ocr_result.md', reading),
+        *answer_block(task, reading),
         block('notes.md', notes),
     ]))
+    # One recheck when a full score meets an answer whose intervals or points differ from the reference.
+    recheck = answer_recheck(task, reading, graded)
+    if recheck:
+        messages = messages + [{'role': 'assistant', 'content': raw}, {'role': 'user', 'content': recheck}]
+        message = await provider.chat(messages)
+        answer = message.get('content') if type(message) is dict else None
+        try:
+            again = parse_response(answer) if type(answer) is str else None
+        except (ValueError, RecursionError):
+            again = None
+        if type(again) is dict:
+            graded, raw = again, answer
     for attempt in range(MAX_REPAIRS + 1):
         model_analysis = graded.get('analysis') if type(graded.get('analysis')) is dict else {}
         response = {

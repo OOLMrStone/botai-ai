@@ -176,7 +176,7 @@ def test_prompt_preview_is_gated_and_offline(client):
     response = client.post(url, json=request, headers={'X-Debug-Token': 'test-token'})
     assert response.status_code == 200, response.text
     data = response.json()
-    assert set(data['files']) == {'main.md', 'ocr.md', 'analysis.md', 'grading.md',
+    assert set(data['files']) == {'main.md', 'ocr.md', 'ocr_biases.md', 'analysis.md', 'grading.md',
         'criteria.md', 'popular_mistakes.md', 'response-format.md', 'Statement.md', 'Solution.md'}
     assert data['files']['Statement.md'] == 'x > 0'
     assert len(data['tools']) == 5

@@ -560,7 +560,16 @@ async def test_reader_failure_falls_back_to_model_ocr(tmp_path):
     assert 'ocr_result.md' in writes
 
 
-@pytest.mark.parametrize('number', [15, 16, 18])
+async def test_task_16_is_read_first_and_graded_in_stages(tmp_path):
+    provider = RecordingMock()
+    provider.transcribe = AsyncMock(return_value='3^x > 9 ⇒ x > 2')
+    result = json.loads(await service(tmp_path, provider).run(png(), [png()], 'test-user', 16))
+    provider.transcribe.assert_called()
+    assert result['is_graded'] and result['ocr'] == '3^x > 9 ⇒ x > 2'
+    assert not any(m.get('tool_calls') for messages in provider.inputs for m in messages)
+
+
+@pytest.mark.parametrize('number', [15, 18])
 async def test_other_tasks_do_not_use_the_reader(tmp_path, number):
     provider = RecordingMock()
     provider.transcribe = AsyncMock(return_value='text')
@@ -628,3 +637,46 @@ def test_analysis_status_line_is_parsed_strictly():
     assert parse_analysis('СТАТУС: подходит') is None  # notes.md is required when the work fits
     assert parse_analysis('{"status": "ok"}') is None
     assert parse_analysis('СТАТУС: отказ maybe: что-то') is None
+
+
+async def test_photo_is_turned_only_when_both_sheets_agree():
+    from io import BytesIO
+    from PIL import Image
+    from app.grading.reader import upright
+    image = png(400, 300)
+
+    def size(safe):
+        with Image.open(BytesIO(safe.data)) as opened:
+            return opened.size
+
+    provider = SimpleNamespace(transcribe=AsyncMock(side_effect=['2', '4']))  # 90° in both orders
+    assert size(await upright(provider, image)) == (300, 400)
+    provider = SimpleNamespace(transcribe=AsyncMock(side_effect=['2', '1']))  # 90° and 180°: disagree
+    assert await upright(provider, image) is image
+    provider = SimpleNamespace(transcribe=AsyncMock(side_effect=['1', '3']))  # already upright
+    assert await upright(provider, image) is image
+    provider = SimpleNamespace(transcribe=AsyncMock(side_effect=LLMError('down')))
+    assert await upright(provider, image) is image
+
+
+def test_answer_line_is_given_verbatim_only_for_answer_line_tasks():
+    from app.grading.staged import answer_block, answer_line
+    reading = 'x ∈ (2; 3]\nОтвет: (−∞; 0] ∪ (log₂3; 2) ∪ (2; 3)\n'
+    assert answer_line(reading) == 'Ответ: (−∞; 0] ∪ (log₂3; 2) ∪ (2; 3)'
+    assert '«Ответ: (−∞; 0] ∪ (log₂3; 2) ∪ (2; 3)»' in answer_block({'task_number': 16}, reading)[0]
+    assert answer_block({'task_number': 14}, reading) == []
+    assert answer_block({'task_number': 16}, 'без ответа') == []
+
+
+def test_answer_parts_and_recheck():
+    from app.grading.staged import answer_parts, answer_recheck
+    assert answer_parts(r'Ответ: $(-\infty; 0] \cup (\log_2 3; 2) \cup (2; 3)$') == ['(-∞;0]', '(log23;2)', '(2;3)']
+    assert sorted(answer_parts('−1; [1; √2); (√2; +∞)')) == sorted(['[1;√2)', '(√2;∞)', '{-1}'])
+    assert sorted(answer_parts('Ответ: x = 1; x ∈ (2; +∞)')) == ['(2;∞)', '{1}']
+    task = {'task_number': 16, 'max_score': 2, 'reference_answer': '(-∞;0]; (log_2 3;2); (2;3]'}
+    full = {'grading': {'score': 2}}
+    note = answer_recheck(task, 'Ответ: (−∞; 0] ∪ (log₂3; 2) ∪ (2; 3)', full)
+    assert note and 'только в правильном: (2;3]' in note
+    assert answer_recheck(task, 'Ответ: (−∞; 0] ∪ (log₂3; 2) ∪ (2; 3]', full) is None
+    assert answer_recheck(task, 'Ответ: (−∞; 0] ∪ (log₂3; 2) ∪ (2; 3)', {'grading': {'score': 1}}) is None
+    assert answer_recheck({**task, 'task_number': 14}, 'Ответ: (2; 3)', full) is None

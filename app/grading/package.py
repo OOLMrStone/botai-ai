@@ -16,7 +16,12 @@ MAX_SCORES = {14: 2, 15: 3, 16: 2, 18: 3}
 SUPPORTED_TASKS = frozenset(MAX_SCORES)
 DEFAULT_TASK = 16
 # Tasks whose photos are read by a separate literal call before grading (reader.py).
-READER_TASKS = frozenset({14})
+READER_TASKS = frozenset({14, 16})
+# Reader tasks whose analysis and grading also get the student's «Ответ» line verbatim from the transcript.
+ANSWER_LINE_TASKS = frozenset({16})
+# Reader tasks whose photos are first turned upright (reader.upright). Off: on 14.10 it turned 7 of 36 upright
+# photos of task 16 and missed two of three turned ones (tasks/16/evals/fix-2026-10-14.md).
+ORIENT_TASKS = frozenset()
 # Optional per-task files; a task without them keeps its package unchanged.
 OPTIONAL_NAMES = ('ocr_biases.md',)
 TASK_TITLES = {14: 'Уравнение', 15: 'Стереометрия', 16: 'Неравенство', 18: 'Планиметрия'}
