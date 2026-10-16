@@ -108,3 +108,71 @@ the exact supplied fields. Legacy/v1 and number-line shapes remain unchanged.
 Both required prompt reviewers approved the added circle-only instruction.
 Agreed v2 caps (64 points, 128 arcs, bounded IDs/labels/notes) are enforced both
 before analysis and at the final gate, with no truncation or changed v1 behavior.
+
+## Local live-smoke failures and bounded recovery
+
+Run `5a320c3e-3ac9-4dfe-acf2-186631a179fb` completed three OCR strip reads and
+one whole-photo join with HTTP 200, then failed with `llm_bad_response` in
+`resolve_doubts`. The call sequence and singular error message identify the
+fewer-than-two-distinct-alternatives branch. The join instruction allows an
+unresolved marker without requiring two alternatives; the previous resolver
+rejected it immediately. Original provider bodies were not retained, so the
+exact disputed text and its location cannot be reconstructed from this run.
+
+V2 now permits bounded independent visual recovery for that marker; the exact
+contract is in [internal-v2-proposal.md](internal-v2-proposal.md). A synthetic
+pipeline regression reproduced the same old exception before the fix and
+passed afterward. Recovery never accepts the original lone suggestion without
+consensus. Failure still produces no grade; it is not evidence of poor photo
+quality, and the UI may report that AI could not complete the check.
+
+Matching FIPI 15.1.1 run `34a9544d-9f45-4444-8eee-4648a64e5d25` completed OCR,
+then exhausted all three layout attempts at `$.steps.line_ids`. Every other
+layout validation passed. The old generic diagnostic cannot distinguish omitted,
+repeated, unknown or reordered IDs; raw responses were not retained. The patch
+adds bounded actionable repair facts and distinct safe event codes while retaining
+the exact acceptance condition and two-repair budget. No automatic insertion,
+sorting, dropped OCR lines or legacy-string fallback is introduced.
+
+An offline SDK serialization probe confirmed image bytes remain intact in user
+`image_url` parts with `detail: high`. The current DeepSeek alias supports image
+input according to the official [vision guide](https://api-docs.deepseek.com/guides/vision/)
+and [model documentation](https://api-docs.deepseek.com/). This run's four HTTP 200
+responses do not support an image-transport failure. The current service uses
+`LLM_*` throughout, as documented in [service.md](service.md); legacy
+`LLM_VISION_*` overrides are not a separate model selection in this pipeline.
+
+Separate limitation, not the observed failure: generated enlargements may exceed
+the provider's side-length limit for very tall valid inputs (a synthetic
+500×5000 image becomes 2000×20000). No image-size or provider-setting changes are
+included in this OCR/layout patch.
+
+Historical comparison: the [15 October FIPI summary](../../tasks/16/evals/results/2026-10-15-staged/fipi-summary.json)
+records the same 15.1.1 case graded 2 in 118.653 seconds, request
+`req_31de2d80fcd64b99`; see its [run description](../../tasks/16/evals/full-run-2026-10-15.md).
+Between staged commit `865868ea6911af9f31811636b0d76c6869d7ade2` and accepted
+`131fd79`, `reader.py`, `images.py`, task-16 `ocr.md` and `ocr_biases.md` are
+byte-identical; `Provider.transcribe` has an identical AST. Historical full
+runtime settings were not retained, so complete configuration equality is unknown.
+That older staged flow went directly from reader to analysis and grading, without
+mandatory doubt resolution, structured layout or source-ID coverage. The new
+failures occur at these added completion requirements; weakening them or assuming
+the photograph became unreadable is not an evidenced remedy.
+
+Both required prompt reviewers approved the new reread instruction and specific
+layout repair feedback. The full offline suite passed **887 tests, 3 skipped,
+1 deselected**; the excluded case remains the live-readiness probe. The new
+checks cover independent votes, abstention, malformed/duplicate JSON, Unicode
+line separators, uncertainty retention, no transport replay, legacy compatibility,
+actionable layout feedback and exhaustion without a grade.
+
+The single authorized matching FIPI 15.1.1 preflight on this patch completed
+successfully: run `97fc3a0e-7776-4d68-8183-f65b3e9cc0a7`, `is_graded=true`,
+score 2/2, 71.93 seconds. OCR, layout, analysis, grading and final validation
+all completed. No retry was needed, so this live success does not itself exercise
+the new recovery or demonstrate elimination of stochastic layout failures.
+Those paths are covered by offline fault injection. The prepared task came only
+from the demo manifest's statement/reference answer and its matching student PNG;
+hidden expected scores were not model inputs. Private evidence remains outside
+Git and runtime exports. This was a direct pipeline preflight, not backend/browser
+end-to-end acceptance, and the existing container was not changed.

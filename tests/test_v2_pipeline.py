@@ -154,9 +154,65 @@ async def test_ocr_vote_transport_failure_stops_before_another_vote(settings, mo
     assert provider.calls['ocr'] == 5
 
 
+async def test_single_candidate_ocr_is_reread_before_layout(settings, monkeypatch):
+    provider = ScriptedProvider({'ocr': [GOOD, GOOD, GOOD, 'x [неразборчиво: >] 0',
+        '{"reading":"≠"}', '{"reading":null}', '{"reading":"≠"}']})
+    result, trace = await run(settings, monkeypatch, provider)
+    assert result['ocr']['steps'][0]['lines'] == ['x ≠ 0']
+    assert result['is_graded'] and provider.calls['ocr'] == 7
+    assert events(trace, 'retry', 'ocr')[0]['data']['code'] == 'ocr_doubt_reread'
+
+
+async def test_unsettled_single_candidate_stops_before_layout(settings, monkeypatch):
+    provider = ScriptedProvider({'ocr': [GOOD, GOOD, GOOD, 'x [неразборчиво: >] 0',
+        '{"reading":">"}', '{"reading":null}', '{"reading":"≠"}']})
+    values = setup_run()
+    with pytest.raises(LLMResponseFormatError):
+        await run(settings, monkeypatch, provider, values=values)
+    assert provider.calls['ocr'] == 7 and provider.calls['layout'] == 0
+    assert provider.calls['analysis'] == provider.calls['grading'] == 0
+    assert events(values[-1], 'validation_failed', 'ocr')[-1]['data']['issue_codes'] == ['ocr_doubt_no_consensus']
+
+
 def layout(ids, *, title='Решение', figure=None):
     return {'content': json.dumps({'steps': [{'id': 's1', 'type': 'other', 'title': title,
                                             'line_ids': ids, 'figure': figure}]})}
+
+
+@pytest.mark.parametrize('ids,code,detail', [
+    (['l1'], 'missing_source_lines', 'l2'),
+    (['l1', 'l1', 'l2'], 'duplicate_source_lines', 'l1'),
+    (['l1', 'foreign-private-content', 'l2'], 'unknown_source_lines', 'flattened positions 2'),
+    (['l2', 'l1'], 'source_line_order', 'position 1'),
+])
+async def test_layout_repair_gets_specific_coverage_facts_without_mutating_source(
+        settings, monkeypatch, ids, code, detail):
+    class InspectRepair(ScriptedProvider):
+        async def chat(self, messages, tools=None, **kwargs):
+            if messages[0]['content'] == service.LAYOUT_PROMPT and self.calls['layout'] == 1:
+                feedback = messages[-1]['content']
+                assert code in feedback and detail in feedback
+                assert 'foreign-private-content' not in feedback
+            return await super().chat(messages, tools, **kwargs)
+
+    provider = InspectRepair({'layout': [layout(ids), GOOD]})
+    result, trace = await run(settings, monkeypatch, provider)
+    assert result['ocr']['steps'][0]['lines'] == ['Демонстрация mock: изображения не распознавались.', 'x > 0']
+    assert provider.calls['layout'] == 2
+    failure = events(trace, 'validation_failed', 'layout')[0]
+    assert code in failure['data']['issue_codes']
+    assert 'foreign-private-content' not in json.dumps(failure)
+
+
+async def test_coverage_failure_exhausts_without_autofilling_or_sorting(settings, monkeypatch):
+    provider = ScriptedProvider({'layout': [layout(['l2', 'l1'])] * 3})
+    values = setup_run()
+    with pytest.raises(LLMResponseFormatError):
+        await run(settings, monkeypatch, provider, values=values)
+    assert provider.calls['layout'] == 3 and provider.calls['analysis'] == provider.calls['grading'] == 0
+    assert values[-1].reader_ocr is None
+    assert [e['data']['issue_codes'] for e in events(values[-1], 'validation_failed', 'layout')] == [
+        ['source_line_order']] * 3
 
 
 @pytest.mark.parametrize('bad', [layout(['l1']), layout(['l2', 'l1']), layout(['l1', 'l1', 'l2']),

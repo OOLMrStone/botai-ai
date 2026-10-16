@@ -259,6 +259,17 @@ Grading may additionally perform one answer-consistency recheck without resettin
 its repair budget. OCR strip/join reading permits one format retry per call;
 an unsuccessful join never falls back to overlapping strips. Doubt resolution
 requires two exact votes out of three and supports at most six doubtful locations.
+V2 markers with fewer than two distinct alternatives trigger three independent
+fragment readings from the original photos, with the lone suggestion hidden.
+Only two matching bounded JSON readings resolve the fragment; null, malformed
+responses and lack of consensus fail without a grade. Legacy recovery is unchanged.
+Malformed marker boundaries fail before dispatch. No uncertain guess is promoted
+to a final reading merely because it is the only candidate.
+
+Layout repair feedback identifies missing/duplicate source IDs, unknown-ID
+positions and the first sequence mismatch. It does not insert, sort or deduplicate
+the returned layout. The original exact coverage and order condition remains
+mandatory. Events expose bounded issue codes and paths, never model text.
 Transport failures propagate immediately in v2, including OCR and doubt voting.
 All calls share the request deadline (at most 360 seconds).
 

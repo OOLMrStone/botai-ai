@@ -1,4 +1,5 @@
 """Local B2B structured pipeline with source-bound layout and observable stages."""
+from collections import Counter
 from copy import deepcopy
 import json
 import re
@@ -21,6 +22,8 @@ from app.grading.v2_artifacts import crop_diagram, project_native_figure_for_val
 
 MAX_REPAIRS = 2
 MAX_RESPONSE_BYTES = 256_000
+SOURCE_ISSUE_CODES = {'missing_source_lines', 'duplicate_source_lines',
+                      'unknown_source_lines', 'source_line_order'}
 
 LAYOUT_PROMPT = '''STAGE: v2_layout
 Разложи дословную расшифровку на смысловые шаги. Строки нельзя переписывать: укажи их line_ids.
@@ -96,8 +99,12 @@ class ObservedProvider:
 def _invalid(trace, phase, errors, attempt):
     # Diagnostics carry paths/codes only, never quotes from the provider response.
     paths = [e.split(':', 1)[0][:120] for e in errors if e.startswith('$')][:30]
+    codes = list(dict.fromkeys(e.split(':', 2)[1].strip() for e in errors
+                              if len(e.split(':', 2)) > 1
+                              and e.split(':', 2)[1].strip() in SOURCE_ISSUE_CODES))
     trace.emit('validation_failed', phase, {'valid': False, 'attempt': attempt,
-                                           'issue_paths': paths, 'issue_codes': ['invalid_stage_response']})
+                                           'issue_paths': paths,
+                                           'issue_codes': codes or ['invalid_stage_response']})
 
 
 async def _candidate(provider, messages, **kwargs):
@@ -166,7 +173,8 @@ async def _read(provider, trace, images, package):
     reading = await _transcribe(provider, trace,
         resolve_prompt(package) + '\n\n## Расшифровка по полосам\n' + joined,
         *[enlarged(image).part() for image in images])
-    return await resolve_doubts(provider, reading, images, fail_on_transport=True)
+    return await resolve_doubts(provider, reading, images, fail_on_transport=True,
+                                recover_missing_options=True, trace=trace)
 
 
 def _preparation_errors(data):
@@ -184,6 +192,36 @@ def _preparation_errors(data):
             continue
         if type(value) is not str or not value.strip() or len(value) > limit:
             errors.append(f'$.{key}: expected bounded nonempty text')
+    return errors
+
+
+def _source_coverage_errors(covered, expected):
+    """Give actionable bounded repair facts; never reorder or fill a model's layout."""
+    if covered == expected:
+        return []
+    counts, allowed = Counter(covered), set(expected)
+    missing = [lid for lid in expected if not counts[lid]]
+    repeated = [lid for lid in expected if counts[lid] > 1]
+    unknown = [i + 1 for i, lid in enumerate(covered) if lid not in allowed]
+    errors = []
+    path = '$.steps.line_ids: '
+    if missing:
+        errors.append(path + 'missing_source_lines: include omitted IDs ' + ', '.join(missing[:40])
+                      + f' (missing total {len(missing)}); retain crossed-out lines and diagram descriptions')
+    if repeated:
+        errors.append(path + 'duplicate_source_lines: use each ID only once: ' + ', '.join(repeated[:40]))
+    if unknown:
+        # Locations, not model-supplied strings, are safe repair diagnostics.
+        errors.append(path + 'unknown_source_lines: use only transcript_lines IDs; unknown IDs at '
+                      'flattened positions ' + ', '.join(map(str, unknown[:40])))
+    # The same source order applies even if membership errors are also present.
+    first = next((i for i, (a, b) in enumerate(zip(covered, expected)) if a != b),
+                 min(len(covered), len(expected)))
+    window = expected[max(0, first - 2):first + 20]
+    errors.append(path + f'source_line_order: flattened sequence first differs at position {first + 1}; '
+                  + f'expected total {len(expected)}, received total {len(covered)}; '
+                  + 'required source IDs near this position: ' + ', '.join(window)
+                  + '; divide source order into consecutive steps, without rearranging it')
     return errors
 
 
@@ -238,8 +276,7 @@ def _layout_errors(data, lines, image_ids, task_number):
               or bbox['width'] <= 0 or bbox['height'] <= 0
               or bbox['x'] + bbox['width'] > 1 or bbox['y'] + bbox['height'] > 1):
             errors.append(path + '.figure.bbox: rectangle must fit the original image')
-    if covered != [line['id'] for line in lines]:
-        errors.append('$.steps.line_ids: every source line must occur exactly once in source order')
+    errors += _source_coverage_errors(covered, [line['id'] for line in lines])
     if figures > 8:
         errors.append('$.steps.figure: at most eight crops')
     return errors
