@@ -793,6 +793,8 @@ async def test_analysis_that_ran_out_of_reasoning_is_tried_once_more(tmp_path):
             if 'составь notes.md' in messages[0]['content'] and not self.looped:
                 self.looped = True
                 raise LLMResponseFormatError('Модель не завершила ответ. Повтори проверку')
+            if 'не уложилась в предел рассуждения' in messages[0]['content']:
+                assert kwargs.get('think') is False  # the retry must fit in the time left
             return await super().chat(messages, tools, **kwargs)
 
     provider = LoopsOnce()
@@ -800,3 +802,12 @@ async def test_analysis_that_ran_out_of_reasoning_is_tried_once_more(tmp_path):
     result = json.loads(await service(tmp_path, provider).run(png(), [png()], 'test-user', 14))
     assert result['is_graded'] and provider.looped
     assert any('не уложилась в предел рассуждения' in m[0]['content'] for m in provider.inputs)
+
+
+async def test_answer_digits_are_settled_by_two_of_three_rereads():
+    from app.grading.staged import vote_answer
+    reading = 'AD : BC = 7 : 1\nОтвет: б) 4 : 1'
+    provider = SimpleNamespace(transcribe=AsyncMock(side_effect=['Ответ: б) 7 : 1', 'Ответ: б) 7:1', 'Ответ: б) 4 : 1']))
+    assert await vote_answer(provider, reading, [png()]) == 'AD : BC = 7 : 1\nОтвет: б) 7 : 1'
+    provider = SimpleNamespace(transcribe=AsyncMock(side_effect=['Ответ: 21,5', 'Ответ: 24,5', 'Ответ: 27,5']))
+    assert await vote_answer(provider, 'Ответ: 24,5', [png()]) == 'Ответ: 24,5'  # no two votes for another value
