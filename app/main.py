@@ -22,10 +22,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
-from app.api import routes_grading, routes_internal_grading
+from app.api import routes_grading, routes_internal_grading, routes_grading_v2
 from app.grading.capabilities import build_registry
 from app.grading.service import GradingService
 from app.grading.reports import ReportStore
+from app.grading.observability import RunStore
 from app import __version__
 from app.api import routes_debug, routes_legacy_grading, routes_health, routes_photo
 from app.config import Settings, get_settings
@@ -79,11 +80,21 @@ async def lifespan(_app: FastAPI):
     _app.state.photo_identity_secret = await asyncio.to_thread(
         ReportStore(settings.photo.reports_dir).identity_secret)
     cleanup = asyncio.create_task(cleanup_reports())
+    evidence_cleanup = None
+    if hasattr(_app.state, 'grading_v2_store'):
+        async def cleanup_evidence():
+            while True:
+                _app.state.grading_v2_store.cleanup()
+                await asyncio.sleep(30)
+        evidence_cleanup = asyncio.create_task(cleanup_evidence())
     try:
         yield
     finally:
         cleanup.cancel()
         await asyncio.gather(cleanup, return_exceptions=True)
+        if evidence_cleanup is not None:
+            evidence_cleanup.cancel()
+            await asyncio.gather(evidence_cleanup, return_exceptions=True)
         # Only close what was actually built. A process whose provider never
         # constructed (no API key) must still shut down cleanly.
         for client in peek_llm_clients():
@@ -185,6 +196,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         _app.state.grading_capabilities = build_registry()
         _app.add_middleware(routes_internal_grading.InternalGradingMiddleware, settings=settings)
         _app.include_router(routes_internal_grading.router)
+    if settings.local_demo_ai.enabled and not settings.app.is_prod:
+        token = settings.internal_grading.token
+        if token is None or not token.get_secret_value().strip():
+            raise ValueError("INTERNAL_GRADING_TOKEN is required when local demo AI is enabled")
+        _app.state.grading_v2_store = RunStore()
+        _app.add_middleware(routes_grading_v2.GradingV2Middleware, settings=settings,
+                            store=_app.state.grading_v2_store)
+        _app.include_router(routes_grading_v2.router)
     _app.include_router(routes_grading.router)
     _app.include_router(routes_health.router)
     _app.include_router(routes_legacy_grading.router)

@@ -81,8 +81,15 @@ class _ObjectPairs(list):
 
 def parse_response(text: str) -> object:
     """Parse the entire response, with exact object boundaries and no wrapper."""
-    if not text.startswith("{") or not text.endswith("}"):
+    if type(text) is not str or not text.startswith("{") or not text.endswith("}"):
         raise ValueError("$: response must start with '{' and end with '}', with nothing outside")
+    return parse_json(text)
+
+
+def parse_json(text: str) -> object:
+    """Parse one JSON value, including stage arrays, rejecting duplicate keys and constants."""
+    if type(text) is not str:
+        raise ValueError("$: expected JSON text")
     def reject_constant(value):
         raise ValueError(f"$: {value} is not a JSON number")
 
@@ -154,10 +161,11 @@ def validate_response(response: object, *, catalog_path=None) -> list[str]:
         task_in = response.get("task") if type(response.get("task")) is dict else {}
         errors.extend(ocr_errors(response["ocr"], task_in.get("task_number")))
         if type(analysis_in) is dict:
-            errors.extend(e.replace("$.statuses", "$.analysis.statuses") for e in status_errors(response["ocr"], statuses))
+            errors.extend(e.replace("$.statuses", "$.analysis.statuses") for e in
+                          status_errors(response["ocr"], statuses, require_corrections=True))
             grading_in = response.get("grading") if type(response.get("grading")) is dict else {}
             errors.extend(issue_errors(response["ocr"], analysis_in.get("errors"), grading_in.get("score"),
-                                       task_in.get("max_score")))
+                                       task_in.get("max_score"), statuses=statuses))
             analysis_in = {k: v for k, v in analysis_in.items() if k != "statuses"}
             if type(analysis_in.get("errors")) is list:
                 analysis_in["errors"] = [{k: v for k, v in e.items() if k not in ("step_id", "penalty")}

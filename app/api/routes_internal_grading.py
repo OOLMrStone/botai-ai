@@ -13,6 +13,7 @@ from starlette.responses import JSONResponse, Response
 
 from app.core.errors import LLMResponseFormatError, ServiceError
 from app.grading.capabilities import select_capability
+from app.grading import expert_grading
 from app.grading.images import MAX_IMAGE_BYTES, sanitize
 from app.grading.internal_contract import (
     CONTRACT_VERSION, INTERNAL_PATH, MAX_BODY_BYTES, MAX_METADATA_BYTES,
@@ -31,10 +32,11 @@ class InternalRun:
     provider_mode: str
     report: InternalReportSink
     package_id: str = 'none'
+    contract_version: str = CONTRACT_VERSION
 
     def headers(self):
         headers = {'X-Request-ID': self.request_id, 'Cache-Control': 'no-store',
-                   'X-Grading-Contract-Version': CONTRACT_VERSION,
+                   'X-Grading-Contract-Version': self.contract_version,
                    'X-Grading-Provider-Mode': self.provider_mode,
                    'X-Grading-Package-Id': self.package_id}
         if self.report.rejection_code:
@@ -64,6 +66,10 @@ class InternalGradingMiddleware:
         request_id = ids[0] if valid_id else str(uuid4())
         run = InternalRun(request_id, settings, 'mock' if settings.llm.provider == 'mock' else 'live',
                           InternalReportSink(request_id))
+        is_expert = path == INTERNAL_PATH + '/grade-analysis'
+        if is_expert:
+            run.contract_version = expert_grading.CONTRACT_VERSION
+        body_limit = expert_grading.MAX_BODY_BYTES if is_expert else MAX_BODY_BYTES
         scope.setdefault('state', {})['internal_run'] = run
         # The existing request logger must never see a caller-controlled free-form ID.
         scope['headers'] = [(key, value) for key, value in scope['headers'] if key.lower() != b'x-request-id']
@@ -75,9 +81,9 @@ class InternalGradingMiddleware:
             response = error_response(run, 'service_unauthorized', 'Нет доступа к сервису проверки', 401)
             response.headers['WWW-Authenticate'] = 'Bearer'
             return await response(scope, receive, send)
-        if path not in (INTERNAL_PATH, INTERNAL_PATH + '/capabilities'):
+        if path not in (INTERNAL_PATH, INTERNAL_PATH + '/capabilities', INTERNAL_PATH + '/grade-analysis'):
             return await error_response(run, 'not_found', 'Маршрут не найден', 404)(scope, receive, send)
-        method = 'POST' if path == INTERNAL_PATH else 'GET'
+        method = 'GET' if path == INTERNAL_PATH + '/capabilities' else 'POST'
         if scope['method'] != method:
             return await error_response(run, 'method_not_allowed', 'Метод не поддерживается', 405)(scope, receive, send)
         if method == 'POST' and not valid_id:
@@ -86,7 +92,7 @@ class InternalGradingMiddleware:
         if lengths:
             if len(lengths) != 1 or not lengths[0].isascii() or not lengths[0].isdigit():
                 return await error_response(run, 'invalid_multipart', 'Некорректный размер запроса', 422)(scope, receive, send)
-            if len(lengths[0]) > 12 or int(lengths[0]) > MAX_BODY_BYTES:
+            if len(lengths[0]) > 12 or int(lengths[0]) > body_limit:
                 return await error_response(run, 'upload_too_large', 'Общий размер фотографий слишком большой', 413)(scope, receive, send)
         received = 0
         started = False
@@ -99,7 +105,7 @@ class InternalGradingMiddleware:
                 body_error = InternalGradingError('upload_disconnected', 'Загрузка фотографий прервана', 400)
                 return message
             received += len(message.get('body', b''))
-            if received > MAX_BODY_BYTES:
+            if received > body_limit:
                 body_error = InternalGradingError('upload_too_large', 'Общий размер фотографий слишком большой', 413)
                 raise body_error
             return message
@@ -192,6 +198,27 @@ async def grade(request: Request):
         result = gate.finalize(raw)
         if result['task'] != prepared.task or result['solution_image_ids'] != prepared.solution_image_ids:
             raise LLMResponseFormatError('Результат не соответствует отправленной задаче')
+        return Response(raw, media_type='application/json')
+    finally:
+        request.app.state.photo_active -= 1
+
+
+@router.post('/grade-analysis')
+async def grade_expert_analysis(request: Request):
+    run = request.state.internal_run
+    if request.app.state.photo_active >= run.settings.photo.concurrency:
+        raise InternalGradingError('grading_busy', 'Сервис занят. Попробуй позже', 429)
+    request.app.state.photo_active += 1
+    try:
+        if request.headers.get('content-type', '').split(';', 1)[0].strip().lower() != 'application/json':
+            raise InternalGradingError('invalid_expert_analysis', 'Нужен JSON экспертного анализа')
+        prepared = expert_grading.parse_request(await request.body())
+        capability = select_capability(request.app.state.grading_capabilities, prepared.task.model_dump())
+        run.package_id = capability.package_id
+        capability.check_unchanged()
+        raw = await expert_grading.grade_analysis(prepared, run.settings, capability.package)
+        capability.check_unchanged()
+        expert_grading.validate_grade(raw, prepared.task.max_score)
         return Response(raw, media_type='application/json')
     finally:
         request.app.state.photo_active -= 1

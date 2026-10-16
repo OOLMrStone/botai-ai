@@ -3,6 +3,12 @@
 Implemented for private backend workers. The browser never receives the service
 token or calls this endpoint. Enabling it does not enable additional math packages.
 
+The isolated local B2B v2 routes, structured figures, events and compatible
+grade-only contract are documented in [internal-v2-proposal.md](internal-v2-proposal.md).
+The existing `/internal/v1/grading/grade-analysis` accepts `expert-grading.v1`
+using the same token and task16 capability; it returns only validated `grading`.
+It does not enable the local v2 routes or extend v1 task support.
+
 ## Configuration and discovery
 
 Set `INTERNAL_GRADING_ENABLED=true` and a nonempty `INTERNAL_GRADING_TOKEN` in the

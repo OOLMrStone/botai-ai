@@ -1,7 +1,7 @@
 """Expert-screen structure for staged tasks: no doubtful readings, steps from the reader, statuses from the analysis.
 
 1. resolve_doubts: every «[неразборчиво: A | B]» left by the reader is settled by three independent calls on the
-   whole photos (two of three win, otherwise the first variant): the final JSON has no doubtful readings.
+   whole photos (two of three win; no consensus fails without a grade).
 2. structure_reading: one call without photos and without reasoning lays the transcript out as steps
    (expert_json format), checked by ocr_errors with up to two repairs; None when it still fails.
 3. split_statuses: the analysis puts one status per step in a «ШАГИ:» block before its notes.
@@ -13,9 +13,11 @@ import json
 import re
 from collections import Counter
 
+from app.core.errors import LLMResponseFormatError
 from app.grading import reader
 from app.grading.expert_json import (STATUSES, STEP_TYPES, TASK_STEP_TYPES, TYPE_NAMES, corrected, drift_errors,
                                      ocr_errors, status_errors)
+from app.grading.validator import parse_response
 
 DOUBT = re.compile(r'\[неразборчиво:\s*([^\]]+?)\]')
 MAX_DOUBTS = 6
@@ -54,18 +56,19 @@ STEPS_RULE = '''
 consequence и minor замечание обязательно; у шага одно замечание. Затем пустая строка и текст notes.md.'''
 
 
-async def resolve_doubts(provider, reading: str, images) -> str:
+async def resolve_doubts(provider, reading: str, images, *, fail_on_transport=False) -> str:
     """The reading with every doubtful place replaced by the variant two of three independent calls see."""
     if not images or '[неразборчиво' not in reading:
         return reading
+    matches = list(DOUBT.finditer(reading))
+    if not matches or len(matches) > MAX_DOUBTS:
+        raise LLMResponseFormatError('Не удалось достоверно прочитать спорные места. Пришли более чёткое фото')
     whole = [reader.enlarged(image).part() for image in images]
     resolved = reading
-    for count, match in enumerate(DOUBT.finditer(reading)):
-        options = [o.strip() for o in match.group(1).split('|') if o.strip()]
+    for match in matches:
+        options = list(dict.fromkeys(o.strip() for o in match.group(1).split('|') if o.strip()))
         if len(options) < 2:
-            choice = options[0] if options else ''
-        elif count >= MAX_DOUBTS:
-            choice = options[0]
+            raise LLMResponseFormatError('Не удалось достоверно прочитать спорное место. Пришли более чёткое фото')
         else:
             line = next((l for l in reading.splitlines() if match.group(0) in l), match.group(0))
             prompt = DOUBT_PROMPT.format(line=line.replace(match.group(0), '…').strip(),
@@ -74,12 +77,16 @@ async def resolve_doubts(provider, reading: str, images) -> str:
             for _ in range(VOTES):
                 try:
                     answer = (await provider.transcribe(prompt, *whole) or '').strip().strip('«»" ')
-                except Exception:  # provider errors are already sanitized; a lost vote counts for nobody
+                except Exception as exc:  # v1 keeps a lost vote; v2 never replays an uncertain dispatch
+                    if fail_on_transport and not isinstance(exc, LLMResponseFormatError):
+                        raise
                     answer = ''
-                votes.append(next((o for o in options if answer == o), None)
-                             or next((o for o in options if o in answer), None))
-            best, n = Counter(v for v in votes if v).most_common(1)[0] if any(votes) else (options[0], 0)
-            choice = best if n >= 2 else options[0]
+                # A substring is not a vote: “не >, а ≠” contains both alternatives.
+                votes.append(answer if answer in options else None)
+            best, n = Counter(v for v in votes if v).most_common(1)[0] if any(votes) else (None, 0)
+            if n < 2:
+                raise LLMResponseFormatError('Не удалось достоверно прочитать спорное место. Пришли более чёткое фото')
+            choice = best
         resolved = resolved.replace(match.group(0), choice, 1)
     return resolved
 
@@ -96,8 +103,8 @@ async def structure_reading(provider, reading: str, task_number=None) -> dict | 
             return None
         raw = message.get('content') if type(message) is dict else None
         try:
-            data = json.loads(raw) if type(raw) is str else None
-        except ValueError:
+            data = parse_response(raw) if type(raw) is str else None
+        except (ValueError, RecursionError):
             data = None
         errors = ocr_errors(data, task_number) if type(data) is dict else ['$: expected a JSON object']
         errors = errors or drift_errors(data, reading)
@@ -185,8 +192,8 @@ async def screen_response(provider, text: str, transcript: str, task_number: int
             return text
         raw = message.get('content') if type(message) is dict else None
         try:
-            data = json.loads(raw) if type(raw) is str else None
-        except ValueError:
+            data = parse_response(raw) if type(raw) is str else None
+        except (ValueError, RecursionError):
             data = None
         if type(data) is not dict:
             errors = ['$: expected a JSON object']
