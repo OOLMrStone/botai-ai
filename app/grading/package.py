@@ -17,8 +17,9 @@ SUPPORTED_TASKS = frozenset(MAX_SCORES)
 DEFAULT_TASK = 16
 # Tasks whose photos are read by a separate literal call before grading (reader.py).
 READER_TASKS = frozenset({14, 15, 16, 17, 18, 19, 20})
-# Reader tasks graded in isolated stages (staged.py). Task 15 went back to stages on 16.10.2026: on 15.10 the
-# stages undergraded part а, which the proof rules of 16.10 address, and the tool loop did not fit in 6 minutes.
+# Reader tasks graded in isolated stages (staged.py). Task 15 too since 16.10.2026: with the proof rules of 16.10 the
+# stages gave 23 of 33 and every work fits in 6 minutes, while the old tool loop (24 of 33 on 03.10) now times out on
+# 2 of 3 works (tasks/common/hypotheses/proof-acceptance-proposal.md).
 STAGED_TASKS = frozenset({14, 15, 16, 17, 18, 19, 20})
 # Reader tasks whose analysis and grading also get the student's «Ответ» line verbatim from the transcript.
 ANSWER_LINE_TASKS = frozenset({15, 16, 17, 18, 19})
