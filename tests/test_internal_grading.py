@@ -63,7 +63,11 @@ class RecordingProvider(MockProvider):
         self.closed = False
         self.last_raw = None
 
-    async def chat(self, messages, tools=None):
+    async def transcribe(self, prompt, *image_parts):
+        # No literal reading: these tests cover the internal API on the tool loop the service falls back to.
+        return ''
+
+    async def chat(self, messages, tools=None, plain=False):
         self.inputs.append((deepcopy(messages), tools))
         result = await super().chat(messages, tools)
         if not result.get('tool_calls'):

@@ -11,15 +11,40 @@ ROOT = Path(__file__).resolve().parents[2]
 COMMON_NAMES = ('main.md', 'analysis.md', 'grading.md', 'response-format.md')
 PROMPT_NAMES = ('main.md', 'ocr.md', 'analysis.md', 'popular_mistakes.md',
                 'grading.md', 'criteria.md', 'response-format.md')
-# Project task number -> maximum score of the matching FIPI-2026 task (13, 14, 15, 17).
-MAX_SCORES = {14: 2, 15: 3, 16: 2, 18: 3}
+# Project task number -> maximum score of the matching FIPI-2026 task (13, 14, 15, 16, 17, 18, 19).
+MAX_SCORES = {14: 2, 15: 3, 16: 2, 17: 2, 18: 3, 19: 4, 20: 4}
 SUPPORTED_TASKS = frozenset(MAX_SCORES)
 DEFAULT_TASK = 16
 # Tasks whose photos are read by a separate literal call before grading (reader.py).
-READER_TASKS = frozenset({14})
+READER_TASKS = frozenset({14, 15, 16, 17, 18, 19, 20})
+# Reader tasks graded in isolated stages (staged.py). Task 15 went back to stages on 16.10.2026: on 15.10 the
+# stages undergraded part а, which the proof rules of 16.10 address, and the tool loop did not fit in 6 minutes.
+STAGED_TASKS = frozenset({14, 15, 16, 17, 18, 19, 20})
+# Reader tasks whose analysis and grading also get the student's «Ответ» line verbatim from the transcript.
+ANSWER_LINE_TASKS = frozenset({15, 16, 17, 18, 19})
+# Of those, tasks whose answer is a single value (part б of tasks 15 and 18, task 17), compared by value, not by intervals.
+VALUE_ANSWER_TASKS = frozenset({15, 17, 18})
+# Tasks whose response carries the expert-screen structure: ocr as steps, analysis statuses
+# (app/grading/expert_json.py, docs/grading/expert-json.md). Staged tasks get it inside the stages,
+# tool-loop tasks (15, 18) by structure.screen_response after the graded response.
+EXPERT_JSON_TASKS = frozenset({14, 15, 16, 17, 18, 19, 20})
+# Reader tasks whose photos are first turned upright (reader.upright). Off: on 14.10 it turned 7 of 36 upright
+# photos of task 16 and missed two of three turned ones (tasks/16/evals/fix-2026-10-14.md).
+ORIENT_TASKS = frozenset()
 # Optional per-task files; a task without them keeps its package unchanged.
 OPTIONAL_NAMES = ('ocr_biases.md',)
-TASK_TITLES = {14: 'Уравнение', 15: 'Стереометрия', 16: 'Неравенство', 18: 'Планиметрия'}
+TASK_TITLES = {14: 'Уравнение', 15: 'Стереометрия', 16: 'Неравенство', 17: 'Экономическая задача',
+               18: 'Планиметрия', 19: 'Задача с параметром', 20: 'Числа и их свойства'}
+
+
+def response_format(text: str, max_score: int) -> str:
+    """The common response-format.md names the 2-point scale of task 16; other maxima are put in its place.
+    Without it task 19 (max 4) was graded on a "2-point scale": 4 became 2 and 3 became 1 (15.10.2026)."""
+    if max_score == 2:
+        return text
+    scores = ', '.join(map(str, range(max_score))) + f' или {max_score}'
+    return (text.replace('максимальный балл, для этого пакета 2', f'максимальный балл, для этого пакета {max_score}')
+            .replace('Целое 0, 1 или 2', 'Целое ' + scores))
 
 
 def task_directory(task_number: int = 16, *, root: Path = ROOT) -> Path:

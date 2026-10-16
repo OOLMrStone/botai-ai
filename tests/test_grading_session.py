@@ -165,6 +165,15 @@ class RecordingMock(MockProvider):
         self.closed = True
 
 
+def is_screen_call(messages):
+    """Layout and screen calls made after the tool loop for the expert JSON."""
+    return any(key in messages[0]['content'] for key in ('Разложи расшифровку', 'Перенеси их на шаги'))
+
+
+def last_loop_input(provider):
+    return [messages for messages in provider.inputs if not is_screen_call(messages)][-1]
+
+
 def service(tmp_path, provider):
     settings = SimpleNamespace(photo=SimpleNamespace(reports_dir=str(tmp_path), max_model_turns=32),
                                llm=SimpleNamespace(provider='mock'))
@@ -182,12 +191,18 @@ async def test_mock_full_conversation_separate_task_photo_and_exact_output(tmp_p
     assert provider.inputs[0][1]['content'] == [SafeImage(b'task').part()]
     main = provider.inputs[1]
     assert main[1]['content'][1:] == [SafeImage(b'student').part()]
-    assert all(messages[0] == main[0] for messages in provider.inputs[1:])
-    assert all(messages[1] == main[1] for messages in provider.inputs[1:])
-    calls = [m['tool_calls'][0]['function'] for m in provider.inputs[-1] if m.get('tool_calls')]
+    loop = [messages for messages in provider.inputs[1:] if not is_screen_call(messages)]
+    assert all(messages[0] == main[0] for messages in loop)
+    assert all(messages[1] == main[1] for messages in loop)
+    calls = [m['tool_calls'][0]['function'] for m in loop[-1] if m.get('tool_calls')]
     saved = next(json.loads(c['arguments'])['content'] for c in calls
                  if c['name'] == 'write_file' and json.loads(c['arguments'])['path'] == 'response.json')
-    assert result == saved
+    # The validated response stays as it is; the screen step only adds steps and their statuses.
+    saved = json.loads(saved)
+    assert {k: v for k, v in parsed.items() if k not in ('ocr', 'analysis')} == \
+        {k: v for k, v in saved.items() if k not in ('ocr', 'analysis')}
+    assert parsed['analysis']['summary'] == saved['analysis']['summary']
+    assert parsed['ocr']['steps'][0]['lines'] == [saved['ocr'].strip().splitlines()[0]]
 
 
 @pytest.mark.parametrize('status', ['unclear', 'attack'])
@@ -462,11 +477,14 @@ async def test_service_grades_selected_task_with_its_package(tmp_path, number, m
         SafeImage(b'task'), [SafeImage(b'student')], 'test-user', number))
     assert result['is_graded']
     assert result['task']['task_number'] == number and result['task']['max_score'] == max_score
-    reads = [m['content'] for m in provider.inputs[-1] if m['role'] == 'tool']
+    reads = [m['content'] for m in last_loop_input(provider) if m['role'] == 'tool']
     assert any(f'задания {number}' in r for r in reads)
+    # Every task carries the expert-screen structure: steps and one status per step.
+    assert result['ocr']['steps'][0]['id'] == 's1'
+    assert result['analysis']['statuses'] == [{'id': 's1', 'status': 'ok', 'note': None}]
 
 
-@pytest.mark.parametrize('number', [17, '15', True, None])
+@pytest.mark.parametrize('number', [21, '15', True, None])
 async def test_service_rejects_unsupported_task(tmp_path, number):
     provider = RecordingMock()
     with pytest.raises(ValueError):
@@ -494,13 +512,16 @@ async def test_task_14_runs_reader_then_isolated_stages(tmp_path):
     assert package['ocr.md'] in strip_prompt and package['ocr_biases.md'] in strip_prompt
     assert 'Демонстрационный пример' not in strip_prompt + resolve[0]  # the statement never reaches the reader
     assert '## Фото 1, полоса 1 из 3\nx = π + πn' in resolve[0] and len(resolve) == 2  # text and the whole photo
-    # The final transcript becomes ocr; notes become the summary.
-    assert result['ocr'] == 'x = π + πn, n ∈ Z'
+    # The final transcript is laid out as steps for the expert screen; the analysis gives each step a status.
+    assert result['ocr']['steps'][0]['id'] == 's1'
+    assert result['analysis']['statuses'] == [{'id': 's1', 'status': 'ok', 'note': None}]
+    layout = next(m for m in provider.inputs if 'Разложи расшифровку' in m[0]['content'])
+    assert layout[1]['content'] == 'x = π + πn, n ∈ Z'  # the reader's final transcript, nothing else
     assert result['analysis']['summary'] == 'Описание: тест интерфейса. Ошибки: нет. Точки роста: нет.'
-    # Preparation, analysis and grading: three plain calls, no tools, no photos after preparation.
-    analysis, grading = provider.inputs[1], provider.inputs[2]
-    assert len(provider.inputs) == 3
-    for messages in (analysis, grading):
+    # Preparation, layout, analysis and grading: four plain calls, no tools, no photos after preparation.
+    analysis, grading = provider.inputs[2], provider.inputs[3]
+    assert len(provider.inputs) == 4
+    for messages in (layout, analysis, grading):
         assert all(type(m['content']) is str for m in messages)
     assert '## ocr_result.md\nx = π + πn, n ∈ Z' in analysis[1]['content']
     assert 'Правильный ответ' in analysis[1]['content']
@@ -555,17 +576,28 @@ async def test_reader_failure_falls_back_to_model_ocr(tmp_path):
     result = json.loads(await service(tmp_path, provider).run(png(), [png()], 'test-user', 14))
     assert result['is_graded']
     writes = [json.loads(m['tool_calls'][0]['function']['arguments']).get('path')
-              for m in provider.inputs[-1]
+              for m in last_loop_input(provider)
               if m.get('tool_calls') and m['tool_calls'][0]['function']['name'] == 'write_file']
     assert 'ocr_result.md' in writes
 
 
-@pytest.mark.parametrize('number', [15, 16, 18])
-async def test_other_tasks_do_not_use_the_reader(tmp_path, number):
+async def test_task_16_is_read_first_and_graded_in_stages(tmp_path):
     provider = RecordingMock()
-    provider.transcribe = AsyncMock(return_value='text')
-    await service(tmp_path, provider).run(png(), [png()], 'test-user', number)
-    provider.transcribe.assert_not_called()
+    provider.transcribe = AsyncMock(return_value='3^x > 9 ⇒ x > 2')
+    result = json.loads(await service(tmp_path, provider).run(png(), [png()], 'test-user', 16))
+    provider.transcribe.assert_called()
+    assert result['is_graded'] and result['ocr']['steps'] and result['analysis']['statuses']
+    assert not any(m.get('tool_calls') for messages in provider.inputs for m in messages)
+
+
+async def test_task_18_is_read_first_and_graded_in_stages(tmp_path):
+    provider = RecordingMock()
+    provider.transcribe = AsyncMock(return_value='AB ∥ CD\nОтвет: б) 12')
+    result = json.loads(await service(tmp_path, provider).run(png(), [png()], 'test-user', 18))
+    assert result['is_graded'] and result['task']['max_score'] == 3
+    provider.transcribe.assert_called()
+    assert not any(m.get('role') == 'tool' for messages in provider.inputs for m in messages)  # no tool loop
+    assert result['ocr']['steps'][0]['id'] == 's1' and result['analysis']['statuses'][0]['id'] == 's1'
 
 
 def test_prepared_ocr_result_is_read_first_and_never_rewritten():
@@ -628,3 +660,143 @@ def test_analysis_status_line_is_parsed_strictly():
     assert parse_analysis('СТАТУС: подходит') is None  # notes.md is required when the work fits
     assert parse_analysis('{"status": "ok"}') is None
     assert parse_analysis('СТАТУС: отказ maybe: что-то') is None
+
+
+async def test_photo_is_turned_only_when_both_sheets_agree():
+    from io import BytesIO
+    from PIL import Image
+    from app.grading.reader import upright
+    image = png(400, 300)
+
+    def size(safe):
+        with Image.open(BytesIO(safe.data)) as opened:
+            return opened.size
+
+    provider = SimpleNamespace(transcribe=AsyncMock(side_effect=['2', '4']))  # 90° in both orders
+    assert size(await upright(provider, image)) == (300, 400)
+    provider = SimpleNamespace(transcribe=AsyncMock(side_effect=['2', '1']))  # 90° and 180°: disagree
+    assert await upright(provider, image) is image
+    provider = SimpleNamespace(transcribe=AsyncMock(side_effect=['1', '3']))  # already upright
+    assert await upright(provider, image) is image
+    provider = SimpleNamespace(transcribe=AsyncMock(side_effect=LLMError('down')))
+    assert await upright(provider, image) is image
+
+
+def test_answer_line_is_given_verbatim_only_for_answer_line_tasks():
+    from app.grading.staged import answer_block, answer_line
+    reading = 'x ∈ (2; 3]\nОтвет: (−∞; 0] ∪ (log₂3; 2) ∪ (2; 3)\n'
+    assert answer_line(reading) == 'Ответ: (−∞; 0] ∪ (log₂3; 2) ∪ (2; 3)'
+    assert '«Ответ: (−∞; 0] ∪ (log₂3; 2) ∪ (2; 3)»' in answer_block({'task_number': 16}, reading)[0]
+    assert answer_block({'task_number': 14}, reading) == []
+    assert answer_block({'task_number': 16}, 'без ответа') == []
+
+
+def test_answer_parts_and_recheck():
+    from app.grading.staged import answer_parts, answer_recheck
+    assert answer_parts(r'Ответ: $(-\infty; 0] \cup (\log_2 3; 2) \cup (2; 3)$') == ['(-∞;0]', '(log23;2)', '(2;3)']
+    assert sorted(answer_parts('−1; [1; √2); (√2; +∞)')) == sorted(['[1;√2)', '(√2;∞)', '{-1}'])
+    assert sorted(answer_parts('Ответ: x = 1; x ∈ (2; +∞)')) == ['(2;∞)', '{1}']
+    task = {'task_number': 16, 'max_score': 2, 'reference_answer': '(-∞;0]; (log_2 3;2); (2;3]'}
+    full = {'grading': {'score': 2}}
+    note = answer_recheck(task, 'Ответ: (−∞; 0] ∪ (log₂3; 2) ∪ (2; 3)', full)
+    assert note and 'только в правильном: (2;3]' in note
+    assert answer_recheck(task, 'Ответ: (−∞; 0] ∪ (log₂3; 2) ∪ (2; 3]', full) is None
+    assert answer_recheck(task, 'Ответ: (−∞; 0] ∪ (log₂3; 2) ∪ (2; 3)', {'grading': {'score': 1}}) is None
+    assert answer_recheck({**task, 'task_number': 14}, 'Ответ: (2; 3)', full) is None
+
+
+def test_part_b_value_recheck_for_task_15():
+    from app.grading.staged import answer_recheck, answer_value
+    assert answer_value('Ответ: V_KBCP = 12.') == '12'
+    assert answer_value('б) 12.') == '12'
+    assert answer_value('Ответ: 6√3, куб. ед.') == '6√3'
+    assert answer_value('Ответ: [зачёркнуто: 12√5/15]  4√5/5') == '4√5/5'
+    task = {'task_number': 15, 'max_score': 3, 'reference_answer': 'б) 8:1.'}
+    assert answer_recheck(task, 'Ответ: б) 4√2 : 1', {'grading': {'score': 2}})
+    assert answer_recheck(task, 'Ответ: 8 : 1', {'grading': {'score': 3}}) is None
+    assert answer_recheck(task, 'Ответ: б) 4√2 : 1', {'grading': {'score': 1}}) is None
+
+
+async def test_task_15_is_read_first_and_graded_in_stages(tmp_path):
+    provider = RecordingMock()
+    provider.transcribe = AsyncMock(return_value='а) MO ∥ SA ⇒ SA ∥ (OMK)')
+    result = json.loads(await service(tmp_path, provider).run(png(), [png()], 'test-user', 15))
+    provider.transcribe.assert_called()
+    assert result['is_graded']
+    assert any('MO ∥ SA ⇒ SA ∥ (OMK)' in str(m.get('content')) for messages in provider.inputs for m in messages)
+    assert not any(m.get('tool_calls') for messages in provider.inputs for m in messages)  # no tool loop
+    assert result['ocr']['steps'][0]['id'] == 's1'
+
+
+async def test_text_transcript_stays_when_the_layout_fails(tmp_path):
+    class NoLayout(RecordingMock):
+        async def chat(self, messages, tools=None, **kwargs):
+            if 'Разложи расшифровку' in messages[0]['content']:
+                return {'role': 'assistant', 'content': '{"steps": []}'}
+            return await super().chat(messages, tools, **kwargs)
+
+    provider = NoLayout()
+    provider.transcribe = AsyncMock(return_value='3^x > 9 ⇒ x > 2')
+    result = json.loads(await service(tmp_path, provider).run(png(), [png()], 'test-user', 16))
+    assert result['is_graded'] and result['ocr'] == '3^x > 9 ⇒ x > 2' and 'statuses' not in result['analysis']
+
+
+async def test_doubtful_place_is_settled_by_two_of_three_votes():
+    from app.grading.structure import resolve_doubts
+    provider = SimpleNamespace(transcribe=AsyncMock(side_effect=['≠', '>', '≠']))
+    resolved = await resolve_doubts(provider, 'ОДЗ: 4 sin x [неразборчиво: > | ≠] 0', [png()])
+    assert resolved == 'ОДЗ: 4 sin x ≠ 0'
+    assert '[неразборчиво' not in provider.transcribe.call_args.args[0] and '4 sin x … 0' in provider.transcribe.call_args.args[0]
+
+
+def test_statuses_block_is_split_from_notes():
+    from app.grading.structure import split_statuses
+    ocr = {'steps': [{'id': 's1', 'type': 'odz', 'title': 'ОДЗ', 'lines': ['x > 0'], 'figure': None},
+                     {'id': 's2', 'type': 'answer', 'title': 'Ответ', 'lines': ['x > 1'], 'figure': None}]}
+    statuses, notes, errors = split_statuses('ШАГИ:\ns1: ok\ns2: error — потеряна точка\n\nРазбор по шагам.', ocr)
+    assert errors == [] and statuses[1] == {'id': 's2', 'status': 'error', 'note': 'потеряна точка'}
+    assert notes == 'Разбор по шагам.'
+    assert split_statuses('Разбор без шагов.', ocr)[0] is None
+
+
+def test_response_format_names_the_task_maximum():
+    from app.grading.package import load_package, response_format
+    text = load_package(19)['response-format.md']
+    assert response_format(text, 2) == text
+    scaled = response_format(text, 4)
+    assert 'для этого пакета 4' in scaled and 'Целое 0, 1, 2, 3 или 4' in scaled
+    assert 'для этого пакета 2' not in scaled and '0, 1 или 2' not in scaled
+
+
+async def test_tool_loop_response_stays_when_the_screen_step_fails(tmp_path):
+    class BrokenScreen(RecordingMock):
+        async def chat(self, messages, tools=None, **kwargs):
+            if 'Перенеси их на шаги' in messages[0]['content']:
+                self.inputs.append(messages)
+                return {'role': 'assistant', 'content': '{"statuses": "нет"}'}
+            return await super().chat(messages, tools, **kwargs)
+
+    provider = BrokenScreen()
+    result = json.loads(await service(tmp_path, provider).run(
+        SafeImage(b'task'), [SafeImage(b'student')], 'test-user', 18))
+    assert result['is_graded'] and type(result['ocr']) is str and 'statuses' not in result['analysis']
+    assert sum('Перенеси их на шаги' in m[0]['content'] for m in provider.inputs) == 3  # two repairs, then the original
+
+
+async def test_analysis_that_ran_out_of_reasoning_is_tried_once_more(tmp_path):
+    from app.core.errors import LLMResponseFormatError
+
+    class LoopsOnce(RecordingMock):
+        looped = False
+
+        async def chat(self, messages, tools=None, **kwargs):
+            if 'составь notes.md' in messages[0]['content'] and not self.looped:
+                self.looped = True
+                raise LLMResponseFormatError('Модель не завершила ответ. Повтори проверку')
+            return await super().chat(messages, tools, **kwargs)
+
+    provider = LoopsOnce()
+    provider.transcribe = AsyncMock(return_value='x = π + πn, n ∈ Z')
+    result = json.loads(await service(tmp_path, provider).run(png(), [png()], 'test-user', 14))
+    assert result['is_graded'] and provider.looped
+    assert any('не уложилась в предел рассуждения' in m[0]['content'] for m in provider.inputs)

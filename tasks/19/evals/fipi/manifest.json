@@ -1,0 +1,200 @@
+{
+  "source": "matematika_mr_ege_2026.pdf",
+  "source_task_number": 18,
+  "target_task_number": 19,
+  "cases": [
+    {
+      "id": "18.1.1",
+      "source_page": 195,
+      "problem_and_reference_answer": "problems/18.1.png",
+      "solution": [
+        "18.1.1/solution-01.png",
+        "18.1.1/solution-02.png",
+        "18.1.1/solution-03.png"
+      ],
+      "expected": "18.1.1/expected.json"
+    },
+    {
+      "id": "18.1.2",
+      "source_page": 197,
+      "problem_and_reference_answer": "problems/18.1.png",
+      "solution": [
+        "18.1.2/solution-01.png",
+        "18.1.2/solution-02.png",
+        "18.1.2/solution-03.png",
+        "18.1.2/solution-04.png"
+      ],
+      "expected": "18.1.2/expected.json"
+    },
+    {
+      "id": "18.1.3",
+      "source_page": 200,
+      "problem_and_reference_answer": "problems/18.1.png",
+      "solution": [
+        "18.1.3/solution-01.png",
+        "18.1.3/solution-02.png",
+        "18.1.3/solution-03.png",
+        "18.1.3/solution-04.png"
+      ],
+      "expected": "18.1.3/expected.json"
+    },
+    {
+      "id": "18.1.4",
+      "source_page": 202,
+      "problem_and_reference_answer": "problems/18.1.png",
+      "solution": [
+        "18.1.4/solution-01.png",
+        "18.1.4/solution-02.png",
+        "18.1.4/solution-03.png",
+        "18.1.4/solution-04.png"
+      ],
+      "expected": "18.1.4/expected.json"
+    },
+    {
+      "id": "18.2.1",
+      "source_page": 206,
+      "problem_and_reference_answer": "problems/18.2.png",
+      "solution": [
+        "18.2.1/solution-01.png",
+        "18.2.1/solution-02.png",
+        "18.2.1/solution-03.png"
+      ],
+      "expected": "18.2.1/expected.json"
+    },
+    {
+      "id": "18.2.2",
+      "source_page": 208,
+      "problem_and_reference_answer": "problems/18.2.png",
+      "solution": "18.2.2/solution.png",
+      "expected": "18.2.2/expected.json"
+    },
+    {
+      "id": "18.2.3",
+      "source_page": 209,
+      "problem_and_reference_answer": "problems/18.2.png",
+      "solution": [
+        "18.2.3/solution-01.png",
+        "18.2.3/solution-02.png"
+      ],
+      "expected": "18.2.3/expected.json"
+    },
+    {
+      "id": "18.2.4",
+      "source_page": 211,
+      "problem_and_reference_answer": "problems/18.2.png",
+      "solution": "18.2.4/solution.png",
+      "expected": "18.2.4/expected.json"
+    },
+    {
+      "id": "18.3.1",
+      "source_page": 212,
+      "problem_and_reference_answer": "problems/18.3.png",
+      "solution": [
+        "18.3.1/solution-01.png",
+        "18.3.1/solution-02.png",
+        "18.3.1/solution-03.png",
+        "18.3.1/solution-04.png"
+      ],
+      "expected": "18.3.1/expected.json"
+    },
+    {
+      "id": "18.3.2",
+      "source_page": 214,
+      "problem_and_reference_answer": "problems/18.3.png",
+      "solution": [
+        "18.3.2/solution-01.png",
+        "18.3.2/solution-02.png"
+      ],
+      "expected": "18.3.2/expected.json"
+    },
+    {
+      "id": "18.3.3",
+      "source_page": 215,
+      "problem_and_reference_answer": "problems/18.3.png",
+      "solution": "18.3.3/solution.png",
+      "expected": "18.3.3/expected.json"
+    },
+    {
+      "id": "18.4.1",
+      "source_page": 216,
+      "problem_and_reference_answer": "problems/18.4.png",
+      "solution": [
+        "18.4.1/solution-01.png",
+        "18.4.1/solution-02.png"
+      ],
+      "expected": "18.4.1/expected.json"
+    },
+    {
+      "id": "18.4.2",
+      "source_page": 217,
+      "problem_and_reference_answer": "problems/18.4.png",
+      "solution": [
+        "18.4.2/solution-01.png",
+        "18.4.2/solution-02.png"
+      ],
+      "expected": "18.4.2/expected.json"
+    },
+    {
+      "id": "18.4.3",
+      "source_page": 219,
+      "problem_and_reference_answer": "problems/18.4.png",
+      "solution": [
+        "18.4.3/solution-01.png",
+        "18.4.3/solution-02.png"
+      ],
+      "expected": "18.4.3/expected.json"
+    },
+    {
+      "id": "18.4.4",
+      "source_page": 220,
+      "problem_and_reference_answer": "problems/18.4.png",
+      "solution": [
+        "18.4.4/solution-01.png",
+        "18.4.4/solution-02.png",
+        "18.4.4/solution-03.png"
+      ],
+      "expected": "18.4.4/expected.json"
+    },
+    {
+      "id": "18.5.1",
+      "source_page": 221,
+      "problem_and_reference_answer": "problems/18.5.png",
+      "solution": [
+        "18.5.1/solution-01.png",
+        "18.5.1/solution-02.png"
+      ],
+      "expected": "18.5.1/expected.json"
+    },
+    {
+      "id": "18.5.2",
+      "source_page": 222,
+      "problem_and_reference_answer": "problems/18.5.png",
+      "solution": [
+        "18.5.2/solution-01.png",
+        "18.5.2/solution-02.png",
+        "18.5.2/solution-03.png"
+      ],
+      "expected": "18.5.2/expected.json"
+    },
+    {
+      "id": "18.6.1",
+      "source_page": 225,
+      "problem_and_reference_answer": "problems/18.6.png",
+      "solution": [
+        "18.6.1/solution-01.png",
+        "18.6.1/solution-02.png"
+      ],
+      "expected": "18.6.1/expected.json"
+    },
+    {
+      "id": "18.6.2",
+      "source_page": 226,
+      "problem_and_reference_answer": "problems/18.6.png",
+      "solution": [
+        "18.6.2/solution-01.png",
+        "18.6.2/solution-02.png"
+      ],
+      "expected": "18.6.2/expected.json"
+    }
+  ]
+}

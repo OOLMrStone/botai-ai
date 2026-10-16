@@ -31,4 +31,4 @@ def test_conflicting_or_unsupported_task_number(tmp_path):
     with pytest.raises(ValueError):
         runner.manifest_task(manifest(tmp_path, target_task_number=15), 18)
     with pytest.raises(ValueError):
-        runner.manifest_task(manifest(tmp_path, target_task_number=17), None)
+        runner.manifest_task(manifest(tmp_path, target_task_number=21), None)

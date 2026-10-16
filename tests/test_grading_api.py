@@ -176,7 +176,7 @@ def test_prompt_preview_is_gated_and_offline(client):
     response = client.post(url, json=request, headers={'X-Debug-Token': 'test-token'})
     assert response.status_code == 200, response.text
     data = response.json()
-    assert set(data['files']) == {'main.md', 'ocr.md', 'analysis.md', 'grading.md',
+    assert set(data['files']) == {'main.md', 'ocr.md', 'ocr_biases.md', 'analysis.md', 'grading.md',
         'criteria.md', 'popular_mistakes.md', 'response-format.md', 'Statement.md', 'Solution.md'}
     assert data['files']['Statement.md'] == 'x > 0'
     assert len(data['tools']) == 5
@@ -185,10 +185,10 @@ def test_prompt_preview_is_gated_and_offline(client):
 def test_config_lists_supported_tasks(client):
     config = client.get('/api/v1/photo-check/config').json()
     assert config['default_task'] == 16
-    assert [(t['number'], t['max_score']) for t in config['tasks']] == [(14, 2), (15, 3), (16, 2), (18, 3)]
+    assert [(t['number'], t['max_score']) for t in config['tasks']] == [(14, 2), (15, 3), (16, 2), (17, 2), (18, 3), (19, 4), (20, 4)]
 
 
-@pytest.mark.parametrize('number, max_score', [(None, 2), ('14', 2), ('15', 3), ('16', 2), ('18', 3)])
+@pytest.mark.parametrize('number, max_score', [(None, 2), ('14', 2), ('15', 3), ('16', 2), ('18', 3), ('17', 2), ('19', 4), ('20', 4)])
 def test_task_number_selects_task(client, number, max_score):
     data = {} if number is None else {'task_number': number}
     res = client.post('/api/v1/photo-check', files=files(), data=data)
@@ -198,7 +198,7 @@ def test_task_number_selects_task(client, number, max_score):
     assert task['max_score'] == max_score
 
 
-@pytest.mark.parametrize('data', [{'task_number': '17'}, {'task_number': '016'}, {'task_number': 'abc'},
+@pytest.mark.parametrize('data', [{'task_number': '21'}, {'task_number': '016'}, {'task_number': 'abc'},
                                   {'task_number': ''}, {'task_number': ['15', '18']}])
 def test_unsupported_task_number_rejected(client, data):
     res = client.post('/api/v1/photo-check', files=files(), data=data)

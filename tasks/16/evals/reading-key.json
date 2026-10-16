@@ -1,0 +1,759 @@
+{
+ "task": 16,
+ "note": "Ключ чтения задания 16: что на фото на самом деле в местах, от которых зависит балл. Только рабочие наборы (ФИПИ и Кастян); CHECK-MAT не использовать.",
+ "works": [
+  {
+   "id": "15.1.1",
+   "set": "fipi",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: {−1} ∪ [1; √2) ∪ (√2; +∞)",
+     "check": "regex",
+     "right": "\\(\\-1\\)∪\\[1[;,]√2\\)∪\\(√2[;,]\\+?∞\\)"
+    },
+    {
+     "cat": "bounds",
+     "truth": "совокупность: 1 ≤ x < √2; x > √2; x = −1",
+     "check": "regex",
+     "right": "1≤x<√2"
+    },
+    {
+     "cat": "bracket",
+     "truth": "совокупность (квадратная скобка): 1 ≤ x < √2; x > √2; x = −1",
+     "check": "regex",
+     "right": "совокупность",
+     "wrong": "система:|begin\\(cases\\)|begincases|фигурн"
+    },
+    {
+     "cat": "condition",
+     "truth": "рационализация: ((2 − 1)(x² − 2))² — множитель (2 − 1), не (2 − 2)",
+     "check": "regex",
+     "right": "\\(2-1\\)\\(x",
+     "wrong": "\\(2-2\\)\\(x"
+    }
+   ]
+  },
+  {
+   "id": "15.1.2",
+   "set": "fipi",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: x ∈ {−1} ∪ [1; √2) ∪ (√2; +∞)",
+     "check": "regex",
+     "right": "[\\(\\{]-1[\\)\\}]∪\\[1[;,]√2\\)∪\\(√2[;,]\\+?∞\\)"
+    },
+    {
+     "cat": "condition",
+     "truth": "(x − 1)(x + 1)² ≥ 0",
+     "check": "regex",
+     "right": "\\(x-1\\)\\(x\\+1\\)²≥0"
+    }
+   ]
+  },
+  {
+   "id": "15.1.3",
+   "set": "fipi",
+   "score": 1,
+   "places": [
+    {
+     "cat": "condition",
+     "truth": "первая строка …+16 > 0 — строгий знак (ошибка ученика, в условии ≥)",
+     "check": "regex",
+     "right": "16>0",
+     "wrong": "16≥0"
+    },
+    {
+     "cat": "answer",
+     "truth": "Ответ: (1; √2) ∪ (√2; +∞) — без −1 и 1",
+     "check": "regex",
+     "right": "\\(1[;,]√2\\)∪\\(√2[;,]\\+?∞\\)",
+     "wrong": "\\[1[;,]√2\\)"
+    },
+    {
+     "cat": "line",
+     "truth": "на прямой все четыре точки −√2, −1, 1, √2 выколоты (подписаны «гр»); знаки слева направо: −, −, −, +, +; штриховка правее 1",
+     "check": "judge"
+    }
+   ]
+  },
+  {
+   "id": "15.1.4",
+   "set": "fipi",
+   "score": 0,
+   "places": [
+    {
+     "cat": "condition",
+     "truth": "знаменатель (x − √2)(x + √2) без квадрата (ошибка ученика)",
+     "check": "regex",
+     "right": "\\(x-√2\\)\\(x\\+√2\\)≥0",
+     "wrong": "\\(x-√2\\)²\\(x\\+√2\\)²≥0"
+    },
+    {
+     "cat": "answer",
+     "truth": "Ответ: (−√2; 1] ∪ (√2, +∞)",
+     "check": "regex",
+     "right": "\\(\\-√2[;,]1\\]∪\\(√2[;,]\\+?∞\\)"
+    },
+    {
+     "cat": "line",
+     "truth": "точки −√2 (выколота), −1 (закрашена, с петлёй), 1 (закрашена), √2 (выколота); знаки слева направо: −, +, +, −, +",
+     "check": "judge"
+    }
+   ]
+  },
+  {
+   "id": "15.2.1",
+   "set": "fipi",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: x = 1; x ∈ (2; +∞)",
+     "check": "regex",
+     "right": "\\(2[;,]\\+?∞\\)"
+    },
+    {
+     "cat": "roots",
+     "truth": "3^x = 3 ⇒ x = 1",
+     "check": "regex",
+     "right": "x=1"
+    }
+   ]
+  },
+  {
+   "id": "15.2.2",
+   "set": "fipi",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: {1} ∪ (2; +∞)",
+     "check": "regex",
+     "right": "[\\(\\{]1[\\)\\}]∪\\(2[;,]\\+?∞\\)"
+    },
+    {
+     "cat": "bracket",
+     "truth": "совокупность: t ≥ 9; t = 3",
+     "check": "regex",
+     "right": "совокупность",
+     "wrong": "система:|begin\\(cases\\)|begincases|фигурн"
+    },
+    {
+     "cat": "bounds",
+     "truth": "t ≥ 9 и t = 3 (не t ≤ 3)",
+     "check": "regex",
+     "right": "t=3",
+     "wrong": "t≤3"
+    }
+   ]
+  },
+  {
+   "id": "15.2.3",
+   "set": "fipi",
+   "score": 1,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: x ∈ (2; +∞) — без x = 1 (ошибка ученика)",
+     "check": "regex",
+     "right": "(Ответ|ответ):?x?∈?\\(2[;,]\\+?∞\\)",
+     "wrong": "[\\(\\{]1[\\)\\}]∪\\(2"
+    },
+    {
+     "cat": "bounds",
+     "truth": "⇒ t > 9 (точка t = 3 потеряна)",
+     "check": "regex",
+     "right": "t>9"
+    },
+    {
+     "cat": "line",
+     "truth": "прямая по t: −9 и 0 отмечены, 3 закрашена, 9 выколота; знаки −, −, +; выделено правее 9",
+     "check": "judge"
+    }
+   ]
+  },
+  {
+   "id": "15.2.4",
+   "set": "fipi",
+   "score": 0,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: x ∈ {1} ∪ (2; +∞)",
+     "check": "regex",
+     "right": "[\\(\\{]1[\\)\\}]∪\\(2[;,]\\+?∞\\)"
+    },
+    {
+     "cat": "line",
+     "truth": "в точке t = 3 петля со знаком «+» (ошибка ученика); знаки: −, −, +; −9 и 9 выколоты, 3 закрашена",
+     "check": "judge"
+    }
+   ]
+  },
+  {
+   "id": "15.3.1",
+   "set": "fipi",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: x ∈ (1; 31]",
+     "check": "regex",
+     "right": "\\(1[;,]31\\]"
+    },
+    {
+     "cat": "bounds",
+     "truth": "x ∈ (−1; 1) ∪ (1; 31]",
+     "check": "regex",
+     "right": "\\(\\-1[;,]1\\)∪\\(1[;,]31\\]"
+    }
+   ]
+  },
+  {
+   "id": "15.3.2",
+   "set": "fipi",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "О: x ∈ (1; 31]",
+     "check": "regex",
+     "right": "\\(1[;,]31\\]"
+    },
+    {
+     "cat": "condition",
+     "truth": "(x − 1)(31 − x) ≥ 0",
+     "check": "regex",
+     "right": "\\(x-1\\)\\(31-x\\)≥0"
+    }
+   ]
+  },
+  {
+   "id": "15.3.3",
+   "set": "fipi",
+   "score": 1,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: x ∈ (1; 31) — 31 исключена (ошибка ученика)",
+     "check": "regex",
+     "right": "\\(1[;,]31\\)",
+     "wrong": "\\(1[;,]31\\]"
+    },
+    {
+     "cat": "condition",
+     "truth": "(x² − 32x + 31)/((x − 1)(x + 1)) ≤ 0",
+     "check": "regex",
+     "right": "x²-32x\\+31\\)?/\\(?\\(x-1\\)\\(x\\+1\\)\\)?≤0"
+    }
+   ]
+  },
+  {
+   "id": "15.3.4",
+   "set": "fipi",
+   "score": 0,
+   "places": [
+    {
+     "cat": "odz",
+     "truth": "ОДЗ: система {x > 1; x < −1} (ошибка ученика)",
+     "check": "regex",
+     "right": "x<-1"
+    },
+    {
+     "cat": "answer",
+     "truth": "Ответ: (1; 31]",
+     "check": "regex",
+     "right": "\\(1[;,]31\\]"
+    }
+   ]
+  },
+  {
+   "id": "15.4.1",
+   "set": "fipi",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: [1; 2) ∪ (3; +∞)",
+     "check": "regex",
+     "right": "\\[1[;,]2\\)∪\\(3[;,]\\+?∞\\)"
+    }
+   ]
+  },
+  {
+   "id": "15.4.2",
+   "set": "fipi",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: [1; 2) ∪ (3; +∞)",
+     "check": "regex",
+     "right": "\\[1[;,]2\\)∪\\(3[;,]\\+?∞\\)"
+    }
+   ]
+  },
+  {
+   "id": "15.4.3",
+   "set": "fipi",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: x ∈ [1; 2) ∪ (3; +∞)",
+     "check": "regex",
+     "right": "\\[1[;,]2\\)∪\\(3[;,]\\+?∞\\)"
+    },
+    {
+     "cat": "bounds",
+     "truth": "3 ≤ t < 9",
+     "check": "regex",
+     "right": "3≤t<9"
+    }
+   ]
+  },
+  {
+   "id": "15.4.4",
+   "set": "fipi",
+   "score": 0,
+   "places": [
+    {
+     "cat": "condition",
+     "truth": "3t − 9 ≥ 0 (знаменатель отброшен — ошибка ученика)",
+     "check": "regex",
+     "right": "(^|[^/])3t-9≥0"
+    },
+    {
+     "cat": "answer",
+     "truth": "Ответ: x ∈ [1; 2) ∪ (2; 3) ∪ (3; +∞)",
+     "check": "regex",
+     "right": "\\[1[;,]2\\)∪\\(2[;,]3\\)∪\\(3[;,]\\+?∞\\)"
+    }
+   ]
+  },
+  {
+   "id": "15.5.1",
+   "set": "fipi",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: (−∞; 0] ∪ (log₂3; 2) ∪ (2; 3]",
+     "check": "regex",
+     "right": "\\(\\-∞[;,]0\\]∪\\(log23[;,]2\\)∪\\(2[;,]3\\]"
+    }
+   ]
+  },
+  {
+   "id": "15.5.2",
+   "set": "fipi",
+   "score": 1,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: (−∞; 0] ∪ (log₂3; 2) ∪ (2; 3) — 3 исключена (ошибка ученика)",
+     "check": "regex",
+     "right": "\\(log23[;,]2\\)∪\\(2[;,]3\\)",
+     "wrong": "\\(2[;,]3\\]"
+    }
+   ]
+  },
+  {
+   "id": "15.5.3",
+   "set": "fipi",
+   "score": 0,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: (−∞; 0] ∪ [2; 3] (2 включена — ошибка ученика)",
+     "check": "regex",
+     "right": "\\(\\-∞[;,]0\\]∪\\[2[;,]3\\]",
+     "wrong": "\\(2[;,]3\\]"
+    }
+   ]
+  },
+  {
+   "id": "15.6.1",
+   "set": "fipi",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: [−3; 1)",
+     "check": "regex",
+     "right": "\\[\\-3[;,]1\\)"
+    },
+    {
+     "cat": "condition",
+     "truth": "(x + 3)(x − 1)/(x + 4) ≤ 0",
+     "check": "regex",
+     "right": "\\(x\\+3\\)\\(x-1\\)\\)?/\\(?x\\+4\\)?≤0"
+    }
+   ]
+  },
+  {
+   "id": "15.6.2",
+   "set": "fipi",
+   "score": 0,
+   "places": [
+    {
+     "cat": "odz",
+     "truth": "ОДЗ: x ∈ (−4; 1); (2; +∞) — неверно решена система (ошибка ученика)",
+     "check": "regex",
+     "right": "\\(\\-4[;,∪]1\\)[;,∪]\\(2[;,]\\+?∞\\)"
+    },
+    {
+     "cat": "answer",
+     "truth": "Ответ: [−3; 1)",
+     "check": "regex",
+     "right": "\\[\\-3[;,]1\\)"
+    }
+   ]
+  },
+  {
+   "id": "K-B-2",
+   "set": "kostyan",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "x ∈ [−1; 2]",
+     "check": "regex",
+     "right": "\\[\\-1[;,]2\\]"
+    },
+    {
+     "cat": "condition",
+     "truth": "3t² − 28t + 9 ≤ 0 (поверх зачёркнутого)",
+     "check": "regex",
+     "right": "3t²-28t\\+9"
+    }
+   ]
+  },
+  {
+   "id": "K-B-3",
+   "set": "kostyan",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "x ∈ [−1; 2]",
+     "check": "regex",
+     "right": "\\[\\-1[;,]2\\]"
+    },
+    {
+     "cat": "condition",
+     "truth": "(t − 1/3)(t − 9)/(t + 1)² ≤ 0",
+     "check": "regex",
+     "right": "\\(t-1/3\\)\\(t-9\\)"
+    }
+   ]
+  },
+  {
+   "id": "K-B-4",
+   "set": "kostyan",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "x ∈ [−1; 2] (вторая страница)",
+     "check": "regex",
+     "right": "\\[\\-1[;,]2\\]"
+    },
+    {
+     "cat": "condition",
+     "truth": "3t² − 28t + 9 ≤ 0",
+     "check": "regex",
+     "right": "3t²-28t\\+9"
+    }
+   ]
+  },
+  {
+   "id": "K-D-11",
+   "set": "kostyan",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "x ∈ (−5; −√22] ∪ [−4; 4] ∪ [√22; 5): −∞ и +∞ зачёркнуты, под ними −5 и 5",
+     "check": "regex",
+     "right": "-5|5\\)"
+    },
+    {
+     "cat": "condition",
+     "truth": "x² ≥ 22 (исправленная цифра)",
+     "check": "regex",
+     "right": "x²≥22"
+    },
+    {
+     "cat": "bracket",
+     "truth": "совокупность: t ≤ 1; t ≥ 2 и дальше",
+     "check": "regex",
+     "right": "совокупность",
+     "wrong": "система:|begin\\(cases\\)|begincases|фигурн"
+    }
+   ]
+  },
+  {
+   "id": "K-D-12",
+   "set": "kostyan",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "x ∈ (−5; −√22] ∪ [−4; 4] ∪ [√22; 5)",
+     "check": "regex",
+     "right": "\\[\\-4[;,]4\\]"
+    },
+    {
+     "cat": "condition",
+     "truth": "x² ≥ 22",
+     "check": "regex",
+     "right": "x²≥22"
+    }
+   ]
+  },
+  {
+   "id": "K-D-13",
+   "set": "kostyan",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "x ∈ (−5; −√22] ∪ [−4; 4] ∪ [√22; 5)",
+     "check": "regex",
+     "right": "\\[\\-4[;,]4\\]"
+    },
+    {
+     "cat": "condition",
+     "truth": "x² ≥ 22",
+     "check": "regex",
+     "right": "x²≥22"
+    }
+   ]
+  },
+  {
+   "id": "K-P16",
+   "set": "kostyan",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: 0 (x = 0)",
+     "check": "regex",
+     "right": "x=0"
+    },
+    {
+     "cat": "bounds",
+     "truth": "t ∈ [(−7 − 3√5)/2; (−7 + 3√5)/2] ∪ {1}",
+     "check": "regex",
+     "right": "∪[\\(\\{]1[\\)\\}]"
+    }
+   ]
+  },
+  {
+   "id": "K-P17",
+   "set": "kostyan",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: [2log₃2; log₃82)",
+     "check": "regex",
+     "right": "\\[2log32;log382\\)"
+    },
+    {
+     "cat": "bounds",
+     "truth": "t ∈ (−∞; −2] ∪ [4; 82)",
+     "check": "regex",
+     "right": "\\[4[;,]82\\)"
+    },
+    {
+     "cat": "bracket",
+     "truth": "совокупность: 3^x ≤ −2; система: 3^x ≥ 4, 3^x < 82 (вложенные)",
+     "check": "regex",
+     "right": "совокупность"
+    },
+    {
+     "cat": "roots",
+     "truth": "3^x ≤ −2 ⇒ x ∉ ℝ",
+     "check": "regex",
+     "right": "x∉",
+     "wrong": "x∈R|x∈ℝ|x∈mathbbR"
+    }
+   ]
+  },
+  {
+   "id": "K-P18",
+   "set": "kostyan",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: (−∞; −2) ∪ [−log₂√5; +∞)",
+     "check": "regex",
+     "right": "\\(\\-∞[;,]\\-2\\)∪\\[\\-log2√5[;,]\\+?∞\\)"
+    },
+    {
+     "cat": "bounds",
+     "truth": "t ∈ (0; √5] ∪ (4; +∞)",
+     "check": "regex",
+     "right": "\\(0[;,]√5\\]∪\\(4[;,]\\+?∞\\)"
+    },
+    {
+     "cat": "bracket",
+     "truth": "совокупность: 0 < 2^(−x) ≤ √5; 2^(−x) > 4",
+     "check": "regex",
+     "right": "совокупность",
+     "wrong": "система:|begin\\(cases\\)|begincases|фигурн"
+    }
+   ]
+  },
+  {
+   "id": "K-P19",
+   "set": "kostyan",
+   "score": 0,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: (−∞; 2) ∪ (log₂6; 3] — x = 0 не исключён (ошибка ученика)",
+     "check": "regex",
+     "right": "\\(\\-∞[;,]2\\)∪\\(log26[;,]3\\]",
+     "wrong": "\\(0[;,]2\\)"
+    }
+   ]
+  },
+  {
+   "id": "K-P20",
+   "set": "kostyan",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: (0; 1] ∪ (2; +∞)",
+     "check": "regex",
+     "right": "\\(0[;,]1\\]∪\\(2[;,]\\+?∞\\)"
+    },
+    {
+     "cat": "bounds",
+     "truth": "1 < t ≤ 3 или t > 9",
+     "check": "regex",
+     "right": "1<t≤3"
+    }
+   ]
+  },
+  {
+   "id": "K-P21",
+   "set": "kostyan",
+   "score": 1,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: (−∞; −7) ∪ (−1 − log₂5; +∞) — круглая скобка (ошибка ученика)",
+     "check": "regex",
+     "right": "∪\\(\\-1\\-log25[;,]\\+?∞\\)",
+     "wrong": "∪\\[\\-1\\-log25"
+    },
+    {
+     "cat": "bounds",
+     "truth": "x ≥ −1 − log₂5",
+     "check": "regex",
+     "right": "x≥-1-log25"
+    }
+   ]
+  },
+  {
+   "id": "K-I",
+   "set": "kostyan",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: (0; 1) ∪ {4} ∪ (32; +∞)",
+     "check": "regex",
+     "right": "\\(0;1\\)∪[\\(\\{]4[\\)\\}]∪\\(32[;,]\\+?∞\\)"
+    }
+   ]
+  },
+  {
+   "id": "K-K",
+   "set": "kostyan",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: (0; 1/√5] ∪ [√5; +∞)",
+     "check": "regex",
+     "right": "\\(0[;,]1/√5\\]∪\\[√5[;,]\\+?∞\\)"
+    }
+   ]
+  },
+  {
+   "id": "K-L",
+   "set": "kostyan",
+   "score": 2,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: {−3}",
+     "check": "regex",
+     "right": "[\\(\\{]-3[\\)\\}]"
+    }
+   ]
+  },
+  {
+   "id": "K-X4",
+   "set": "kostyan",
+   "score": 1,
+   "places": [
+    {
+     "cat": "condition",
+     "truth": "(t − 2)²/(t(t − 5)) ≥ 0 ⇔ 1/(t(t − 5)) > 0 (деление на (t − 2)² — ошибка ученика)",
+     "check": "regex",
+     "right": "1/\\(t\\(t-5\\)\\)>0"
+    },
+    {
+     "cat": "answer",
+     "truth": "Ответ: (0; 1) ∪ (32; +∞)",
+     "check": "regex",
+     "right": "\\(0[;,]1\\)∪\\(32[;,]\\+?∞\\)"
+    }
+   ]
+  },
+  {
+   "id": "K-X5",
+   "set": "kostyan",
+   "score": 0,
+   "places": [
+    {
+     "cat": "answer",
+     "truth": "Ответ: (−∞; −√22] ∪ [−4; 4] ∪ [√22; +∞)",
+     "check": "regex",
+     "right": "\\(\\-∞[;,]\\-√22\\]∪\\[\\-4[;,]4\\]∪\\[√22[;,]\\+?∞\\)"
+    }
+   ]
+  },
+  {
+   "id": "K-X6",
+   "set": "kostyan",
+   "score": 1,
+   "places": [
+    {
+     "cat": "condition",
+     "truth": "8(x + 1)² раскрыто как 8x² + 8x + 8 (ошибка ученика)",
+     "check": "regex",
+     "right": "8x²\\+8x\\+8"
+    },
+    {
+     "cat": "answer",
+     "truth": "Ответ: ∅",
+     "check": "regex",
+     "right": "∅"
+    }
+   ]
+  }
+ ]
+}

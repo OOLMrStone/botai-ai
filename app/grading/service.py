@@ -4,10 +4,12 @@ import json
 from uuid import uuid4
 
 from app.core.errors import LLMResponseFormatError, ValidationError
-from app.grading.package import DEFAULT_TASK, MAX_SCORES, READER_TASKS, SUPPORTED_TASKS, task_directory
+from app.grading.package import (DEFAULT_TASK, EXPERT_JSON_TASKS, MAX_SCORES, ORIENT_TASKS, READER_TASKS,
+                                 STAGED_TASKS, SUPPORTED_TASKS, task_directory)
 from app.grading.provider import PREP_PROMPT, MockProvider, Provider
 from app.grading.reader import read_photos, reader_prompt, resolve_prompt
 from app.grading.staged import run_staged
+from app.grading.structure import resolve_doubts, screen_response
 from app.grading.reports import ReportStore
 from app.grading.session import ADAPTER, ATTACK_REASON, PREPARED_ADAPTER, TOOLS, Session, load_package
 from app.grading.validator import parse_response
@@ -94,14 +96,18 @@ class GradingService:
         if task_number not in READER_TASKS:
             return None
         package = self.package if self.package is not None else self.packages[task_number]
-        return asyncio.create_task(read_photos(provider, images, reader_prompt(package), resolve_prompt(package)))
+        return asyncio.create_task(read_photos(provider, images, reader_prompt(package), resolve_prompt(package),
+                                               orient=task_number in ORIENT_TASKS))
 
     async def _run_session(self, provider, task, image_ids, images, report_sink, reading=None):
         package = self.package if self.package is not None else self.packages[task['task_number']]
-        if reading is not None and task['task_number'] in READER_TASKS:
+        if reading is not None and task['task_number'] in STAGED_TASKS:
             # Isolated stages: analysis and grading see results, not reasoning or photos.
             return await run_staged(provider, task, image_ids, package, reading, report_sink,
-                                    task_directory(task['task_number']) / 'popular_mistakes.md')
+                                    task_directory(task['task_number']) / 'popular_mistakes.md', images)
+        screen = task['task_number'] in EXPERT_JSON_TASKS
+        if screen and reading is not None:
+            reading = await resolve_doubts(provider, reading, images)  # no doubtful readings on the screen
         session = Session(task, image_ids, package, reading=reading)
         initial_task = {key: value for key, value in task.items()
                         if key not in ('reference_answer', 'reference_solution')}
@@ -126,8 +132,17 @@ class GradingService:
                 raise LLMResponseFormatError('Модель запросила слишком много действий. Повтори проверку')
             if not calls:
                 try:
-                    return session.finalize(message.get('content') or '')
+                    final = session.finalize(message.get('content') or '')
                 except ValueError:
+                    final = None
+                if final is not None:
+                    if not screen:
+                        return final
+                    # The reader's transcript when there is one (15), otherwise the model's own (18).
+                    transcript = reading if reading is not None else json.loads(final).get('ocr')
+                    return await screen_response(provider, final, transcript, task['task_number'],
+                                                 task_directory(task['task_number']) / 'popular_mistakes.md')
+                else:
                     messages.append({k: v for k, v in message.items() if k in {'role', 'content'}})
                     messages.append({'role': 'user', 'content': 'Ответ не прошёл серверную проверку. Выполни обязательные шаги, сохрани и проверь response.json, верни точный проверенный текст.'})
                     continue
