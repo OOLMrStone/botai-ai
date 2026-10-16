@@ -1,0 +1,169 @@
+{
+  "source": "matematika_mr_ege_2026.pdf",
+  "source_task_number": 19,
+  "target_task_number": 20,
+  "cases": [
+    {
+      "id": "19.1.1",
+      "source_page": 237,
+      "problem_and_reference_answer": "problems/19.1.png",
+      "solution": [
+        "19.1.1/solution-01.png",
+        "19.1.1/solution-02.png"
+      ],
+      "expected": "19.1.1/expected.json"
+    },
+    {
+      "id": "19.1.2",
+      "source_page": 238,
+      "problem_and_reference_answer": "problems/19.1.png",
+      "solution": [
+        "19.1.2/solution-01.png",
+        "19.1.2/solution-02.png"
+      ],
+      "expected": "19.1.2/expected.json"
+    },
+    {
+      "id": "19.1.3",
+      "source_page": 239,
+      "problem_and_reference_answer": "problems/19.1.png",
+      "solution": [
+        "19.1.3/solution-01.png",
+        "19.1.3/solution-02.png",
+        "19.1.3/solution-03.png"
+      ],
+      "expected": "19.1.3/expected.json"
+    },
+    {
+      "id": "19.1.4",
+      "source_page": 241,
+      "problem_and_reference_answer": "problems/19.1.png",
+      "solution": "19.1.4/solution.png",
+      "expected": "19.1.4/expected.json"
+    },
+    {
+      "id": "19.2.1",
+      "source_page": 242,
+      "problem_and_reference_answer": "problems/19.2.png",
+      "solution": [
+        "19.2.1/solution-01.png",
+        "19.2.1/solution-02.png"
+      ],
+      "expected": "19.2.1/expected.json"
+    },
+    {
+      "id": "19.2.2",
+      "source_page": 243,
+      "problem_and_reference_answer": "problems/19.2.png",
+      "solution": "19.2.2/solution.png",
+      "expected": "19.2.2/expected.json"
+    },
+    {
+      "id": "19.2.3",
+      "source_page": 244,
+      "problem_and_reference_answer": "problems/19.2.png",
+      "solution": "19.2.3/solution.png",
+      "expected": "19.2.3/expected.json"
+    },
+    {
+      "id": "19.2.4",
+      "source_page": 245,
+      "problem_and_reference_answer": "problems/19.2.png",
+      "solution": "19.2.4/solution.png",
+      "expected": "19.2.4/expected.json"
+    },
+    {
+      "id": "19.3.1",
+      "source_page": 246,
+      "problem_and_reference_answer": "problems/19.3.png",
+      "solution": [
+        "19.3.1/solution-01.png",
+        "19.3.1/solution-02.png"
+      ],
+      "expected": "19.3.1/expected.json"
+    },
+    {
+      "id": "19.3.2",
+      "source_page": 247,
+      "problem_and_reference_answer": "problems/19.3.png",
+      "solution": "19.3.2/solution.png",
+      "expected": "19.3.2/expected.json"
+    },
+    {
+      "id": "19.3.3",
+      "source_page": 248,
+      "problem_and_reference_answer": "problems/19.3.png",
+      "solution": [
+        "19.3.3/solution-01.png",
+        "19.3.3/solution-02.png",
+        "19.3.3/solution-03.png"
+      ],
+      "expected": "19.3.3/expected.json"
+    },
+    {
+      "id": "19.4.1",
+      "source_page": 250,
+      "problem_and_reference_answer": "problems/19.4.png",
+      "solution": "19.4.1/solution.png",
+      "expected": "19.4.1/expected.json"
+    },
+    {
+      "id": "19.4.2",
+      "source_page": 251,
+      "problem_and_reference_answer": "problems/19.4.png",
+      "solution": "19.4.2/solution.png",
+      "expected": "19.4.2/expected.json"
+    },
+    {
+      "id": "19.5.1",
+      "source_page": 252,
+      "problem_and_reference_answer": "problems/19.5.png",
+      "solution": [
+        "19.5.1/solution-01.png",
+        "19.5.1/solution-02.png"
+      ],
+      "expected": "19.5.1/expected.json"
+    },
+    {
+      "id": "19.5.2",
+      "source_page": 254,
+      "problem_and_reference_answer": "problems/19.5.png",
+      "solution": [
+        "19.5.2/solution-01.png",
+        "19.5.2/solution-02.png"
+      ],
+      "expected": "19.5.2/expected.json"
+    },
+    {
+      "id": "19.5.3",
+      "source_page": 255,
+      "problem_and_reference_answer": "problems/19.5.png",
+      "solution": "19.5.3/solution.png",
+      "expected": "19.5.3/expected.json"
+    },
+    {
+      "id": "19.5.4",
+      "source_page": 256,
+      "problem_and_reference_answer": "problems/19.5.png",
+      "solution": "19.5.4/solution.png",
+      "expected": "19.5.4/expected.json"
+    },
+    {
+      "id": "19.6.1",
+      "source_page": 257,
+      "problem_and_reference_answer": "problems/19.6.png",
+      "solution": "19.6.1/solution.png",
+      "expected": "19.6.1/expected.json"
+    },
+    {
+      "id": "19.6.2",
+      "source_page": 258,
+      "problem_and_reference_answer": "problems/19.6.png",
+      "solution": [
+        "19.6.2/solution-01.png",
+        "19.6.2/solution-02.png"
+      ],
+      "expected": "19.6.2/expected.json"
+    }
+  ]
+}

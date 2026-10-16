@@ -144,6 +144,25 @@ def validate_response(response: object, *, catalog_path=None) -> list[str]:
             name = {str: "string", int: "integer", bool: "boolean"}[schema]
             errors.append(f"{path}: expected {name}")
 
+    # Expert-screen format: ocr is the reader's steps and analysis carries one status per step
+    # (app/grading/expert_json.py); the rest of the response keeps the usual schema.
+    structured = type(response) is dict and type(response.get("ocr")) is dict
+    if structured:
+        from app.grading.expert_json import issue_errors, ocr_errors, status_errors
+        analysis_in = response.get("analysis")
+        statuses = analysis_in.get("statuses") if type(analysis_in) is dict else None
+        task_in = response.get("task") if type(response.get("task")) is dict else {}
+        errors.extend(ocr_errors(response["ocr"], task_in.get("task_number")))
+        if type(analysis_in) is dict:
+            errors.extend(e.replace("$.statuses", "$.analysis.statuses") for e in status_errors(response["ocr"], statuses))
+            grading_in = response.get("grading") if type(response.get("grading")) is dict else {}
+            errors.extend(issue_errors(response["ocr"], analysis_in.get("errors"), grading_in.get("score"),
+                                       task_in.get("max_score")))
+            analysis_in = {k: v for k, v in analysis_in.items() if k != "statuses"}
+            if type(analysis_in.get("errors")) is list:
+                analysis_in["errors"] = [{k: v for k, v in e.items() if k not in ("step_id", "penalty")}
+                                         if type(e) is dict else e for e in analysis_in["errors"]]
+        response = {**response, "ocr": "", "analysis": analysis_in}
     check(response, SCHEMA, "$")
     if errors:
         return errors

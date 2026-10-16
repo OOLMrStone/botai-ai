@@ -1,0 +1,180 @@
+{
+ "ocr": {
+  "steps": [
+   {
+    "id": "s1",
+    "type": "odz",
+    "title": "Область допустимых значений",
+    "lines": [
+     "\\begin{cases} 3^x - 9 \\ne 0 \\\\ 3^x + 9 \\ne 0 \\\\ 9^x - 81 \\ne 0 \\end{cases} \\Rightarrow \\begin{cases} x \\ne 2 \\\\ x \\ne 2 \\end{cases}"
+    ],
+    "figure": null
+   },
+   {
+    "id": "s2",
+    "type": "substitution",
+    "title": "Замена переменной",
+    "lines": [
+     "t = 3^x, \\quad t > 0"
+    ],
+    "figure": null
+   },
+   {
+    "id": "s3",
+    "type": "transform",
+    "title": "Преобразование неравенства",
+    "lines": [
+     "\\frac{t+9}{t-9} + \\frac{t-9}{t+9} \\ge \\frac{12t+144}{t^2-81}",
+     "\\frac{2t^2 - 12t + 18}{(t-9)(t+9)} \\ge 0",
+     "\\frac{(t-3)^2}{(t-9)(t+9)} \\ge 0"
+    ],
+    "figure": null
+   },
+   {
+    "id": "s4",
+    "type": "intervals",
+    "title": "Метод интервалов",
+    "lines": [],
+    "figure": {
+     "kind": "number_line",
+     "variable": "t",
+     "note": "При t > 0",
+     "points": [
+      {
+       "id": "p1",
+       "value": "-9",
+       "included": false,
+       "sign": null
+      },
+      {
+       "id": "p2",
+       "value": "0",
+       "included": null,
+       "sign": null,
+       "bound": true
+      },
+      {
+       "id": "p3",
+       "value": "3",
+       "included": true,
+       "sign": "0"
+      },
+      {
+       "id": "p4",
+       "value": "9",
+       "included": false,
+       "sign": null
+      }
+     ],
+     "arcs": [
+      {
+       "from": "p2",
+       "to": "p3",
+       "sign": "-",
+       "selected": false
+      },
+      {
+       "from": "p3",
+       "to": "p4",
+       "sign": "-",
+       "selected": false
+      },
+      {
+       "from": "p4",
+       "to": "+inf",
+       "sign": "+",
+       "selected": true
+      }
+     ]
+    }
+   },
+   {
+    "id": "s5",
+    "type": "selection",
+    "title": "Отбор решений",
+    "lines": [
+     "t > 9"
+    ],
+    "figure": null
+   },
+   {
+    "id": "s6",
+    "type": "back_substitution",
+    "title": "Обратная замена",
+    "lines": [
+     "3^x > 9 \\Rightarrow 3^x > 3^2 \\Rightarrow x > 2"
+    ],
+    "figure": null
+   },
+   {
+    "id": "s7",
+    "type": "answer",
+    "title": "Ответ ученика",
+    "lines": [
+     "x \\in (2; +\\infty)"
+    ],
+    "figure": null
+   }
+  ],
+  "answer": "x ∈ (2; +∞)"
+ },
+ "analysis": {
+  "statuses": [
+   {
+    "id": "s1",
+    "status": "ok",
+    "note": null
+   },
+   {
+    "id": "s2",
+    "status": "ok",
+    "note": null
+   },
+   {
+    "id": "s3",
+    "status": "ok",
+    "note": null
+   },
+   {
+    "id": "s4",
+    "status": "ok",
+    "note": null
+   },
+   {
+    "id": "s5",
+    "status": "error",
+    "note": "Потеряна точка t = 3",
+    "correct": "t = 3 \\quad или \\quad t > 9"
+   },
+   {
+    "id": "s6",
+    "status": "consequence",
+    "note": "Следствие потерянной точки: нет x = 1",
+    "correct": "3^x = 3 \\Rightarrow x = 1; \\quad 3^x > 9 \\Rightarrow x > 2"
+   },
+   {
+    "id": "s7",
+    "status": "consequence",
+    "note": "В ответе не хватает x = 1",
+    "correct": "x \\in \\{1\\} \\cup (2; +\\infty)"
+   }
+  ],
+  "errors": [
+   {
+    "id": "e1",
+    "code": "E08",
+    "description": "Потеряна точка, где числитель равен нулю",
+    "where": "t > 9",
+    "correct_version": "t = 3 или t > 9",
+    "advice": "При знаке ≥ проверяй нули числителя отдельно: точка t = 3 даёт решение x = 1",
+    "step_id": "s5",
+    "penalty": 1
+   }
+  ]
+ },
+ "grading": {
+  "score": 1,
+  "criterion": "Обоснованно получен ответ, отличающийся от верного исключением точки 1",
+  "explanation": "На прямой точка t = 3 включена, но в отбор решений не попала; обратная замена и ответ следуют из этой ошибки."
+ }
+}

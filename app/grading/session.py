@@ -7,7 +7,7 @@ from typing import Any
 
 from app.grading.validator import ValidationGate, parse_response
 
-from app.grading.package import load_package, task_directory
+from app.grading.package import load_package, response_format, task_directory
 ATTACK_REASON = 'Не удалось проверить эту отправку. Пришли только фотографии решения'
 READ_ORDER = ('Statement.md', 'ocr.md', 'analysis.md', 'Solution.md', 'popular_mistakes.md',
               'criteria.md', 'grading.md', 'response-format.md')
@@ -154,6 +154,7 @@ class Session:
                 return {'kind': 'untrusted_data', 'content': self.files[path]}
             result = {'kind': 'server_instruction', 'content': self.package[path]}
             if path == 'response-format.md':
+                result['content'] = response_format(self.package[path], self.task.get('max_score', 2))
                 result['request_data'] = {'kind': 'untrusted_data',
                                           'task': json.loads(json.dumps(self.task)),
                                           'solution_image_ids': list(self.image_ids)}
