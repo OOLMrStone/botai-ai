@@ -319,6 +319,61 @@ def test_v1_circle_schema_and_number_line_loop_remain_unchanged(circle_response)
     assert validate(circle_response)  # Number-line arcs did not gain circle-only fields.
 
 
+def as_native(response, kind):
+    figure = response['ocr']['steps'][0]['figure']
+    if kind == 'number_line':
+        figure.update(kind=kind, variable='x', note=None)
+        for arc in figure['arcs']:
+            del arc['direction']
+            del arc['full_circle']
+    return figure
+
+
+@pytest.mark.parametrize('kind', ['number_line', 'unit_circle'])
+@pytest.mark.parametrize('field,limit', [('points', 64), ('arcs', 128)])
+def test_native_collection_limits_accept_boundary_and_reject_overflow(circle_response, kind, field, limit):
+    from app.grading.expert_json import ocr_errors
+    figure = as_native(circle_response, kind)
+    if field == 'points':
+        figure[field] = [{'id': f'p{i}', 'value': str(i), 'included': True, 'sign': None}
+                         for i in range(1, limit + 1)]
+        extra = {'id': 'overflow', 'value': '1000', 'included': False, 'sign': None}
+    else:
+        extra = deepcopy(figure['arcs'][0])
+        figure[field] = [deepcopy(extra) for _ in range(limit)]
+    assert validate(circle_response) == []
+    figure[field].append(extra)
+    assert any(field in error and str(limit) in error for error in validate(circle_response))
+    if kind == 'number_line':
+        assert ocr_errors(circle_response['ocr'], 14) == []  # V1 did not gain the v2 cap.
+
+
+@pytest.mark.parametrize('kind', ['number_line', 'unit_circle'])
+@pytest.mark.parametrize('field,limit', [('id', 128), ('value', 500)])
+def test_native_point_string_limits_are_lossless_at_boundary(circle_response, kind, field, limit):
+    figure = as_native(circle_response, kind)
+    figure['points'][0][field] = 'p' * limit
+    if field == 'id':
+        figure['arcs'][0]['from'] = figure['points'][0]['id']
+    before = deepcopy(circle_response)
+    assert validate(circle_response) == [] and circle_response == before
+    figure['points'][0][field] += 'p'
+    if field == 'id':
+        figure['arcs'][0]['from'] = figure['points'][0]['id']
+    assert any(field in error and str(limit) in error for error in validate(circle_response))
+
+
+@pytest.mark.parametrize('field,limit', [('variable', 64), ('note', 2000)])
+def test_number_line_text_limits_do_not_change_v1(circle_response, field, limit):
+    from app.grading.expert_json import ocr_errors
+    figure = as_native(circle_response, 'number_line')
+    figure[field] = 'x' * limit
+    assert validate(circle_response) == []
+    figure[field] += 'x'
+    assert any(field in error and str(limit) in error for error in validate(circle_response))
+    assert ocr_errors(circle_response['ocr'], 14) == []
+
+
 def test_shared_validator_still_checks_grade_and_malformed_nested_values(response):
     for bad in (None, [], True, 99):
         candidate = deepcopy(response)

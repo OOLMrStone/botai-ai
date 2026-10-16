@@ -101,8 +101,10 @@ passed 169 grade-only/internal-v1/internal-v2 tests. Values remain strict intege
 within the task maximum; explicit zero and absence survive provider projection
 unchanged, and v1 still rejects the field. No score is recomputed from deductions.
 
-The v2-only circle path follow-up passed 357 targeted tests. Circle arcs now require
+The v2-only circle path and native-limit follow-up passed 373 targeted tests. Circle arcs now require
 explicit `direction` and `full_circle`; missing/ambiguous paths exhaust the bounded
 layout repair budget without a grade. Both layout and final validation preserve
 the exact supplied fields. Legacy/v1 and number-line shapes remain unchanged.
 Both required prompt reviewers approved the added circle-only instruction.
+Agreed v2 caps (64 points, 128 arcs, bounded IDs/labels/notes) are enforced both
+before analysis and at the final gate, with no truncation or changed v1 behavior.

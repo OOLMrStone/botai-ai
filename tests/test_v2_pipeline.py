@@ -264,6 +264,34 @@ async def test_ambiguous_circle_exhaustion_never_publishes_a_grade(settings, mon
     assert events(trace, 'stage_failed', 'layout') and not events(trace, 'stage_completed', 'layout')
 
 
+@pytest.mark.parametrize('field', ['points', 'arcs', 'id', 'value', 'variable', 'note'])
+async def test_native_limits_enter_layout_repair_before_analysis(settings, monkeypatch, field):
+    good = circle_figure()
+    if field in ('variable', 'note'):
+        good.update(kind='number_line', variable='x', note=None)
+        for arc in good['arcs']:
+            del arc['direction']
+            del arc['full_circle']
+    oversized = deepcopy(good)
+    if field == 'points':
+        oversized['points'] = [{'id': f'p{i}', 'value': str(i), 'included': True, 'sign': None}
+                               for i in range(1, 66)]
+    elif field == 'arcs':
+        oversized['arcs'] = [deepcopy(good['arcs'][0]) for _ in range(129)]
+    elif field in ('id', 'value'):
+        oversized['points'][0][field] = 'x' * (129 if field == 'id' else 501)
+        if field == 'id':
+            oversized['arcs'][0]['from'] = oversized['points'][0]['id']
+    else:
+        oversized[field] = 'x' * (65 if field == 'variable' else 2001)
+    provider = ScriptedProvider({'layout': [layout(['l1', 'l2'], figure=oversized),
+                                           layout(['l1', 'l2'], figure=good)]})
+    result, trace = await run(settings, monkeypatch, provider, 14)
+    assert result['ocr']['steps'][0]['figure'] == good
+    assert provider.calls['layout'] == 2 and provider.calls['analysis'] == 1
+    assert len(events(trace, 'validation_failed', 'layout')) == 1
+
+
 @pytest.mark.parametrize('reference', ['', 's2', 's3', 's1,s1'])
 def test_causal_parser_rejects_absent_self_future_duplicate_links(reference):
     ocr = {'steps': [{'id': f's{i}', 'type': 'other', 'title': 'Шаг', 'lines': ['x'], 'figure': None}

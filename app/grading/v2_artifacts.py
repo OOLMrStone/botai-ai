@@ -101,11 +101,26 @@ def _same(left, right):
     return left == right
 
 
-def project_circle_for_validation(figure, path):
-    """Validate v2 arc geometry, then project a copy for the unchanged v1 validator."""
+def project_native_figure_for_validation(figure, path):
+    """Validate v2 limits/path, then project a copy for the unchanged v1 validator."""
     projection = deepcopy(figure)
     errors = []
-    if type(figure) is not dict or figure.get('kind') != 'unit_circle':
+    if type(figure) is not dict or figure.get('kind') not in ('number_line', 'unit_circle'):
+        return errors, projection
+    for key, limit in (('points', 64), ('arcs', 128)):
+        if type(figure.get(key)) is list and len(figure[key]) > limit:
+            errors.append(f'{path}.{key}: at most {limit} entries')
+    if type(figure.get('points')) is list:
+        for index, point in enumerate(figure['points']):
+            if type(point) is not dict:
+                continue
+            for key, limit in (('id', 128), ('value', 500)):
+                if type(point.get(key)) is str and len(point[key]) > limit:
+                    errors.append(f'{path}.points[{index}].{key}: at most {limit} characters')
+    if figure['kind'] == 'number_line':
+        for key, limit in (('variable', 64), ('note', 2000)):
+            if type(figure.get(key)) is str and len(figure[key]) > limit:
+                errors.append(f'{path}.{key}: at most {limit} characters')
         return errors, projection
     arcs = figure.get('arcs')
     if type(arcs) is not list:
@@ -274,9 +289,9 @@ def validate_v2_response(raw: str, *, task: dict, image_ids: list[str],
                 projection['ocr']['steps'][index]['figure'] = {'kind': 'unit_circle', 'points': [], 'arcs': []}
             elif type(task) is dict and task.get('task_number') not in (14, 16):
                 errors.append(f'{path}: this task requires a cropped image figure')
-            elif type(figure) is dict and figure.get('kind') == 'unit_circle':
-                arc_errors, projected_figure = project_circle_for_validation(figure, path)
-                errors += arc_errors
+            elif type(figure) is dict and figure.get('kind') in ('number_line', 'unit_circle'):
+                figure_errors, projected_figure = project_native_figure_for_validation(figure, path)
+                errors += figure_errors
                 projection['ocr']['steps'][index]['figure'] = projected_figure
     errors += [f'$.artifacts: unreferenced diagram artifact {identifier!r}'
                for identifier in sorted(artifact_ids - used)]

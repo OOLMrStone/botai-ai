@@ -6,7 +6,7 @@ Java adapts the AI response to this backend-owned canonical contract.
 AI implementation and offline verification are complete. Baseline checkpoint
 `28823a0`: **797 passed, 3 skipped, 1 deselected** (legacy live-readiness probe
 excluded). The optional-penalty compatibility follow-up passed 169 targeted tests.
-The subsequent explicit-circle-path change passed **357 targeted pipeline,
+The subsequent explicit-circle-path and native-limit changes passed **373 targeted pipeline,
 artifact, validator, grade-only, internal-v1 and internal-v2 tests**. No paid calls were made.
 Backend/browser end-to-end acceptance and any live smoke remain separately coordinated.
 
@@ -168,12 +168,14 @@ The frontend owns circle-view parsing of raw labels; an unknown angle requires
 manual clarification rather than a fabricated coordinate. One stable step ID
 continues to cover its formulas, diagram and review.
 
-The existing native AI schema has no separate count limits for points/arcs or
-length limits for their IDs, `value`, `variable` or `note`. IDs and values are
-nonblank strings; point IDs are unique within a figure and cannot be `-inf`/`+inf`.
-`note` is null or a nonblank string. The layout response is bounded at 256000
-UTF-8 bytes and each stored JSON artifact at 1 MiB. This circle-only change does
-not silently introduce the earlier proposed numeric-schema 64/128-element caps.
+Native v2 limits, enforced at layout and final validation: at most **64 points**
+and **128 arcs** per figure; point ID <=128 characters, `value` <=500,
+number-line `variable` <=64 and `note` <=2000. All these strings are nonblank;
+`note` may instead be null. Point IDs are unique within a figure and cannot be
+`-inf`/`+inf`. Optional `bound` is boolean; `included:null` is allowed only with
+`bound:true`. The layout response is also bounded at 256000 UTF-8 bytes and each
+stored JSON artifact at 1 MiB. Exceeding a limit enters the same bounded layout
+repair budget; output is never truncated. These caps do not alter the v1 schema.
 
 Exact internal artifact metadata in the final top-level `artifacts` array:
 
