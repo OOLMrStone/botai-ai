@@ -294,3 +294,25 @@ are persisted in this store. Stage failure events never claim successful complet
 New layout/causal instructions and the preserved grade-only instruction passed
 both required Astra reviews (structure and unnecessary clarifications). Existing
 approved task/common prompt files remain byte-for-byte unchanged.
+
+## OCR notation and explicit native diagrams
+
+The v2 reader and strip join request TeX for formula transcription, preserving
+all visible terms, signs, exponent scope and student errors. Narrow offline
+checks reject Unicode scripts and explicit `(numerator)/(denominator)` forms;
+simple ASCII `x>0` remains valid. A malformed transcription gets the existing
+single retry with diagnostic codes; persistent failure stops before layout.
+No server-side formula rewriting or mathematical inference is performed.
+The resolved transcript is checked again before layout.
+
+For native-diagram tasks 14/16 an explicit bracket-and-colon marker for a
+number line (including `интервальная прямая`) or unit circle requires the
+matching native `figure` on the step owning that line. An ordinary prose
+mention does not. Layout repair retains all source line IDs exactly once and
+in order; source strings still come verbatim from the immutable transcript.
+Geometry tasks retain their original-image crop contract.
+
+Verification: 95 focused notation/pipeline tests and 937 full offline tests
+passed (3 skipped, 1 live-readiness probe deselected). Both required prompt
+reviews completed; a malformed native `kind` regression was fixed and tested.
+No paid model calls or runtime changes were made for this checkpoint.

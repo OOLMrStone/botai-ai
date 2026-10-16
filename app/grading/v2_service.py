@@ -19,6 +19,7 @@ from app.grading.staged import (ANALYSIS_PROMPT, GRADING_PROMPT, SCREEN_RULE, an
 from app.grading.structure import resolve_doubts
 from app.grading.validator import parse_response
 from app.grading.v2_artifacts import crop_diagram, project_native_figure_for_validation, validate_v2_response
+from app.grading.v2_notation import OCR_NOTATION_PROMPT, math_notation_errors, native_diagram_kinds
 
 MAX_REPAIRS = 2
 MAX_RESPONSE_BYTES = 256_000
@@ -36,6 +37,9 @@ LAYOUT_PROMPT = '''STAGE: v2_layout
 {"source_image_id":"<ID одного из переданных фото>","bbox":{"x":0.1,"y":0.2,"width":0.5,"height":0.4},
 "alt":"<короткое описание рисунка>"}. Координаты относительно полного исходного фото: от 0 до 1.
 Охвати рисунок вместе с подписями, не реконструируй его. Шаг с формулами и рисунком остаётся одним шагом.
+Явный маркер [числовая прямая: ...], [интервальная прямая: ...], [number_line: ...],
+[тригонометрическая окружность: ...] или [unit_circle: ...] требует figure соответствующего вида
+в шаге с этой строкой, не null. Саму строку сохраняй через line_ids.
 Числовую прямую и тригонометрическую окружность передавай структурным JSON, не изображением:
 числовая прямая — {"kind":"number_line","variable":"x","note":null,"points":[],"arcs":[]},
 окружность — {"kind":"unit_circle","points":[],"arcs":[]}.
@@ -155,14 +159,18 @@ async def _transcribe(provider, trace, prompt, *images):
             text = await provider.transcribe(prompt, *images)
         except LLMResponseFormatError:
             text = None
+        errors = ['$.ocr: missing or oversized transcript']
         try:
             if type(text) is str and text.strip() and len(text.encode('utf-8')) <= MAX_RESPONSE_BYTES:
-                return text.strip()
+                errors = math_notation_errors(text)
+                if not errors:
+                    return text.strip()
         except UnicodeError:
             pass
         call_attempt = provider.counters['ocr']
-        _invalid(trace, 'ocr', ['$.ocr: missing or oversized transcript'], call_attempt)
+        _invalid(trace, 'ocr', errors, call_attempt)
         if attempt == 0:
+            prompt += '\nСервер не принял расшифровку:\n' + '\n'.join(errors)
             trace.emit('retry', 'ocr', {'attempt': call_attempt + 1})
     raise LLMResponseFormatError('Не удалось получить полную расшифровку решения')
 
@@ -171,15 +179,20 @@ async def _read(provider, trace, images, package):
     sections = []
     for photo, image in enumerate(images, 1):
         for number, strip in enumerate(strips(image), 1):
-            text = await _transcribe(provider, trace, reader_prompt(package), strip.part())
+            text = await _transcribe(provider, trace, reader_prompt(package) + OCR_NOTATION_PROMPT, strip.part())
             sections.append(f'## Фото {photo}, полоса {number} из {STRIPS}\n{text}')
     joined = '\n\n'.join(sections)
     # A failed join must not release overlapping strips as a completed v2 transcript.
     reading = await _transcribe(provider, trace,
-        resolve_prompt(package) + '\n\n## Расшифровка по полосам\n' + joined,
+        resolve_prompt(package) + OCR_NOTATION_PROMPT + '\n\n## Расшифровка по полосам\n' + joined,
         *[enlarged(image).part() for image in images])
-    return await resolve_doubts(provider, reading, images, fail_on_transport=True,
-                                recover_missing_options=True, trace=trace)
+    reading = await resolve_doubts(provider, reading, images, fail_on_transport=True,
+                                   recover_missing_options=True, trace=trace)
+    errors = math_notation_errors(reading)
+    if errors:
+        _invalid(trace, 'ocr', errors, provider.counters['ocr'])
+        raise LLMResponseFormatError('Расшифровка содержит неподдерживаемую запись формул')
+    return reading
 
 
 def _preparation_errors(data):
@@ -234,6 +247,7 @@ def _layout_errors(data, lines, image_ids, task_number):
     if type(data) is not dict or set(data) != {'steps'} or type(data['steps']) is not list or not 1 <= len(data['steps']) <= 200:
         return ['$.steps: expected 1 to 200 steps']
     errors, seen, covered, figures = [], set(), [], 0
+    source = {line['id']: line['text'] for line in lines}
     for i, step in enumerate(data['steps']):
         path = f'$.steps[{i}]'
         if type(step) is not dict or set(step) != {'id', 'type', 'title', 'line_ids', 'figure'}:
@@ -254,6 +268,11 @@ def _layout_errors(data, lines, image_ids, task_number):
         else:
             covered.extend(ids)
         figure = step['figure']
+        if task_number in (14, 16) and type(ids) is list and all(type(v) is str for v in ids):
+            required = set().union(*(native_diagram_kinds(source.get(lid, '')) for lid in ids))
+            actual = figure.get('kind') if type(figure) is dict else None
+            if required and (type(actual) is not str or required != {actual}):
+                errors.append(path + '.figure: explicit_native_diagram: preserve the marked diagram as its native kind in this source step')
         if not ids and figure is None:
             errors.append(path + ': empty step')
         if figure is None:

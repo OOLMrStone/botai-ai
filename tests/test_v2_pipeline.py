@@ -443,3 +443,71 @@ async def test_cancellation_closes_provider_and_emits_failed_call(settings, monk
         await run(settings, monkeypatch, provider, values=values)
     assert provider.closed and events(values[-1], 'model_failed', 'layout')
     assert not events(values[-1], 'stage_completed', 'layout')
+
+
+async def test_unicode_ocr_retry_returns_tex_without_layout_rewriting(settings, monkeypatch):
+    bad = '(x³ + x² - x - 1) / (4ˣ² - 8·2ˣ² + 16) ≥ 0'
+    good = r'$\frac{x^{3}+x^{2}-x-1}{4^{x^{2}}-8\cdot2^{x^{2}}+16}\ge0$'
+    provider = ScriptedProvider({'ocr': [bad, good, good, good, good]})
+    result, trace = await run(settings, monkeypatch, provider)
+    assert result['ocr']['steps'][0]['lines'] == [good]
+    assert provider.calls['ocr'] == 5
+    assert len(events(trace, 'validation_failed', 'ocr')) == 1
+
+
+async def test_persistent_unicode_ocr_stops_before_layout(settings, monkeypatch):
+    provider = ScriptedProvider(transcript='$4ˣ²$')
+    with pytest.raises(LLMResponseFormatError):
+        await run(settings, monkeypatch, provider)
+    assert provider.calls['ocr'] == 2 and provider.calls['layout'] == 0
+
+
+@pytest.mark.parametrize('kind,marker', [('number_line', 'интервальная прямая'),
+    ('unit_circle', 'тригонометрическая окружность')])
+async def test_explicit_diagram_requires_native_figure_without_losing_source(settings, monkeypatch, kind, marker):
+    text = f'x>0\n[{marker}: отмечена точка 0]'
+    figure = {'kind': kind, 'points': [{'id': 'p1', 'value': '0', 'included': False, 'sign': None}], 'arcs': []}
+    if kind == 'number_line':
+        figure.update(variable='x', note=None)
+    provider = ScriptedProvider({'layout': [layout(['l1', 'l2']), layout(['l1', 'l2'], figure=figure)]}, transcript=text)
+    result, trace = await run(settings, monkeypatch, provider)
+    assert result['ocr']['steps'][0]['lines'] == text.splitlines()
+    assert result['ocr']['steps'][0]['figure'] == figure
+    assert provider.calls['layout'] == 2
+    assert len(events(trace, 'validation_failed', 'layout')) == 1
+
+
+async def test_missing_native_figure_exhaustion_stops_before_analysis(settings, monkeypatch):
+    provider = ScriptedProvider(transcript='[числовая прямая: отмечена точка 0]')
+    with pytest.raises(LLMResponseFormatError):
+        await run(settings, monkeypatch, provider)
+    assert provider.calls['layout'] == 3 and provider.calls['analysis'] == 0
+
+
+def test_diagram_marker_on_another_step_does_not_cover_missing_figure():
+    lines = [{'id': 'l1', 'text': '[числовая прямая: точка 0]'}, {'id': 'l2', 'text': 'x>0'}]
+    data = {'steps': [
+        {'id': 's1', 'type': 'other', 'title': 'Рисунок', 'line_ids': ['l1'], 'figure': None},
+        {'id': 's2', 'type': 'other', 'title': 'Запись', 'line_ids': ['l2'], 'figure':
+         {'kind': 'number_line', 'variable': 'x', 'note': None, 'points': [], 'arcs': []}},
+    ]}
+    assert any('explicit_native_diagram' in error for error in service._layout_errors(data, lines, [], 16))
+
+
+@pytest.mark.parametrize('kind', [[], {}, None, 'unit_circle'])
+async def test_wrong_or_malformed_native_kind_is_repaired(settings, monkeypatch, kind):
+    good = {'kind': 'number_line', 'variable': 'x', 'note': None, 'points': [], 'arcs': []}
+    bad = {**good, 'kind': kind}
+    provider = ScriptedProvider({'layout': [layout(['l1'], figure=bad), layout(['l1'], figure=good)]},
+                                transcript='[числовая прямая: без отметок]')
+    result, _ = await run(settings, monkeypatch, provider)
+    assert result['ocr']['steps'][0]['figure'] == good
+    assert provider.calls['layout'] == 2
+
+
+async def test_join_notation_is_retried_and_keeps_original_tex_terms(settings, monkeypatch):
+    good = r'$\frac{x+1}{x-1}$'
+    provider = ScriptedProvider({'ocr': [good, good, good, '(x+1)/(x-1)', good]})
+    result, _ = await run(settings, monkeypatch, provider)
+    assert result['ocr']['steps'][0]['lines'] == [good]
+    assert provider.calls['ocr'] == 5
