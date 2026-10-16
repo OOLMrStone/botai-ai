@@ -332,7 +332,7 @@ def test_max_score_must_match_task(response, task_number, max_score):
     assert any("$.task.max_score" in e for e in validator.validate_response(response))
 
 
-@pytest.mark.parametrize("task_number", [13, 17, 19])
+@pytest.mark.parametrize("task_number", [13, 21, 12])
 def test_unsupported_task_is_rejected(response, task_number):
     response["task"]["task_number"] = task_number
     assert any("$.task.task_number" in e for e in validator.validate_response(response))

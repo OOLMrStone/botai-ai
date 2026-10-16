@@ -1,5 +1,6 @@
 """Bounded provider adapter; tools execute only in Session, never in the SDK."""
 import json
+import re
 import logging
 import time
 
@@ -49,7 +50,8 @@ class Provider:
     async def close(self):
         await self.client.close()
 
-    async def chat(self, messages, tools=None, plain=False):
+    async def chat(self, messages, tools=None, plain=False, think=True):
+        """One model call; think=False turns reasoning off (layout and choice calls that need no solving)."""
         token_param = getattr(self.settings, 'token_param', 'auto')
         if token_param == 'auto':
             token_param = 'max_tokens'
@@ -61,6 +63,8 @@ class Provider:
             kwargs['response_format'] = {'type': 'json_object'}
         if self.settings.extra_body:
             kwargs['extra_body'] = self.settings.extra_body
+        if not think:
+            kwargs['extra_body'] = {**(self.settings.extra_body or {}), 'thinking': {'type': 'disabled'}}
         try:
             started = time.monotonic()
             completion = await self.client.chat.completions.create(**kwargs)
@@ -69,7 +73,7 @@ class Provider:
         except APIError as exc:
             # Do not leak provider response bodies, request headers or image payloads.
             raise LLMError('Модель не ответила. Попробуй проверить ещё раз', retryable=False) from exc
-        log_usage('tools' if tools else 'prepare', completion, started)
+        log_usage('tools' if tools else ('prepare' if think else 'plain'), completion, started)
         if not completion.choices or completion.choices[0].finish_reason == 'length':
             raise LLMResponseFormatError('Модель не завершила ответ. Повтори проверку')
         return completion.choices[0].message.model_dump(exclude_none=True)
@@ -104,11 +108,24 @@ class MockProvider:
     async def transcribe(self, prompt, *image_parts):
         return 'Демонстрация mock: изображения не распознавались.\nx > 0'
 
-    async def chat(self, messages, tools=None, plain=False):
+    async def chat(self, messages, tools=None, plain=False, think=True):
         system = messages[0]['content'] if messages and messages[0].get('role') == 'system' else ''
+        if not tools and 'Разложи расшифровку' in system:
+            return {'role': 'assistant', 'content': json.dumps({
+                'steps': [{'id': 's1', 'type': 'other', 'title': 'Решение',
+                           'lines': [str(messages[-1].get('content')).strip().splitlines()[0]], 'figure': None}],
+                'answer': '(0; +∞)'}, ensure_ascii=False)}
+        if not tools and 'Перенеси их на шаги' in system:
+            listed = re.search(r'## Ошибки\n(.*?)\n\n## Балл', str(messages[-1].get('content')), re.S)
+            errors = json.loads(listed.group(1)) if listed else []
+            return {'role': 'assistant', 'content': json.dumps({
+                'statuses': [{'id': 's1', 'status': 'ok', 'note': None}],
+                'errors': [{'id': e['id'], 'step_id': 's1', 'penalty': 0} for e in errors],
+                'corrections': []}, ensure_ascii=False)}
         if not tools and 'составь notes.md' in system:
+            steps = 'ШАГИ:\ns1: ok\n' if 'Шаги расшифровки' in str(messages[-1].get('content')) else ''
             return {'role': 'assistant',
-                    'content': 'СТАТУС: подходит\nОписание: тест интерфейса. Ошибки: нет. Точки роста: нет.'}
+                    'content': 'СТАТУС: подходит\n' + steps + 'Описание: тест интерфейса. Ошибки: нет. Точки роста: нет.'}
         if not tools and 'Анализ завершён: notes.md' in system:
             return {'role': 'assistant', 'content': json.dumps({
                 'analysis': {'checks': {'domain': None, 'transformations': None,
