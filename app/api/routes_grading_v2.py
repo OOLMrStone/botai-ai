@@ -239,7 +239,7 @@ async def grade_expert_analysis(request: Request):
         with run.trace.stage('input'):
             if request.headers.get('content-type', '').split(';', 1)[0].strip().lower() != 'application/json':
                 raise InternalGradingError('invalid_expert_analysis', 'Нужен JSON экспертного анализа')
-            prepared = expert_grading.parse_request(await request.body())
+            prepared = expert_grading.parse_request(await request.body(), local_v2=True)
             number = prepared.task.task_number
             if number not in SUPPORTED_TASKS:
                 raise InternalGradingError('unsupported_task', 'Проверка этого задания пока недоступна')

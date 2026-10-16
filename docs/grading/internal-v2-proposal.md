@@ -3,8 +3,10 @@
 This implementation contract supplements the backend-owned `botai-back/docs/integration/B2B-LOCAL-DEMO.md`.
 The new editor document is `expert-review.v2`; old v1 documents remain readable.
 Java adapts the AI response to this backend-owned canonical contract.
-AI implementation and offline verification are complete: **797 passed, 3 skipped,
-1 deselected** (legacy live-readiness probe excluded). No paid calls were made.
+AI implementation and offline verification are complete. Baseline checkpoint
+`28823a0`: **797 passed, 3 skipped, 1 deselected** (legacy live-readiness probe
+excluded). The optional-penalty compatibility follow-up passed **169 targeted
+grade-only, internal-v1 and internal-v2 tests**. No paid calls were made.
 Backend/browser end-to-end acceptance and any live smoke remain separately coordinated.
 
 ## Service boundary
@@ -70,6 +72,14 @@ present. At least a nonblank summary or complete block classification is require
 `expert-review.v2` changes OCR content/title/image only, so its analysis projection
 uses this same grade-only wire contract. OCR text, titles, lines, image artifacts,
 photographs and the canonical document itself are not sent to this endpoint.
+
+Only the local v2 grade-only route additionally accepts optional
+`analysis.findings[].penalty`: a strict integer in `0..task.max_score`. Explicit
+zero is preserved; an absent field remains absent in model input (not zero or
+null). Explicit null, booleans, floats and strings are rejected before dispatch.
+All other analysis fields and references are unchanged. The v1 route continues
+to reject this extra field. The server neither sums penalties into a new score
+nor modifies the expert's analysis.
 
 Success contains exactly `{"grading":{"score":1,"criterion":"…","explanation":"…"}}`
 and `X-Grading-Contract-Version: expert-grading.v1`, even though the local route

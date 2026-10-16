@@ -87,7 +87,7 @@ are evaluation labels and must never enter model inputs. No new crop set is need
 
 ## Offline evidence
 
-Baseline: 543 passed, 3 skipped, 1 deselected. Final local checkpoint: **797 passed,
+Baseline: 543 passed, 3 skipped, 1 deselected. Local checkpoint `28823a0`: **797 passed,
 3 skipped, 1 deselected**. The excluded test is the legacy live-readiness probe.
 All runs used mock providers; no paid model calls, push or deployment occurred.
 Fault injection covers malformed first responses, bounded exhaustion, stale-grade
@@ -95,3 +95,8 @@ prevention, failed OCR votes, duplicate keys, malformed nested structures/Unicod
 ordered source coverage, structured figure preservation, source crops, exact causal
 references, actual call attempts, cancellation, private artifact scope, deadline,
 capacity/retention, both input modes and compatible grade-only runs.
+
+The subsequent canonical-v2 optional `findings[].penalty` compatibility change
+passed 169 grade-only/internal-v1/internal-v2 tests. Values remain strict integers
+within the task maximum; explicit zero and absence survive provider projection
+unchanged, and v1 still rejects the field. No score is recomputed from deductions.

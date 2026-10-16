@@ -34,6 +34,12 @@ def auth():
     return {'Authorization': 'Bearer test-expert-token', 'X-Request-ID': str(uuid4())}
 
 
+def finding(identifier='f1', **extra):
+    return {'id': identifier, 'block_ids': ['a'], 'kind': 'error', 'code': None,
+            'description': 'Ошибка вычисления', 'where': 'x = 1',
+            'correct_version': 'x = 2', 'advice': None, **extra}
+
+
 @pytest.fixture
 def client(settings):
     settings.internal_grading.enabled = True
@@ -181,6 +187,65 @@ def test_v2_discovery_does_not_expand_v1(local_client):
     assert 'grade_analysis' not in v1
     assert v2['grade_analysis'] == {'path': V2_PATH, 'contract_version': 'expert-grading.v1'}
     assert {task['task_number'] for task in v2['tasks'] if task['supported']} == {14, 16, 17, 18}
+
+
+@pytest.mark.parametrize('number,maximum', [(14, 2), (16, 2), (17, 2), (18, 3)])
+def test_v2_finding_penalty_preserves_zero_maximum_and_absence(local_client, monkeypatch, number, maximum):
+    value = payload()
+    value['task'].update(task_number=number, max_score=maximum)
+    value['analysis']['findings'] = [finding('zero', penalty=0), finding('max', penalty=maximum), finding('legacy')]
+    before = deepcopy(value)
+    stage = AsyncMock(return_value='{"grading":{"score":1,"criterion":"Критерий","explanation":"По анализу"}}')
+    monkeypatch.setattr('app.grading.expert_grading.grade_analysis', stage)
+    response = local_client.post(V2_PATH, json=value, headers=auth())
+    assert response.status_code == 200, response.text
+    stage.assert_awaited_once()
+    accepted = stage.call_args.args[0]
+    assert accepted.analysis.model_dump(exclude_unset=True) == before['analysis']
+    assert value == before
+    assert response.json()['grading']['score'] == 1  # Never derived from the supplied deductions.
+
+
+@pytest.mark.parametrize('penalty', [None, True, False, -1, 3, 0.0, 1.5, '1', [], {}])
+def test_v2_invalid_finding_penalty_fails_before_dispatch(local_client, monkeypatch, penalty):
+    stage = AsyncMock(side_effect=AssertionError('Invalid deduction reached the provider'))
+    monkeypatch.setattr('app.grading.expert_grading.grade_analysis', stage)
+    value = payload()
+    value['analysis']['findings'] = [finding(penalty=penalty)]
+    response = local_client.post(V2_PATH, json=value, headers=auth())
+    assert response.status_code == 422
+    assert response.json()['error']['code'] == 'invalid_expert_analysis'
+    stage.assert_not_awaited()
+
+
+def test_v1_still_rejects_even_zero_finding_penalty(local_client, monkeypatch):
+    stage = AsyncMock(side_effect=AssertionError('V1 unexpectedly accepted a v2 field'))
+    monkeypatch.setattr('app.grading.expert_grading.grade_analysis', stage)
+    value = payload()
+    value['analysis']['findings'] = [finding(penalty=0)]
+    response = local_client.post(PATH, json=value, headers=auth())
+    assert response.status_code == 422
+    assert response.json()['error']['code'] == 'invalid_expert_analysis'
+    stage.assert_not_awaited()
+
+
+async def test_v2_provider_projection_is_lossless_without_invented_legacy_penalty():
+    value = payload()
+    value['analysis']['findings'] = [finding('with-zero', penalty=0), finding('without-penalty')]
+    request = parse_request(json.dumps(value).encode(), local_v2=True)
+    before = request.model_dump(exclude_unset=True)
+    raw = '{"grading":{"score":1,"criterion":"Критерий","explanation":"По анализу"}}'
+    provider = SimpleNamespace(chat=AsyncMock(return_value={'content': raw}), close=AsyncMock())
+    result = await grade_analysis(request, SimpleNamespace(llm=SimpleNamespace(provider='live')),
+                                  {'criteria.md': 'CRITERIA', 'popular_mistakes.md': 'CATALOG'}, provider=provider)
+    assert result == raw and request.model_dump(exclude_unset=True) == before
+    messages = provider.chat.call_args.args[0]
+    sent = json.loads(messages[1]['content'])
+    assert sent == {'task': value['task'], 'analysis': value['analysis']}
+    assert sent['analysis']['findings'][0]['penalty'] == 0
+    assert 'penalty' not in sent['analysis']['findings'][1]
+    provider.chat.assert_awaited_once()
+    provider.close.assert_awaited_once()
 
 
 @pytest.mark.parametrize('number,maximum', [(14, 2), (16, 2), (17, 2), (18, 3)])

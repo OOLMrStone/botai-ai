@@ -122,6 +122,32 @@ class GradingRequest(StrictModel):
         return self
 
 
+class LocalFinding(Finding):
+    """Canonical v2 preserves an explicitly supplied deduction, including zero."""
+    penalty: Annotated[int, Field(ge=0)] | None = None
+
+    @model_validator(mode='after')
+    def supplied_penalty_is_not_null(self):
+        if 'penalty' in self.model_fields_set and self.penalty is None:
+            raise ValueError('Penalty must be an integer when present')
+        return self
+
+
+class LocalAnalysis(Analysis):
+    findings: Annotated[list[LocalFinding], Field(max_length=200)]
+
+
+class LocalGradingRequest(GradingRequest):
+    analysis: LocalAnalysis
+
+    @model_validator(mode='after')
+    def penalty_bounds(self):
+        if any(item.penalty is not None and item.penalty > self.task.max_score
+               for item in self.analysis.findings):
+            raise ValueError('Penalty exceeds the task maximum')
+        return self
+
+
 class Grade(StrictModel):
     score: int
     criterion: Annotated[str, Field(min_length=1, max_length=16_000)]
@@ -148,7 +174,7 @@ def validate_grade(raw: str, max_score: int) -> GradingResponse:
     return value
 
 
-def parse_request(raw: bytes) -> GradingRequest:
+def parse_request(raw: bytes, *, local_v2: bool = False) -> GradingRequest:
     if len(raw) > MAX_BODY_BYTES:
         raise InternalGradingError('upload_too_large', 'Данные анализа слишком большие', 413)
     try:
@@ -156,7 +182,8 @@ def parse_request(raw: bytes) -> GradingRequest:
         if isinstance(value, dict) and value.get('contract_version') != CONTRACT_VERSION:
             raise InternalGradingError('unsupported_contract', 'Версия контракта проверки не поддерживается')
         json.dumps(value, ensure_ascii=False).encode('utf-8')
-        return GradingRequest.model_validate(value)
+        request_type = LocalGradingRequest if local_v2 else GradingRequest
+        return request_type.model_validate(value)
     except (ValueError, RecursionError):
         raise InternalGradingError('invalid_expert_analysis', 'Некорректные данные экспертного анализа') from None
 
@@ -190,7 +217,8 @@ async def grade_analysis(request: GradingRequest, settings, package, *, provider
             {'role': 'system', 'content': STAGE_INSTRUCTION + '\n\ncriteria.md\n'
              + package['criteria.md'] + '\n\npopular_mistakes.md\n' + package['popular_mistakes.md']},
             {'role': 'user', 'content': json.dumps({
-                'task': request.task.model_dump(), 'analysis': request.analysis.model_dump()}, ensure_ascii=False)},
+                'task': request.task.model_dump(),
+                'analysis': request.analysis.model_dump(exclude_unset=True)}, ensure_ascii=False)},
         ]
         call = {'call_id': str(uuid4()), 'operation': 'chat', 'attempt': 1}
         started = time.monotonic()
