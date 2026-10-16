@@ -647,10 +647,11 @@ async def test_provider_logs_token_usage_without_content(monkeypatch, caplog):
     with caplog.at_level(logging.INFO, logger='app.grading.provider'):
         with pytest.raises(LLMResponseFormatError):
             await provider.chat([{'role': 'user', 'content': 'secret text'}], tools=[{'type': 'function'}])
-    record = next(r for r in caplog.records if r.getMessage() == 'llm call')
+    record = next(r for r in caplog.records if r.getMessage().startswith('llm call '))
     assert (record.llm_kind, record.finish_reason, record.completion_tokens, record.reasoning_tokens) == \
         ('tools', 'length', 32000, 31000)
     assert 'secret text' not in caplog.text
+    assert 'finish_reason=length' in caplog.text and 'output_limit=32000' in caplog.text
 
 
 def test_analysis_status_line_is_parsed_strictly():

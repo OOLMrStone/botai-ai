@@ -255,6 +255,12 @@ deadline. No transport replay after uncertain dispatch. Structured v2 exhaustion
 fails without a grade; do not silently return legacy string OCR under v2.
 
 Task preparation, layout, analysis and grading each permit two format repairs.
+For analysis only, a completed provider response with `finish_reason=length`
+may use the next existing repair slot with an output limit of 32000 tokens,
+once, if the actual previous limit was smaller. Truncation does not append a
+format-repair instruction or partial output. Truncation at 32000 or above,
+an exhausted repair budget or a second truncation after escalation fails without
+a grade. The per-call override does not mutate shared provider settings.
 Grading may additionally perform one answer-consistency recheck without resetting
 its repair budget. OCR strip/join reading permits one format retry per call;
 an unsuccessful join never falls back to overlapping strips. Doubt resolution
@@ -272,6 +278,11 @@ the returned layout. The original exact coverage and order condition remains
 mandatory. Events expose bounded issue codes and paths, never model text.
 Transport failures propagate immediately in v2, including OCR and doubt voting.
 All calls share the request deadline (at most 360 seconds).
+Provider failures distinguish `error_code=provider_output_truncated` from
+`provider_empty_choices` in model-failed events; the public error remains
+`llm_bad_response`. Console and JSON logs retain bounded finish reason, output
+token count, reasoning token count and requested output limit, without response
+text, reasoning text, images or credentials. Transport timeout remains `llm_timeout`.
 
 Evidence is private, process-local memory: TTL 30 minutes, at most 32 runs and
 128 MiB overall, 512 events/run, eight diagrams plus eight JSON artifacts/run,

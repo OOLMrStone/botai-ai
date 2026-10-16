@@ -1,5 +1,6 @@
 """Offline fault injection through the actual source-bound v2 pipeline."""
 from collections import defaultdict
+import asyncio
 from copy import deepcopy
 from io import BytesIO
 import json
@@ -213,6 +214,73 @@ async def test_coverage_failure_exhausts_without_autofilling_or_sorting(settings
     assert values[-1].reader_ocr is None
     assert [e['data']['issue_codes'] for e in events(values[-1], 'validation_failed', 'layout')] == [
         ['source_line_order']] * 3
+
+
+def truncated(limit=16000):
+    return LLMResponseFormatError('incomplete', details={
+        'provider_failure': 'provider_output_truncated', 'output_limit': limit})
+
+
+async def test_analysis_truncation_uses_one_existing_slot_with_larger_budget(settings, monkeypatch):
+    class BudgetProvider(ScriptedProvider):
+        async def chat(self, messages, tools=None, **kwargs):
+            if messages[0]['content'] == service.ANALYSIS_PROMPT + service.CAUSAL_STEPS_RULE:
+                if self.calls['analysis'] == 0:
+                    assert 'max_output_tokens' not in kwargs
+                else:
+                    assert kwargs['max_output_tokens'] == 32000
+                    assert len(messages) == 2  # Truncation is not a prompt-format error.
+            return await super().chat(messages, tools, **kwargs)
+
+    provider = BudgetProvider({'analysis': [truncated(), GOOD]})
+    result, trace = await run(settings, monkeypatch, provider)
+    assert result['is_graded'] and provider.calls['analysis'] == 2
+    assert events(trace, 'model_failed', 'analysis')[0]['data']['error_code'] == 'provider_output_truncated'
+    assert events(trace, 'retry', 'analysis')[0]['data'] == {
+        'attempt': 2, 'code': 'provider_output_budget_increased'}
+
+
+@pytest.mark.parametrize('answers,expected_calls', [
+    ([truncated(), truncated(32000)], 2),
+    ([truncated(32000)], 1),
+    ([truncated(64000)], 1),
+    ([{'content': 'bad'}, {'content': 'bad'}, truncated()], 3),
+])
+async def test_analysis_truncation_never_repeats_exhausted_budget(settings, monkeypatch, answers, expected_calls):
+    provider = ScriptedProvider({'analysis': answers})
+    with pytest.raises(LLMResponseFormatError) as error:
+        await run(settings, monkeypatch, provider)
+    assert error.value.details['provider_failure'] == 'provider_output_truncated'
+    assert provider.calls['analysis'] == expected_calls and provider.calls['grading'] == 0
+
+
+async def test_truncation_after_format_error_shares_original_repair_budget(settings, monkeypatch):
+    valid = {'content': 'СТАТУС: подходит\nШАГИ:\ns1: ok\n\nОписание: тест интерфейса. Ошибки: нет.'}
+    provider = ScriptedProvider({'analysis': [{'content': 'bad'}, truncated(), valid]})
+    result, _ = await run(settings, monkeypatch, provider)
+    assert result['is_graded'] and provider.calls['analysis'] == 3
+
+
+@pytest.mark.parametrize('failure', [LLMError('uncertain'), asyncio.CancelledError()])
+async def test_transport_error_after_budget_increase_is_not_replayed(settings, monkeypatch, failure):
+    provider = ScriptedProvider({'analysis': [truncated(), failure]})
+    with pytest.raises(type(failure)):
+        await run(settings, monkeypatch, provider)
+    assert provider.calls['analysis'] == 2 and provider.calls['grading'] == 0
+    assert provider.closed
+
+
+async def test_empty_choices_use_format_repair_without_budget_escalation(settings, monkeypatch):
+    class NoEscalation(ScriptedProvider):
+        async def chat(self, messages, tools=None, **kwargs):
+            assert 'max_output_tokens' not in kwargs
+            return await super().chat(messages, tools, **kwargs)
+
+    empty = LLMResponseFormatError('empty', details={'provider_failure': 'provider_empty_choices', 'output_limit': 16000})
+    valid = {'content': 'СТАТУС: подходит\nШАГИ:\ns1: ok\n\nОписание: тест интерфейса. Ошибки: нет.'}
+    provider = NoEscalation({'analysis': [empty, valid]})
+    result, _ = await run(settings, monkeypatch, provider)
+    assert result['is_graded'] and provider.calls['analysis'] == 2
 
 
 @pytest.mark.parametrize('bad', [layout(['l1']), layout(['l2', 'l1']), layout(['l1', 'l1', 'l2']),

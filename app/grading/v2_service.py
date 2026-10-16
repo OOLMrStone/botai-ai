@@ -22,6 +22,7 @@ from app.grading.v2_artifacts import crop_diagram, project_native_figure_for_val
 
 MAX_REPAIRS = 2
 MAX_RESPONSE_BYTES = 256_000
+ANALYSIS_RECOVERY_OUTPUT_LIMIT = 32_000
 SOURCE_ISSUE_CODES = {'missing_source_lines', 'duplicate_source_lines',
                       'unknown_source_lines', 'source_line_order'}
 
@@ -81,9 +82,13 @@ class ObservedProvider:
         try:
             result = await getattr(self.provider, operation)(*args, **kwargs)
         except BaseException as exc:
+            reason = exc.details.get('provider_failure') if isinstance(exc, ServiceError) else None
+            cause = {'error_code': reason} if type(reason) is str and reason in {
+                'provider_empty_choices', 'provider_output_truncated'} else {}
             self.trace.emit('model_failed', self.phase, {**data,
                             'duration_ms': int((time.monotonic() - started) * 1000),
-                            'code': exc.code if isinstance(exc, ServiceError) else 'cancelled_or_internal_error'})
+                            'code': exc.code if isinstance(exc, ServiceError) else 'cancelled_or_internal_error',
+                            **cause})
             raise
         self.trace.emit('model_completed', self.phase,
                         {**data, 'duration_ms': int((time.monotonic() - started) * 1000)})
@@ -358,12 +363,27 @@ async def _analyse(provider, trace, task, package, reading, ocr):
         block('ocr_result.md', reading), *answer_block(task, reading),
         block('Шаги расшифровки', json.dumps(ocr, ensure_ascii=False))])
     messages = [{'role': 'system', 'content': ANALYSIS_PROMPT + CAUSAL_STEPS_RULE}, {'role': 'user', 'content': content}]
+    output_override = None
     with trace.stage('analysis'):
         for attempt in range(MAX_REPAIRS + 1):
             try:
-                message = await provider.for_phase('analysis').chat(messages, plain=True)
+                budget = {} if output_override is None else {'max_output_tokens': output_override}
+                message = await provider.for_phase('analysis').chat(messages, plain=True, **budget)
                 raw = message.get('content') if type(message) is dict else None
-            except LLMResponseFormatError:
+            except LLMResponseFormatError as exc:
+                if exc.details.get('provider_failure') == 'provider_output_truncated':
+                    trace.emit('validation_failed', 'analysis', {'valid': False, 'attempt': attempt + 1,
+                               'issue_paths': ['$.analysis'], 'issue_codes': ['provider_output_truncated']})
+                    limit = exc.details.get('output_limit')
+                    if (attempt == MAX_REPAIRS or output_override is not None
+                            or type(limit) is not int or not 0 < limit < ANALYSIS_RECOVERY_OUTPUT_LIMIT):
+                        raise
+                    # One completed truncated call may use the next existing repair slot.
+                    # Do not mislabel truncation as malformed analysis or replay transport failures.
+                    output_override = ANALYSIS_RECOVERY_OUTPUT_LIMIT
+                    trace.emit('retry', 'analysis', {'attempt': attempt + 2,
+                                                     'code': 'provider_output_budget_increased'})
+                    continue
                 raw = None
             try:
                 valid_text = type(raw) is str and len(raw.encode('utf-8')) <= MAX_RESPONSE_BYTES

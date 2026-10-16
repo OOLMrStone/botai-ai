@@ -176,3 +176,41 @@ from the demo manifest's statement/reference answer and its matching student PNG
 hidden expected scores were not model inputs. Private evidence remains outside
 Git and runtime exports. This was a direct pipeline preflight, not backend/browser
 end-to-end acceptance, and the existing container was not changed.
+
+## Analysis completion limits and diagnostics
+
+Browser run `144b68de-2fa6-4455-b86e-1f268311282d` on `8553ac1` completed OCR
+and layout but all three analysis calls raised `llm_bad_response` inside the
+provider adapter, after HTTP 200. Their durations were 84.277, 86.520 and 80.835
+seconds; the analysis stage failed after 251.637 seconds. The adapter raises this
+exception before exposing content only for `finish_reason=length` or missing
+choices. Thus these were not parser rejections of an otherwise returned analysis
+and not transport timeouts. The console formatter previously discarded finish
+reason and token-count extras; the exact historical branch cannot be recovered.
+
+Verified local runtime: `deepseek-v4-flash`, 16000 output tokens for chat, 8000
+for transcription, timeout 360 seconds, SDK retries zero, shared deadline 360
+seconds, no thinking/effort overrides. OCR/layout explicitly disable thinking;
+analysis/grading use provider defaults. DeepSeek documents default enabled/high
+thinking in its [guide](https://api-docs.deepseek.com/guides/thinking_mode/).
+The prior preflight inherited the then-running container settings; the same
+`live.compose.json` predates it and still specifies 16000/360/zero retries.
+A complete historical environment snapshot was not saved, so full equality is
+not asserted. Backend separately reports production's 32000 output-token limit.
+Truncation is a supported hypothesis for this run, not a proven finish reason.
+
+The follow-up preserves bounded finish/token facts in console as well as JSON
+logs and adds distinct safe causes to model-failed events. Analysis may recover
+one confirmed truncated response using the next existing repair slot at 32000,
+as specified in [internal-v2-proposal.md](internal-v2-proposal.md). It never
+returns partial content, changes grading validation, retries uncertain dispatch,
+extends the deadline or mutates provider settings. The existing 8553ac1 live
+preflight does not validate this new truncation path; it requires its own
+coordinated verification after offline checks and installation.
+
+The follow-up passed **904 tests, 3 skipped, 1 deselected**. An independent
+review approved the bounded recovery and verified 71 targeted tests. Coverage
+includes actual SDK output-limit forwarding, safe console/event diagnostics,
+missing choices, single escalation, shared repair budgets, initially larger limits,
+transport failures, cancellation and unchanged default settings. No additional
+paid call, runtime restart or production change was made for this follow-up.
