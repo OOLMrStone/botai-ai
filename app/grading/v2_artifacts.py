@@ -101,6 +101,32 @@ def _same(left, right):
     return left == right
 
 
+def project_circle_for_validation(figure, path):
+    """Validate v2 arc geometry, then project a copy for the unchanged v1 validator."""
+    projection = deepcopy(figure)
+    errors = []
+    if type(figure) is not dict or figure.get('kind') != 'unit_circle':
+        return errors, projection
+    arcs = figure.get('arcs')
+    if type(arcs) is not list:
+        return errors, projection  # The shared validator handles the remaining shape.
+    for index, arc in enumerate(arcs):
+        if type(arc) is not dict:
+            continue
+        where = f'{path}.arcs[{index}]'
+        if arc.get('direction') not in ('cw', 'ccw'):
+            errors.append(f'{where}.direction: required cw or ccw; no default is inferred')
+        full_circle = arc.get('full_circle')
+        if type(full_circle) is not bool:
+            errors.append(f'{where}.full_circle: required boolean')
+        elif (type(arc.get('from')) is str and type(arc.get('to')) is str
+              and full_circle != (arc['from'] == arc['to'])):
+            errors.append(f'{where}.full_circle: must be true exactly when endpoint IDs are equal')
+        projection['arcs'][index].pop('direction', None)
+        projection['arcs'][index].pop('full_circle', None)
+    return errors, projection
+
+
 def _artifact_errors(artifacts, image_ids):
     if type(artifacts) is not list:
         return ['$.artifacts: expected a list']
@@ -248,6 +274,10 @@ def validate_v2_response(raw: str, *, task: dict, image_ids: list[str],
                 projection['ocr']['steps'][index]['figure'] = {'kind': 'unit_circle', 'points': [], 'arcs': []}
             elif type(task) is dict and task.get('task_number') not in (14, 16):
                 errors.append(f'{path}: this task requires a cropped image figure')
+            elif type(figure) is dict and figure.get('kind') == 'unit_circle':
+                arc_errors, projected_figure = project_circle_for_validation(figure, path)
+                errors += arc_errors
+                projection['ocr']['steps'][index]['figure'] = projected_figure
     errors += [f'$.artifacts: unreferenced diagram artifact {identifier!r}'
                for identifier in sorted(artifact_ids - used)]
     return errors + validate_response(projection)

@@ -248,6 +248,77 @@ def test_legacy_math_figures_only_for_supported_algebra_packages(response):
     assert validate(response) == []
 
 
+@pytest.fixture
+def circle_response(response):
+    response['artifacts'] = []
+    response['task'].update(task_number=14, max_score=2)
+    response['grading']['score'] = 1
+    response['ocr']['steps'][0].update(type='other', figure={
+        'kind': 'unit_circle',
+        'points': [{'id': 'p1', 'value': 'π/2', 'included': True, 'sign': '+'},
+                   {'id': 'p2', 'value': 'π', 'included': None, 'sign': '-', 'bound': True}],
+        'arcs': [{'from': 'p1', 'to': 'p2', 'sign': '-', 'selected': True,
+                  'direction': 'cw', 'full_circle': False}]})
+    return response
+
+
+@pytest.mark.parametrize('direction', ['cw', 'ccw'])
+@pytest.mark.parametrize('full_circle', [True, False])
+def test_circle_explicit_path_passes_without_modifying_original_fields(circle_response, direction, full_circle):
+    arc = circle_response['ocr']['steps'][0]['figure']['arcs'][0]
+    arc.update(direction=direction, full_circle=full_circle, to='p1' if full_circle else 'p2')
+    before = deepcopy(circle_response)
+    assert validate(circle_response) == []
+    assert circle_response == before
+
+
+@pytest.mark.parametrize('field,value', [
+    ('direction', None), ('direction', True), ('direction', 1), ('direction', ''),
+    ('direction', 'CCW'), ('direction', 'unknown'), ('direction', []), ('direction', {}),
+    ('full_circle', None), ('full_circle', 0), ('full_circle', 1), ('full_circle', 0.0),
+    ('full_circle', 'false'), ('full_circle', []), ('full_circle', {}),
+])
+def test_circle_path_types_are_strict_and_never_defaulted(circle_response, field, value):
+    circle_response['ocr']['steps'][0]['figure']['arcs'][0][field] = value
+    assert any(field in error for error in validate(circle_response))
+
+
+@pytest.mark.parametrize('field', ['direction', 'full_circle'])
+def test_circle_path_fields_are_required_at_final_boundary(circle_response, field):
+    del circle_response['ocr']['steps'][0]['figure']['arcs'][0][field]
+    assert any(field in error for error in validate(circle_response))
+
+
+@pytest.mark.parametrize('full_circle,to', [(True, 'p2'), (False, 'p1')])
+def test_circle_full_turn_must_match_endpoint_identity(circle_response, full_circle, to):
+    circle_response['ocr']['steps'][0]['figure']['arcs'][0].update(full_circle=full_circle, to=to)
+    assert any('endpoint IDs' in error for error in validate(circle_response))
+
+
+def test_circle_new_geometry_is_bound_to_original_reader_snapshot(circle_response):
+    original = deepcopy(circle_response['ocr'])
+    circle_response['ocr']['steps'][0]['figure']['arcs'][0]['direction'] = 'ccw'
+    assert any('unchanged reader' in error for error in validate(circle_response, reader_ocr=original))
+
+
+def test_v1_circle_schema_and_number_line_loop_remain_unchanged(circle_response):
+    from app.grading.expert_json import ocr_errors
+    ocr = deepcopy(circle_response['ocr'])
+    figure = ocr['steps'][0]['figure']
+    assert ocr_errors(ocr, 14)  # V1 still forbids the new fields.
+    del figure['arcs'][0]['direction']
+    del figure['arcs'][0]['full_circle']
+    assert ocr_errors(ocr, 14) == []
+    figure.update(kind='number_line', variable='t', note='при t > 0')
+    figure['arcs'][0]['to'] = figure['arcs'][0]['from']
+    circle_response['ocr'] = ocr
+    before = deepcopy(circle_response)
+    assert validate(circle_response) == []
+    assert circle_response == before
+    figure['arcs'][0]['direction'] = 'cw'
+    assert validate(circle_response)  # Number-line arcs did not gain circle-only fields.
+
+
 def test_shared_validator_still_checks_grade_and_malformed_nested_values(response):
     for bad in (None, [], True, 99):
         candidate = deepcopy(response)

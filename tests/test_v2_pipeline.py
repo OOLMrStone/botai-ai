@@ -204,7 +204,8 @@ async def test_mixed_formula_and_diagram_is_one_step_with_original_crop(settings
     (14, {'kind': 'unit_circle',
           'points': [{'id': 'p1', 'value': 'π/2', 'included': True, 'sign': None},
                      {'id': 'p2', 'value': 'π', 'included': False, 'sign': None}],
-          'arcs': [{'from': 'p1', 'to': 'p2', 'sign': None, 'selected': True}]}),
+          'arcs': [{'from': 'p1', 'to': 'p2', 'sign': None, 'selected': True,
+                    'direction': 'ccw', 'full_circle': False}]}),
 ])
 async def test_structured_number_line_and_circle_remain_editable_with_same_step(settings, monkeypatch, number, figure):
     provider = ScriptedProvider({'layout': [layout(['l1', 'l2'], figure=figure)]})
@@ -216,10 +217,51 @@ async def test_structured_number_line_and_circle_remain_editable_with_same_step(
 
 async def test_structured_figure_invalid_reference_is_repaired_before_analysis(settings, monkeypatch):
     figure = {'kind': 'unit_circle', 'points': [],
-              'arcs': [{'from': 'missing', 'to': '+inf', 'sign': None, 'selected': True}]}
+              'arcs': [{'from': 'missing', 'to': '+inf', 'sign': None, 'selected': True,
+                        'direction': 'cw', 'full_circle': False}]}
     provider = ScriptedProvider({'layout': [layout(['l1', 'l2'], figure=figure), GOOD]})
     await run(settings, monkeypatch, provider, 14)
     assert provider.calls['layout'] == 2 and provider.calls['analysis'] == 1
+
+
+def circle_figure():
+    return {'kind': 'unit_circle',
+            'points': [{'id': 'p1', 'value': '0', 'included': True, 'sign': '+'},
+                       {'id': 'p2', 'value': 'π', 'included': False, 'sign': None}],
+            'arcs': [{'from': 'p1', 'to': 'p2', 'sign': '-', 'selected': True,
+                      'direction': 'cw', 'full_circle': False}]}
+
+
+async def test_circle_missing_direction_is_repaired_without_default_or_field_loss(settings, monkeypatch):
+    good = circle_figure()
+    missing = deepcopy(good)
+    del missing['arcs'][0]['direction']
+    provider = ScriptedProvider({'layout': [layout(['l1', 'l2'], figure=missing),
+                                           layout(['l1', 'l2'], figure=good)]})
+    result, trace = await run(settings, monkeypatch, provider, 14)
+    assert result['ocr']['steps'][0]['figure'] == good
+    assert trace.reader_ocr['steps'][0]['figure'] == good
+    assert provider.calls['layout'] == 2 and provider.calls['analysis'] == 1
+    assert len(events(trace, 'validation_failed', 'layout')) == 1
+
+
+@pytest.mark.parametrize('missing', [True, False])
+async def test_ambiguous_circle_exhaustion_never_publishes_a_grade(settings, monkeypatch, missing):
+    figure = circle_figure()
+    if missing:
+        del figure['arcs'][0]['direction']
+        del figure['arcs'][0]['full_circle']
+    else:
+        figure['arcs'][0].update(direction=None, full_circle=None)
+    provider = ScriptedProvider({'layout': [layout(['l1', 'l2'], figure=figure)] * 3})
+    values = setup_run(14)
+    with pytest.raises(LLMResponseFormatError):
+        await run(settings, monkeypatch, provider, values=values)
+    trace = values[-1]
+    assert provider.calls['layout'] == 3 and provider.calls['analysis'] == provider.calls['grading'] == 0
+    assert trace.reader_ocr is None and trace.store._runs[trace.run_id].artifacts == {}
+    assert len(events(trace, 'validation_failed', 'layout')) == 3
+    assert events(trace, 'stage_failed', 'layout') and not events(trace, 'stage_completed', 'layout')
 
 
 @pytest.mark.parametrize('reference', ['', 's2', 's3', 's1,s1'])

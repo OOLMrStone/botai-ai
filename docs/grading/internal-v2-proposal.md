@@ -5,8 +5,9 @@ The new editor document is `expert-review.v2`; old v1 documents remain readable.
 Java adapts the AI response to this backend-owned canonical contract.
 AI implementation and offline verification are complete. Baseline checkpoint
 `28823a0`: **797 passed, 3 skipped, 1 deselected** (legacy live-readiness probe
-excluded). The optional-penalty compatibility follow-up passed **169 targeted
-grade-only, internal-v1 and internal-v2 tests**. No paid calls were made.
+excluded). The optional-penalty compatibility follow-up passed 169 targeted tests.
+The subsequent explicit-circle-path change passed **357 targeted pipeline,
+artifact, validator, grade-only, internal-v1 and internal-v2 tests**. No paid calls were made.
 Backend/browser end-to-end acceptance and any live smoke remain separately coordinated.
 
 ## Service boundary
@@ -125,7 +126,8 @@ Exact AI step figure:
 ```
 
 Geometry uses the image form above. Tasks 14/16 retain PR #4's editable structured
-figures verbatim; these are not converted to image artifacts:
+figure fields; these are not converted to image artifacts. V2 circle arcs add the
+explicit path fields described below; number-line and v1 schemas remain unchanged:
 
 ```json
 {"kind":"number_line","variable":"x","note":null,
@@ -135,17 +137,43 @@ figures verbatim; these are not converted to image artifacts:
 
 ```json
 {"kind":"unit_circle",
- "points":[{"id":"p1","value":"π","included":true,"sign":null}],
- "arcs":[]}
+ "points":[{"id":"p1","value":"π/2","included":true,"sign":null},
+           {"id":"p2","value":"π","included":false,"sign":null}],
+ "arcs":[{"from":"p1","to":"p2","sign":null,"selected":true,
+          "direction":"ccw","full_circle":false}]}
 ```
 
 Point optional `bound:true` represents a dashed domain boundary and allows
 `included:null`; otherwise `included` is boolean. Arc endpoints must reference
 point IDs (plus `-inf`/`+inf` only on number lines). Signs are `+|-|0|null`.
 Server validation retains the exact figure inside the unchanged OCR snapshot.
-The backend/editor extension for a structured diagram alongside `content.lines`
-must preserve that one stable step ID; its canonical union is coordinated by
-the backend owner. It must not split formulas and diagram into different blocks.
+Each v2 circle arc requires `direction:"cw"|"ccw"` and `full_circle:boolean`.
+Direction specifies the geometric path from `from` to `to`, not whether an arrow
+was drawn. `full_circle` is true exactly when endpoint IDs are equal; both
+directions represent the same geometry for a full turn. The model must read the
+path from the transcript or original photo, never assume CCW from endpoint order.
+Missing, null or inconsistent path fields fail layout validation; at most two
+format repairs are permitted, then the request fails without a grade. No default
+direction/full-turn value is inserted. The final boundary independently checks
+these fields and their identity with the reader snapshot. A private validation
+copy removes the extensions solely to reuse the unchanged v1 shape validator;
+the actual model result, OCR artifact and response keep them exactly.
+
+The original `from`, `to`, `sign`, `selected`, point `value`, `included`, `sign`,
+optional `bound` and number-line `variable`/`note` remain intact. The agreed canonical
+adapter passes these fields through inside `step.diagram`, renaming only `kind`
+to `type:number_line_v2|unit_circle_v2`. Number-line points retain their supplied
+order and sparse arcs/loops; no scalar evaluation, sorting or invented intervals.
+The frontend owns circle-view parsing of raw labels; an unknown angle requires
+manual clarification rather than a fabricated coordinate. One stable step ID
+continues to cover its formulas, diagram and review.
+
+The existing native AI schema has no separate count limits for points/arcs or
+length limits for their IDs, `value`, `variable` or `note`. IDs and values are
+nonblank strings; point IDs are unique within a figure and cannot be `-inf`/`+inf`.
+`note` is null or a nonblank string. The layout response is bounded at 256000
+UTF-8 bytes and each stored JSON artifact at 1 MiB. This circle-only change does
+not silently introduce the earlier proposed numeric-schema 64/128-element caps.
 
 Exact internal artifact metadata in the final top-level `artifacts` array:
 
