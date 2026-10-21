@@ -1,0 +1,283 @@
+--- a/app/grading/v2_notation.py
++++ b/app/grading/v2_notation.py
+@@ -1,38 +1,128 @@
+-"""Narrow OCR encoding checks; never rewrite or judge the student's mathematics."""
++"""Bounded notation checks for v2 OCR; neither a TeX engine nor a math verifier.
++
++Only canonical dollar delimiters are accepted. Obvious formula syntax outside
++them is rejected, while ordinary narrative and isolated labels/numbers remain
++text. No input is rewritten and diagnostics never contain source fragments.
++"""
+ import re
++import unicodedata
+ 
+ 
+-_SCRIPT = re.compile(r'[²³¹ˣ⁰-⁹⁺⁻⁼⁽⁾ⁿ₀-₉]')
+-_FRACTION = re.compile(r'\([^()\n]{1,2000}\)\s*/\s*\([^()\n]{1,2000}\)')
++MAX_TEXT_CHARS = 200_000
++
++# Unicode super/subscript glyphs remain ambiguous text even inside a TeX span.
++# Modifier letters include the handwritten-OCR spelling ``4ˣ²``.
++_SCRIPT_GLYPHS = re.compile(
++    '[\u00b2\u00b3\u00b9\u02b0-\u02b8\u02e0-\u02e4'
++    '\u1d2c-\u1d6a\u1d78\u1d9b-\u1dbf\u2070-\u209f\ua7f2-\ua7f4]'
++)
++_MATH_SYMBOLS = re.compile('[≤≥≠≈≡≔∈∉∋∌∪∩⊂⊆⊃⊇∅∞√∛∜∑∏∫∂∇±∓×÷⋅·⇒⇔→←↔∧∨¬∀∃⊥∥∠πℝℤℕℚℂ−]')
++_TEX_COMMAND = re.compile(r'\\[A-Za-z]+')
++_RELATION = re.compile(r'[=<>]')
++_WORD = r'A-Za-zА-Яа-яЁё0-9_'
++_ATOM = r'(?:\d+(?:[.,]\d+)?|[A-Z]{1,3}|[a-zх])'
++_POWER = re.compile(rf'(?<![{_WORD}]){_ATOM}\s*[_^]\s*(?:\w|[{{(+-])')
++_BINARY = re.compile(
++    rf'(?<![{_WORD}])(?:{_ATOM}|[)\]}}])\s*[+*/]\s*'
++    rf'(?:{_ATOM}(?![{_WORD}])|[([{{])'
++)
++_VARIABLE_MINUS = re.compile(
++    rf'(?<![{_WORD}])(?:[A-Z]{{1,3}}|[a-zх]|[)\]}}])\s*-\s*'
++    rf'(?:{_ATOM}(?![{_WORD}])|[([{{])'
++)
++_NUMBER_MINUS_VARIABLE = re.compile(rf'(?<![{_WORD}])\d+\s*-\s*[a-zх](?![{_WORD}])')
++_NUMERIC_EXPRESSION = re.compile(r'\s*[-+]?\d+(?:[.,]\d+)?\s*-\s*\d+(?:[.,]\d+)?\s*[.;]?\s*')
++_PRODUCT = re.compile(rf'(?<![{_WORD}])\d+(?:[.,]\d+)?\s*[a-zх](?![{_WORD}])')
++_FUNCTION = re.compile(r'(?<![A-Za-z])(?:sin|cos|tan|tg|ctg|log|ln|exp|sqrt)\s*(?:[(\d]|[a-zх](?![A-Za-z]))')
++_INTERVAL = re.compile(r'[([]\s*[-+]?\d+(?:[.,]\d+)?\s*;\s*[-+]?\d+(?:[.,]\d+)?\s*[)\]]')
++
+ _DIAGRAM = re.compile(
+-    r'\[\s*(интервальная\s+прямая|числовая\s+прямая|number_line|'
+-    r'тригонометрическая\s+окружность|unit_circle)\s*:', re.IGNORECASE
++    r'\[\s*(?P<kind>интервальная\s+прямая|числовая\s+прямая|'
++    r'тригонометрическая\s+окружность|number_line|unit_circle)\s*:', re.IGNORECASE
+ )
+ 
+-OCR_NOTATION_PROMPT = r'''
+-Математические записи передавай в TeX внутри $...$ или $$...$$: степени через ^{...},
+-индексы через _{...}, составные дроби через \frac{...}{...}, а не Unicode-степени
+-или плоскую запись (числитель)/(знаменатель). Сохраняй исходные знаки, показатели,
+-скобки и ошибки ученика; меняется только формат записи, не математика.
+-Описание числовой прямой начинай [числовая прямая: ...], тригонометрической
+-окружности - [тригонометрическая окружность: ...]; сохраняй все видимые детали.'''
++
++def native_diagram_kinds(text) -> set[str]:
++    """Find explicit bracket-and-colon markers, never ordinary prose mentions."""
++    if type(text) is not str or len(text) > MAX_TEXT_CHARS:
++        return set()
++    kinds = set()
++    for match in _DIAGRAM.finditer(text):
++        label = match['kind'].casefold()
++        kinds.add('unit_circle' if label == 'unit_circle' or 'окружность' in label else 'number_line')
++    return kinds
+ 
+ 
+-def math_notation_errors(text: str) -> list[str]:
+-    """Detect only explicit scripts and parenthesized composite slash fractions.
++def math_notation_errors(text) -> list[str]:
++    """Return unique ``$: code`` diagnostics, with no input quotes or rewrites.
+ 
+-    Simple ASCII mathematics, prose and uncertainty markers remain valid. This
+-    is not a general TeX validator: source transcription is never normalized.
++    Balanced $...$ and $$...$$ are supported. This intentionally does not infer
++    mathematics from isolated numbers/letters or prove that delimited TeX renders
++    or that a formula is mathematically correct. Unicode math operators inside
++    TeX are accepted; Unicode super/subscripts must use TeX notation instead.
+     """
+-    errors = []
+-    if _SCRIPT.search(text):
+-        errors.append('$: unicode_math_script: encode visible scripts as TeX, preserving their scope')
+-    if _FRACTION.search(text):
+-        errors.append('$: composite_slash_fraction: encode the visible fraction as TeX without changing its terms')
+-    return errors
++    if type(text) is not str:
++        return ['$: math_notation_text_type']
++    if len(text) > MAX_TEXT_CHARS:
++        return ['$: math_notation_text_limit']
++    try:
++        text.encode('utf-8')
++    except UnicodeError:
++        return ['$: math_notation_unicode']
+ 
+-
+-def native_diagram_kinds(text: str) -> set[str]:
+-    """Only an explicit bracketed OCR marker requires a native figure."""
+-    return {'unit_circle' if 'окружность' in match[1].casefold() or match[1].casefold() == 'unit_circle'
+-            else 'number_line' for match in _DIAGRAM.finditer(text)}
++    errors = set()
++    if _SCRIPT_GLYPHS.search(text):
++        errors.add('unicode_math_script')
++    outside, delimiter, start, braces = [], None, 0, 0
++    index = 0
++    while index < len(text):
++        char = text[index]
++        if char == '\\' and index + 1 < len(text):
++            following = text[index + 1]
++            if following in '()[]':
++                errors.add('unsupported_math_delimiter')
++            if following in '\\${}':
++                if delimiter is None:
++                    outside.append(text[index:index + 2])
++                index += 2
++                continue
++        if char == '$':
++            end = index + 1
++            while end < len(text) and text[end] == '$':
++                end += 1
++            token = text[index:end]
++            if len(token) > 2:
++                errors.add('math_delimiter_mismatch')
++            elif delimiter is None:
++                delimiter, start, braces = token, end, 0
++                outside.append(' ')
++            elif token != delimiter:
++                errors.add('math_delimiter_mismatch')
++            else:
++                if not text[start:index].strip():
++                    errors.add('empty_math_span')
++                if braces:
++                    errors.add('math_brace_mismatch')
++                delimiter = None
++                outside.append(' ')
++            index = end
++            continue
++        if delimiter is None:
++            outside.append(char)
++        elif char == '{':
++            braces += 1
++        elif char == '}':
++            braces -= 1
++            if braces < 0:
++                errors.add('math_brace_mismatch')
++        index += 1
++    if delimiter is not None:
++        errors.add('math_delimiter_mismatch')
++    plain = ''.join(outside)
++    if (_MATH_SYMBOLS.search(plain) or _TEX_COMMAND.search(plain) or _RELATION.search(plain)
++            or any(ord(char) > 127 and unicodedata.category(char) == 'Sm' for char in plain)
++            or any(pattern.search(plain) for pattern in
++                   (_POWER, _BINARY, _VARIABLE_MINUS, _NUMBER_MINUS_VARIABLE, _PRODUCT, _FUNCTION, _INTERVAL))
++            or any(_NUMERIC_EXPRESSION.fullmatch(line) for line in plain.splitlines())):
++        errors.add('math_outside_latex')
++    return ['$: ' + code for code in sorted(errors)]
+--- a/tests/test_v2_notation.py
++++ b/tests/test_v2_notation.py
+@@ -1,36 +1,99 @@
+-"""Only concrete OCR encoding defects trigger retries; source math is immutable."""
++"""Notation checks detect encoding defects without rewriting mathematical work."""
+ import pytest
+ 
+-from app.grading.v2_notation import math_notation_errors, native_diagram_kinds
++from app.grading.v2_notation import MAX_TEXT_CHARS, math_notation_errors, native_diagram_kinds
+ 
+ 
+-@pytest.mark.parametrize('text', ['x>0', 'x = 0', 'x/y', 'x^2', '4≤5',
+-    'Дата 2026-10-16, задачи 1-2; и/или', 'x [неразборчиво: > | ≠] 0',
+-    r'$\frac{x^{3}+x^{2}-x-1}{4^{x^{2}}-8\cdot2^{x^{2}}+16}\ge0$',
+-    r'$\frac{x+1}{x-1}$', 'числовая прямая: рассуждение'])
+-def test_plain_math_and_tex_remain_valid_and_unchanged(text):
+-    original = text
+-    assert not math_notation_errors(text)
+-    assert text == original
++@pytest.mark.parametrize('text', [
++    'Решение верно. Ошибки ученика сохранены.',
++    'Демонстрация mock: изображения не распознавались.',
++    'Зачёркнуто. Черновик. Ответ записан ниже.',
++    'Шаг 2. Рассмотрим 2 случая и задачи 1-2.',
++    'Дата 2026-10-16, ЕГЭ-2026, 11-й класс.',
++    'Проверка и/или замечание.',
++    'x', '2', 'AB', 'Пусть x обозначает неизвестное.',
++    '$x>0$', '$4\\le 5$', '$4≤5$', '$x^{3}+x^{2}$', '$4^{x^{2}}$',
++    '$$\\frac{x^{3}+x^{2}}{4^{x^{2}}}\\ge 0$$',
++    r'$\left\{x\right\}$',
++    r'Получили $x > 0$, затем $x\ne 1$. Зачёркнуто.',
++    r'Цена \$100; формула $x = 1$.',
++    '[числовая прямая: точки $0$, $1$; промежуток $(0;1)$]',
++    '[number_line: отмечены точки]', '[unit_circle: отмечены точки]',
++])
++def test_prose_and_delimited_math_are_preserved(text):
++    before = text
++    assert math_notation_errors(text) == []
++    assert text == before
+ 
+ 
+-@pytest.mark.parametrize('text', ['(x³ + x² - x - 1) / (4ˣ² - 8·2ˣ² + 16) ≥ 0',
+-    '$x²$', '$4ˣ²$', '(x+1)/(x-1)', '$(x+1)/(x-1)$'])
+-def test_specific_encoding_defects_are_rejected_without_source_in_diagnostics(text):
+-    original = text
+-    errors = math_notation_errors(text)
+-    assert errors and all(text not in error for error in errors)
+-    assert text == original
++@pytest.mark.parametrize('text', [
++    '4≤5', 'x>0', 'x = 0', 'x != 0', 'x^2', 'x_{2}', 'x_1', 'x+y',
++    'x - y', 'x-1', '4-5', '4-x', '4+5', '2*x', 'x/y', '(x+1)/(x-1)',
++    '2x', 'sin x', 'cos(x)', 'log2 x', r'\frac{x}{2}', r'\sqrt{x}',
++    '[1;2]', 'x ∈ ℝ', 'Ответ: ∅', 'π', 'a → b', 'a·b', 'a ≪ b', 'a ∝ b',
++    '(x³+x²)/(4ˣ²)≥0', 'Демонстрация mock\nx > 0',
++])
++def test_obvious_math_outside_delimiters_is_rejected(text):
++    assert '$: math_outside_latex' in math_notation_errors(text) or '$: unicode_math_script' in math_notation_errors(text)
++
++
++@pytest.mark.parametrize('text', ['$x²$', '$x₁$', '$4ˣ²$', '$aᵇ$', '$n⁻¹$'])
++def test_unicode_super_and_subscripts_are_rejected_even_inside_tex(text):
++    assert math_notation_errors(text) == ['$: unicode_math_script']
++
++
++@pytest.mark.parametrize('text', ['$x', 'x$', '$$x$', '$x$$', '$$$x$$$', '$$$$'])
++def test_broken_or_ambiguous_dollar_delimiters_are_rejected(text):
++    assert '$: math_delimiter_mismatch' in math_notation_errors(text)
++
++
++@pytest.mark.parametrize('text', [r'\(x>0\)', r'\[x>0\]', r'$\(x\)$'])
++def test_unapproved_alternative_delimiters_are_rejected(text):
++    assert '$: unsupported_math_delimiter' in math_notation_errors(text)
++
++
++@pytest.mark.parametrize('text', ['$ $', '$$ $$'])
++def test_empty_math_is_rejected(text):
++    assert math_notation_errors(text) == ['$: empty_math_span']
++
++
++@pytest.mark.parametrize('text', [r'$x^{2$', r'$x}^2$', r'$\frac{x}{2$'])
++def test_unbalanced_unescaped_tex_braces_are_rejected(text):
++    assert '$: math_brace_mismatch' in math_notation_errors(text)
++
++
++@pytest.mark.parametrize('text', [None, 1, True, {}, [], b'$x$'])
++def test_malformed_types_are_total_and_safe(text):
++    assert math_notation_errors(text) == ['$: math_notation_text_type']
++    assert native_diagram_kinds(text) == set()
++
++
++def test_limits_and_diagnostics_never_expose_ocr():
++    assert math_notation_errors('я' * (MAX_TEXT_CHARS + 1)) == ['$: math_notation_text_limit']
++    assert native_diagram_kinds('[' * (MAX_TEXT_CHARS + 1)) == set()
++    assert math_notation_errors('\ud800') == ['$: math_notation_unicode']
++    result = math_notation_errors('PRIVATE STUDENT TEXT $x²}$$ and 4≤5')
++    assert len(result) <= 8
++    assert all(item.startswith('$: ') and 'PRIVATE' not in item for item in result)
++    assert math_notation_errors('\\' * MAX_TEXT_CHARS) == []
++    assert '$: math_delimiter_mismatch' in math_notation_errors('$' * MAX_TEXT_CHARS)
++
++
++def test_notation_gate_does_not_claim_mathematical_correctness_or_full_tex_validation():
++    assert math_notation_errors('$2+2=5$') == []
++    assert math_notation_errors(r'$\unknowncommand{x}$') == []
+ 
+ 
+ @pytest.mark.parametrize('text,expected', [
+     ('[интервальная прямая: описание]', {'number_line'}),
++    ('[числовая прямая: описание]', {'number_line'}),
++    ('[тригонометрическая окружность: описание]', {'unit_circle'}),
++    ('[number_line: описание]', {'number_line'}),
++    ('[unit_circle: описание]', {'unit_circle'}),
+     ('[ ЧИСЛОВАЯ  ПРЯМАЯ : описание]', {'number_line'}),
+-    ('[number_line: описание]', {'number_line'}),
+-    ('[тригонометрическая окружность: описание]', {'unit_circle'}),
+-    ('[unit_circle: описание]', {'unit_circle'}),
+-    ('Упоминается числовая прямая: рассуждение', set()),
+-    ('[числовая прямая] [number_line_extra: описание]', set()),
++    ('[number_line: первая] [числовая прямая: вторая] [unit_circle: третья]', {'number_line', 'unit_circle'}),
++    ('В решении упоминается числовая прямая: затем тригонометрическая окружность.', set()),
++    ('[числовая прямая] [окружность: рисунок] [number_line_extra: рисунок]', set()),
+ ])
+-def test_only_explicit_diagram_markers_require_a_figure(text, expected):
++def test_diagram_detection_requires_an_explicit_bracketed_marker(text, expected):
+     assert native_diagram_kinds(text) == expected
