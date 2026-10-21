@@ -19,7 +19,6 @@ The reader writes ocr; the analysis writes statuses; the server checks each stag
 response carries the reader's ocr unchanged. Usage: python -m app.grading.expert_json <stage> <file> [--ocr reader.json]
 """
 import argparse
-import json
 import re
 import sys
 from pathlib import Path
@@ -67,6 +66,27 @@ def _is_text(value, *, empty=False):
     return type(value) is str and (empty or bool(value.strip()))
 
 
+def _fields(value, required, path, optional=()):
+    """Missing nullable members are errors too; callers have checked the object type."""
+    return ([f'{path}.{key}: missing required field' for key in required if key not in value]
+            + [f'{path}.{key}: unexpected field' for key in value
+               if key not in required and key not in optional])
+
+
+def _step_ids(ocr):
+    """Read only usable IDs, without requiring full OCR when validating a stage in isolation."""
+    steps = ocr.get('steps') if type(ocr) is dict else None
+    if type(steps) is not list:
+        return [], ['$.ocr.steps: expected a list']
+    ids, errors = [], []
+    for index, step in enumerate(steps):
+        if type(step) is not dict or not _is_text(step.get('id')):
+            errors.append(f'$.ocr.steps[{index}].id: expected a non-empty string')
+        else:
+            ids.append(step['id'])
+    return ids, errors
+
+
 def _figure_errors(figure, path):
     if type(figure) is not dict:
         return [f'{path}: expected an object or null']
@@ -74,8 +94,8 @@ def _figure_errors(figure, path):
     kind = figure.get('kind')
     if kind not in ('number_line', 'unit_circle'):
         return [f'{path}.kind: expected "number_line" or "unit_circle"']
-    allowed = {'kind', 'points', 'arcs'} | ({'variable', 'note'} if kind == 'number_line' else set())
-    errors += [f'{path}.{key}: unexpected field' for key in figure if key not in allowed]
+    required = ('kind', 'points', 'arcs') + (('variable', 'note') if kind == 'number_line' else ())
+    errors += _fields(figure, required, path)
     if kind == 'number_line':
         if not _is_text(figure.get('variable')):
             errors.append(f'{path}.variable: expected a non-empty string')
@@ -91,8 +111,7 @@ def _figure_errors(figure, path):
         if type(point) is not dict:
             errors.append(f'{where}: expected an object')
             continue
-        errors += [f'{where}.{key}: unexpected field' for key in point
-                   if key not in ('id', 'value', 'included', 'sign', 'bound')]
+        errors += _fields(point, ('id', 'value', 'included', 'sign'), where, ('bound',))
         if not _is_text(point.get('id')) or point.get('id') in ENDS:
             errors.append(f'{where}.id: expected a non-empty string other than -inf/+inf')
         elif point['id'] in ids:
@@ -118,9 +137,9 @@ def _figure_errors(figure, path):
         if type(arc) is not dict:
             errors.append(f'{where}: expected an object')
             continue
-        errors += [f'{where}.{key}: unexpected field' for key in arc if key not in ('from', 'to', 'sign', 'selected')]
+        errors += _fields(arc, ('from', 'to', 'sign', 'selected'), where)
         for end in ('from', 'to'):
-            if arc.get(end) not in ends:
+            if type(arc.get(end)) is not str or arc[end] not in ends:
                 errors.append(f'{where}.{end}: expected a point id' + (' or -inf/+inf' if kind == 'number_line' else ''))
         if arc.get('sign') is not None and arc.get('sign') not in SIGNS:
             errors.append(f'{where}.sign: expected "+", "-", "0" or null')
@@ -131,10 +150,12 @@ def _figure_errors(figure, path):
 
 def ocr_errors(ocr, task_number=None) -> list[str]:
     """Problems of the reader's structured transcript; [] when it is valid. Step types are the task's own."""
-    types = TASK_STEP_TYPES.get(task_number, STEP_TYPES)
     if type(ocr) is not dict:
         return ['$.ocr: expected an object']
-    errors = [f'$.ocr.{key}: unexpected field' for key in ocr if key not in ('steps', 'answer')]
+    errors = _fields(ocr, ('steps', 'answer'), '$.ocr')
+    types = TASK_STEP_TYPES.get(task_number, STEP_TYPES) if type(task_number) is int else STEP_TYPES
+    if task_number is not None and (type(task_number) is not int or task_number not in TASK_STEP_TYPES):
+        errors.append('$.task.task_number: expected a supported task number')
     if ocr.get('answer') is not None and not _is_text(ocr.get('answer')):
         errors.append('$.ocr.answer: expected a string or null')
     steps = ocr.get('steps')
@@ -146,8 +167,7 @@ def ocr_errors(ocr, task_number=None) -> list[str]:
         if type(step) is not dict:
             errors.append(f'{where}: expected an object')
             continue
-        errors += [f'{where}.{key}: unexpected field' for key in step
-                   if key not in ('id', 'type', 'title', 'lines', 'figure')]
+        errors += _fields(step, ('id', 'type', 'title', 'lines', 'figure'), where)
         if not _is_text(step.get('id')):
             errors.append(f'{where}.id: expected a non-empty string')
         elif step['id'] in ids:
@@ -163,26 +183,28 @@ def ocr_errors(ocr, task_number=None) -> list[str]:
             errors.append(f'{where}.lines: expected a list of strings')
         if step.get('figure') is not None:
             errors += _figure_errors(step['figure'], f'{where}.figure')
-        if not lines and step.get('figure') is None:
+        if (type(lines) is not list or not any(_is_text(line) for line in lines)) and step.get('figure') is None:
             errors.append(f'{where}: expected lines or a figure')
     return errors
 
 
-def status_errors(ocr, statuses) -> list[str]:
+def status_errors(ocr, statuses, *, require_corrections=False) -> list[str]:
     """Problems of the analysis statuses against the reader's steps: one status per step, nothing else."""
     if type(statuses) is not list:
         return ['$.statuses: expected a list']
-    step_ids = [step.get('id') for step in ocr.get('steps', []) if type(step) is dict]
-    errors, seen = [], set()
+    step_ids, errors = _step_ids(ocr)
+    seen = set()
     for i, item in enumerate(statuses):
         where = f'$.statuses[{i}]'
         if type(item) is not dict:
             errors.append(f'{where}: expected an object')
             continue
-        errors += [f'{where}.{key}: unexpected field' for key in item if key not in ('id', 'status', 'note', 'correct')]
+        errors += _fields(item, ('id', 'status', 'note'), where, ('correct',))
+        if require_corrections and item.get('status') in ('error', 'consequence') and 'correct' not in item:
+            errors.append(f'{where}.correct: missing corrected record for error or consequence step')
         if 'correct' in item and (item.get('status') not in ('error', 'consequence') or not _is_text(item['correct'])):
             errors.append(f'{where}.correct: a non-empty record, only for error and consequence steps')
-        if item.get('id') not in step_ids:
+        if type(item.get('id')) is not str or item['id'] not in step_ids:
             errors.append(f'{where}.id: no such step "{item.get("id")}"')
         elif item['id'] in seen:
             errors.append(f'{where}.id: second status for step "{item["id"]}" — one remark per step')
@@ -199,33 +221,49 @@ def status_errors(ocr, statuses) -> list[str]:
     return errors
 
 
-def issue_errors(ocr, items, score=None, max_score=None) -> list[str]:
+def issue_errors(ocr, items, score=None, max_score=None, *, statuses=None) -> list[str]:
     """Each analysis error points to a step (or null) and says how many points it took off."""
-    step_ids = {step.get('id') for step in ocr.get('steps', []) if type(step) is dict}
-    errors, total = [], 0
-    for i, item in enumerate(items if type(items) is list else []):
+    ids, errors = _step_ids(ocr)
+    step_ids, total = set(ids), 0
+    by_id = {item['id']: item.get('status') for item in statuses
+             if type(item) is dict and _is_text(item.get('id'))} if type(statuses) is list else {}
+    if type(items) is not list:
+        return errors + ['$.analysis.errors: expected a list']
+    for i, item in enumerate(items):
         where = f'$.analysis.errors[{i}]'
         if type(item) is not dict:
+            errors.append(f'{where}: expected an object')
             continue
-        if item.get('step_id') is not None and item.get('step_id') not in step_ids:
-            errors.append(f'{where}.step_id: no such step "{item.get("step_id")}"')
+        if 'step_id' not in item:
+            errors.append(f'{where}.step_id: missing required field')
+        link = item.get('step_id')
+        if link is not None and (type(link) is not str or link not in step_ids):
+            errors.append(f'{where}.step_id: no such step "{link}"')
+        linked_status = by_id.get(link) if type(link) is str else None
+        if linked_status == 'ok':
+            errors.append(f'{where}.step_id: an error cannot point to an ok step')
         penalty = item.get('penalty')
-        if type(penalty) is not int or penalty < 0 or (max_score is not None and penalty > max_score):
+        if type(penalty) is not int or penalty < 0 or (type(max_score) is int and penalty > max_score):
             errors.append(f'{where}.penalty: expected an integer from 0 to the maximum score')
         else:
             total += penalty
+            if linked_status in ('consequence', 'minor') and penalty != 0:
+                errors.append(f'{where}.penalty: expected zero for a {linked_status} step')
     if type(score) is int and type(max_score) is int and 0 <= score <= max_score and total > max_score - score:
         errors.append(f'$.analysis.errors: penalties sum to {total}, more than {max_score} - {score}')
     return errors
 
 
-def corrected(statuses, corrections) -> list:
+def corrected(statuses, corrections):
     """Statuses with the grader's corrected records added to error and consequence steps; anything else is dropped."""
     fixes = {}
     for item in corrections if type(corrections) is list else []:
         if type(item) is dict and _is_text(item.get('id')) and _is_text(item.get('correct')):
             fixes.setdefault(item['id'], item['correct'].strip())
-    return [{**s, 'correct': fixes[s['id']]} if s.get('status') in ('error', 'consequence') and s.get('id') in fixes
+    if type(statuses) is not list:
+        return statuses
+    return [{**s, 'correct': fixes[s['id']]} if type(s) is dict and _is_text(s.get('id'))
+            and s.get('status') in ('error', 'consequence') and s['id'] in fixes
             else s for s in statuses]
 
 
@@ -237,10 +275,20 @@ def _plain(text: str) -> str:
 
 def drift_errors(ocr, reading: str) -> list[str]:
     """Step lines the reader never wrote: each line must appear in the transcript as it is."""
+    if type(reading) is not str:
+        return ['$.ocr: expected a text transcript']
+    if type(ocr) is not dict or type(ocr.get('steps')) is not list:
+        return ['$.ocr.steps: expected a list']
     source = _plain(reading)
     errors = []
     for i, step in enumerate(ocr.get('steps', [])):
-        for j, line in enumerate(step.get('lines') or []):
+        if type(step) is not dict or type(step.get('lines')) is not list:
+            errors.append(f'$.steps[{i}].lines: expected a list of strings')
+            continue
+        for j, line in enumerate(step['lines']):
+            if type(line) is not str:
+                errors.append(f'$.steps[{i}].lines[{j}]: expected a string')
+                continue
             if _plain(line) and _plain(line) not in source:
                 errors.append(f'$.steps[{i}].lines[{j}]: not in the transcript as written: {line[:120]}')
     return errors
@@ -253,24 +301,36 @@ def final_errors(response, reader_ocr, task_number=None) -> list[str]:
     if response.get('ocr') != reader_ocr:
         return ['$.ocr: differs from the reader output — the transcript must not change after reading']
     analysis = response.get('analysis') if type(response.get('analysis')) is dict else {}
-    return ocr_errors(reader_ocr, task_number) + status_errors(reader_ocr, analysis.get('statuses'))
+    return ocr_errors(reader_ocr, task_number) + status_errors(
+        reader_ocr, analysis.get('statuses'), require_corrections=True)
 
 
 def main(argv=None):
+    from app.grading.validator import parse_json, parse_response, validate_response
+
     parser = argparse.ArgumentParser(description='Check the expert-screen JSON of one stage.')
     parser.add_argument('stage', choices=('ocr', 'statuses', 'final'))
     parser.add_argument('file', type=Path)
     parser.add_argument('--ocr', type=Path, help='reader output (for statuses and final)')
     parser.add_argument('--task', type=int, help='task number: its own step types')
     args = parser.parse_args(argv)
-    data = json.loads(args.file.read_text(encoding='utf-8'))
-    reader = json.loads(args.ocr.read_text(encoding='utf-8')) if args.ocr else None
-    if args.stage == 'ocr':
-        errors = ocr_errors(data, args.task)
-    elif args.stage == 'statuses':
-        errors = status_errors(reader or {}, data)
-    else:
-        errors = final_errors(data, reader, args.task)
+    try:
+        raw = args.file.read_text(encoding='utf-8')
+        data = parse_response(raw) if args.stage == 'final' else parse_json(raw)
+        reader = parse_json(args.ocr.read_text(encoding='utf-8')) if args.ocr else None
+        if args.stage == 'ocr':
+            errors = ocr_errors(data, args.task)
+        elif args.ocr is None:
+            errors = ['--ocr is required for statuses and final checks']
+        elif args.stage == 'statuses':
+            errors = ocr_errors(reader, args.task) + status_errors(reader, data)
+        else:
+            errors = validate_response(data) + final_errors(data, reader, args.task)
+            task = data.get('task') if type(data) is dict else None
+            if args.task is not None and (type(task) is not dict or task.get('task_number') != args.task):
+                errors.append(f'$.task.task_number: expected {args.task} for this check')
+    except (OSError, ValueError, RecursionError) as exc:
+        errors = [str(exc)]
     print('\n'.join(errors) if errors else 'OK')
     return 1 if errors else 0
 

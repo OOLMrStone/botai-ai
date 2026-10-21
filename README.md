@@ -66,6 +66,7 @@ Install development dependencies from `requirements-dev.txt` in a Python 3.14 vi
 
 - [Working instructions](AGENTS.md)
 - [Current written contract](docs/grading/service.md)
+- [Local B2B v2 boundary and offline evidence](docs/grading/internal-v2-proposal.md)
 - [Prompt package and validator](tasks/16/README.md)
 - [Deployment and access](docs/DEPLOYMENT.md)
 - [Isolated server DEVELOP, model gateway and security snapshots](docs/DEVELOPMENT_SERVER.md)

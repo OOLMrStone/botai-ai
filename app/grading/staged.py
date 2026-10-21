@@ -225,18 +225,34 @@ def solution_text(task: dict) -> str:
             + '\n\nПравильный ответ:\n' + task['reference_answer'])
 
 
+def grading_candidate(message) -> tuple[dict, str]:
+    """Keep invalid output inside the same bounded validation/repair loop."""
+    raw = message.get('content') if type(message) is dict else None
+    if type(raw) is not str or len(raw) > 128_000:
+        return {}, ''
+    try:
+        if len(raw.encode('utf-8')) > 128_000:
+            return {}, ''
+        data = parse_response(raw)
+    except (ValueError, RecursionError):
+        return {}, raw
+    if message.get('tool_calls'):
+        return {}, raw
+    return (data if type(data) is dict else {}), raw
+
+
+async def grading_call(provider, messages) -> tuple[dict, str]:
+    try:
+        message = await provider.chat(messages)
+    except LLMResponseFormatError:
+        # A truncated/empty provider answer uses the same repair budget as bad JSON.
+        return {}, ''
+    return grading_candidate(message)
+
+
 async def json_call(provider, system: str, content: str) -> tuple[list[dict], dict, str]:
     messages = [{'role': 'system', 'content': system}, {'role': 'user', 'content': content}]
-    message = await provider.chat(messages)
-    raw = message.get('content') if type(message) is dict else None
-    if type(raw) is not str:
-        raise LLMResponseFormatError('Модель вернула неверный формат. Повтори проверку')
-    try:
-        data = parse_response(raw)
-    except (ValueError, RecursionError) as exc:
-        raise LLMResponseFormatError('Модель вернула неверный формат. Повтори проверку') from exc
-    if type(data) is not dict:
-        raise LLMResponseFormatError('Модель вернула неверный формат. Повтори проверку')
+    data, raw = await grading_call(provider, messages)
     return messages, data, raw
 
 
@@ -368,19 +384,16 @@ async def run_staged(provider, task: dict, image_ids: list[str], package: dict[s
             f"{s['id']}: {s['status']}" + (f" — {s['note']}" if s.get('note') else '') for s in statuses))]
           if structured else []),
     ]))
-    # One recheck when a full score meets an answer whose intervals or points differ from the reference.
-    recheck = answer_recheck(task, reading, graded)
-    if recheck:
-        messages = messages + [{'role': 'assistant', 'content': raw}, {'role': 'user', 'content': recheck}]
-        message = await provider.chat(messages)
-        answer = message.get('content') if type(message) is dict else None
-        try:
-            again = parse_response(answer) if type(answer) is str else None
-        except (ValueError, RecursionError):
-            again = None
-        if type(again) is dict:
-            graded, raw = again, answer
+    rechecked = False
     for attempt in range(MAX_REPAIRS + 1):
+        # The first eligible candidate may arrive during repair, not only on the
+        # initial call. Recheck at most once without resetting the repair budget.
+        recheck = answer_recheck(task, reading, graded) if not rechecked else None
+        if recheck:
+            rechecked = True
+            messages = messages + [{'role': 'assistant', 'content': raw}, {'role': 'user', 'content': recheck}]
+            # An invalid recheck cannot revive the previous grade.
+            graded, raw = await grading_call(provider, messages)
         model_analysis = graded.get('analysis') if type(graded.get('analysis')) is dict else {}
         response = {
             'task': task, 'solution_image_ids': image_ids, 'is_graded': True, 'rejection_reason': '',
@@ -399,11 +412,4 @@ async def run_staged(provider, task: dict, image_ids: list[str], package: dict[s
             messages = messages + [{'role': 'assistant', 'content': raw},
                                    {'role': 'user', 'content': 'Сервер не принял ответ:\n' + str(exc)[:3000]
                                     + '\nВерни исправленный JSON целиком.'}]
-            message = await provider.chat(messages)
-            raw = message.get('content') if type(message) is dict else None
-            try:
-                graded = parse_response(raw) if type(raw) is str else {}
-            except (ValueError, RecursionError):
-                graded = {}
-            if type(graded) is not dict:
-                graded = {}
+            graded, raw = await grading_call(provider, messages)

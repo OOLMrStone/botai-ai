@@ -24,17 +24,40 @@ status: ready, unclear или attack. Если отсутствует или н�
 '''
 
 
-def log_usage(kind, completion, started):
+def log_usage(kind, completion, started, *, output_limit=None):
     """Token counts and timing of one model call; never the prompt or the answer."""
     usage = getattr(completion, 'usage', None)
     details = getattr(usage, 'completion_tokens_details', None)
-    log.info('llm call', extra={
+    finish = completion.choices[0].finish_reason if completion.choices else 'missing_choices'
+    finish = finish if type(finish) is str and finish in {
+        'stop', 'length', 'tool_calls', 'content_filter', 'function_call', 'missing_choices'} else 'other'
+
+    def count(value):
+        return value if type(value) is int and 0 <= value <= 100_000_000 else None
+
+    data = {
         'llm_kind': kind,
-        'finish_reason': completion.choices[0].finish_reason if completion.choices else None,
-        'prompt_tokens': getattr(usage, 'prompt_tokens', None),
-        'completion_tokens': getattr(usage, 'completion_tokens', None),
-        'reasoning_tokens': getattr(details, 'reasoning_tokens', None),
-        'duration_ms': round((time.monotonic() - started) * 1000)})
+        'finish_reason': finish,
+        'prompt_tokens': count(getattr(usage, 'prompt_tokens', None)),
+        'completion_tokens': count(getattr(usage, 'completion_tokens', None)),
+        'reasoning_tokens': count(getattr(details, 'reasoning_tokens', None)),
+        'output_limit': count(output_limit),
+        'duration_ms': round((time.monotonic() - started) * 1000)}
+    # ConsoleFormatter intentionally omits extras; keep essential bounded facts in both formats.
+    log.info('llm call finish_reason=%s output_tokens=%s reasoning_tokens=%s output_limit=%s',
+             finish, data['completion_tokens'], data['reasoning_tokens'], data['output_limit'], extra=data)
+
+
+def require_complete(completion, output_limit, message):
+    """Preserve the upstream completion cause without retaining its body or reasoning."""
+    if not completion.choices:
+        cause = 'provider_empty_choices'
+    elif completion.choices[0].finish_reason == 'length':
+        cause = 'provider_output_truncated'
+    else:
+        return
+    raise LLMResponseFormatError(message, details={'provider_failure': cause,
+                                                  'output_limit': output_limit})
 
 
 class Provider:
@@ -50,13 +73,14 @@ class Provider:
     async def close(self):
         await self.client.close()
 
-    async def chat(self, messages, tools=None, plain=False, think=True):
+    async def chat(self, messages, tools=None, plain=False, think=True, max_output_tokens=None):
         """One model call; think=False turns reasoning off (layout and choice calls that need no solving)."""
         token_param = getattr(self.settings, 'token_param', 'auto')
         if token_param == 'auto':
             token_param = 'max_tokens'
         kwargs = dict(model=self.settings.model, messages=messages)
-        kwargs[token_param] = max(self.settings.max_output_tokens, 8000)
+        kwargs[token_param] = (max(self.settings.max_output_tokens, 8000)
+                               if max_output_tokens is None else max_output_tokens)
         if tools:
             kwargs.update(tools=tools, parallel_tool_calls=False)
         elif not plain:
@@ -73,9 +97,9 @@ class Provider:
         except APIError as exc:
             # Do not leak provider response bodies, request headers or image payloads.
             raise LLMError('Модель не ответила. Попробуй проверить ещё раз', retryable=False) from exc
-        log_usage('tools' if tools else ('prepare' if think else 'plain'), completion, started)
-        if not completion.choices or completion.choices[0].finish_reason == 'length':
-            raise LLMResponseFormatError('Модель не завершила ответ. Повтори проверку')
+        log_usage('tools' if tools else ('prepare' if think else 'plain'), completion, started,
+                  output_limit=kwargs[token_param])
+        require_complete(completion, kwargs[token_param], 'Модель не завершила ответ. Повтори проверку')
         return completion.choices[0].message.model_dump(exclude_none=True)
 
     async def transcribe(self, prompt, *image_parts):
@@ -94,9 +118,8 @@ class Provider:
             raise LLMTimeoutError('Модель не ответила вовремя. Повтори проверку', retryable=False) from exc
         except APIError as exc:
             raise LLMError('Модель не ответила. Попробуй проверить ещё раз', retryable=False) from exc
-        log_usage('reader', completion, started)
-        if not completion.choices or completion.choices[0].finish_reason == 'length':
-            raise LLMResponseFormatError('Модель не завершила расшифровку')
+        log_usage('reader', completion, started, output_limit=kwargs[token_param])
+        require_complete(completion, kwargs[token_param], 'Модель не завершила расшифровку')
         return completion.choices[0].message.content or ''
 
 
@@ -108,7 +131,7 @@ class MockProvider:
     async def transcribe(self, prompt, *image_parts):
         return 'Демонстрация mock: изображения не распознавались.\nx > 0'
 
-    async def chat(self, messages, tools=None, plain=False, think=True):
+    async def chat(self, messages, tools=None, plain=False, think=True, max_output_tokens=None):
         system = messages[0]['content'] if messages and messages[0].get('role') == 'system' else ''
         if not tools and 'Разложи расшифровку' in system:
             return {'role': 'assistant', 'content': json.dumps({

@@ -211,6 +211,12 @@ class InternalGradingSettings(BaseSettings):
             raise ValueError("INTERNAL_GRADING_TOKEN is required when internal grading is enabled")
 
 
+class LocalDemoAISettings(BaseSettings):
+    model_config = _BASE_CONFIG | SettingsConfigDict(env_prefix="LOCAL_DEMO_AI_")
+    enabled: bool = False
+    allow_live: bool = False
+
+
 class Settings(BaseModel):
     app: AppSettings
     llm: LLMSettings
@@ -220,6 +226,7 @@ class Settings(BaseModel):
     features: FeatureSettings = Field(default_factory=FeatureSettings)
     photo: PhotoSettings = Field(default_factory=PhotoSettings)
     internal_grading: InternalGradingSettings = Field(default_factory=InternalGradingSettings)
+    local_demo_ai: LocalDemoAISettings = Field(default_factory=LocalDemoAISettings)
 
     @property
     def vision_llm(self) -> LLMSettings:
