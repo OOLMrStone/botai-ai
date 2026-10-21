@@ -59,7 +59,7 @@ Missing/unreadable reference data is an input failure without a score.
 V2 capabilities adds
 `grade_analysis:{path:"/internal/v2/grading/grade-analysis",contract_version:"expert-grading.v1"}`.
 The local backend must explicitly discover this route from v2 capabilities for
-tasks 14/16/17/18 and retain the returned package and provider provenance. The
+tasks 14–20 and retain the returned package and provider provenance. The
 existing `/internal/v1/grading/grade-analysis` and photo-grade.v1 capabilities
 remain compatible and task16-only; v2 does not implicitly expand v1 support.
 
@@ -388,3 +388,51 @@ Verification: 95 focused notation/pipeline tests and 937 full offline tests
 passed (3 skipped, 1 live-readiness probe deselected). Both required prompt
 reviews completed; a malformed native `kind` regression was fixed and tested.
 No paid model calls or runtime changes were made for this checkpoint.
+
+
+## Deterministic formula validation and reversible figures — 21 October 2026
+
+All existing task packages 14–20 are advertised only after the normal package
+presence/digest/error-catalog checks; task maxima remain those in `MAX_SCORES`.
+Prepared, from-images and expert grade-only use the same supported set.
+
+`LOCAL_DEMO_AI_FIGURES_ENABLED=false` is the local v2 default. Layout then requests
+`figure:null`, validates that restriction, and retains source descriptions as text.
+It does not require native number lines/circles, produce crops or diagram artifacts.
+The original photographs still enter OCR, join, doubt resolution and layout. Set
+this one flat environment value to `true` to restore the existing native/crop path;
+its code and approved task prompt files are retained unchanged.
+
+`app/grading/tex_validation.py` batches produced text through the offline Node
+helper `app/grading/katex_runtime/validate.cjs`. KaTeX is pinned to **0.16.22** by
+package-lock, matching frontend. Rich-text segmentation mirrors frontend
+`grid-rich-text.ts` (dollars, escaped dollars, parenthesized/bracketed delimiters and
+bare math lines); prose is not parsed as TeX. Native diagram labels, when enabled,
+are direct math fields. Render options match frontend: `htmlAndMathml`, `trust:false`,
+`maxExpand:1000`, `maxSize:10`, and each segment's display mode. Only diagnostic
+`throwOnError:true` differs from the display component's graceful fallback.
+Unclosed delimiters left as prose by the frontend are likewise not math segments.
+
+The producing stage checks TeX after its structural validator: preparation, each
+OCR strip/join, doubt-fragment consensus, layout titles/labels, analysis text/status
+notes, and grading/corrections. Invalid TeX produces `model_response`, code **609**,
+reason `invalid_tex`, and retries that stage within its existing four-attempt budget.
+Previous stages are retained. The validator never repairs strings or evaluates
+mathematical correctness. Expert grade-only validates its produced grading text
+and retries only `grading.expert`. No new model-dependent validation stage exists.
+
+Missing Node/dependency, process failure or validator timeout produces configuration
+code **704**, `tex_validator_unavailable`; it does not spend four model attempts.
+The child receives no provider credentials, no network service is used, and JSON is
+passed on stdin without shell interpretation. Limits: one child at a time per
+application event loop, 64 MiB Node old-space heap, 512 KiB JS stack, five-second
+execution timeout, 1 MiB input, 4096 text/formula entries, and at most 30 safe issue
+paths in a bounded response. Timeout/cancellation kills and reaps the child. The
+heap cap is not a total RSS cap; the existing container memory limit remains the
+outer resource bound. A synthetic single-formula macOS run measured about 45 MiB
+peak RSS and 0.05 s; this is not a production/container capacity certification.
+
+Local source tests require Node and `npm ci --ignore-scripts --prefix
+app/grading/katex_runtime`. Runtime export includes helper, lock and KaTeX license,
+excludes local `node_modules`, and its Docker multi-stage build uses `npm ci` to
+install the pinned dependency and Node 22. No frontend dependency was added.

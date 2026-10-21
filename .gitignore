@@ -40,3 +40,6 @@ output/json-examples/
 # Private tutor photos stay local; manifests and evaluation findings are versioned.
 tasks/16/evals/kostyan/raw/
 tasks/16/evals/kostyan/assets/
+
+# Local deterministic TeX validator dependencies; npm ci recreates these.
+node_modules/

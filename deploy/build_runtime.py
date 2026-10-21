@@ -9,7 +9,7 @@ from pathlib import Path
 import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
-EXCLUDED = {'__pycache__', '.pytest_cache', '.ruff_cache', '.DS_Store'}
+EXCLUDED = {'__pycache__', '.pytest_cache', '.ruff_cache', '.DS_Store', 'node_modules'}
 
 
 def export_runtime(destination: Path, source: Path = ROOT) -> dict[str, str]:

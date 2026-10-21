@@ -27,7 +27,7 @@ CONTRACT_VERSION = 'photo-grade.v2'
 INTERNAL_PATH = '/internal/v2/grading'
 PREPARED_BODY_BYTES = 33 * 1024 * 1024
 MANUAL_BODY_BYTES = 41 * 1024 * 1024
-SUPPORTED_TASKS = frozenset({14, 16, 17, 18})
+SUPPORTED_TASKS = frozenset(MAX_SCORES)
 RUN_PATH = re.compile(re.escape(INTERNAL_PATH) + r'/runs/([^/]+)/(events|artifacts/([^/]+))$')
 ACK_PATH = re.compile(re.escape(INTERNAL_PATH) + r'/runs/([^/]+)$')
 router = APIRouter(prefix=INTERNAL_PATH, tags=['local internal grading v2'])

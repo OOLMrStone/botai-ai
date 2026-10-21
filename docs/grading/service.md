@@ -158,3 +158,15 @@ Backend передаёт готовые условие/ответ/решение
 Standalone cookie, подготовительный OCR и private ReportStore не изменены.
 
 [Историческая подробная спецификация](archive/server-file-reading-spec.md) содержит прежние предложения, включая не реализованные требования; её нельзя использовать как перечень готовых возможностей. [Пользовательские решения о сервисе](archive/service-idea.md) сохранены для истории.
+
+
+### Local v2 formula and figure controls (21 October 2026)
+
+Local v2 supports all task packages 14–20. Output figures default off through
+`LOCAL_DEMO_AI_FIGURES_ENABLED=false`; source photos and literal diagram descriptions
+remain model inputs. The existing figure/crop implementation is reversible with
+that setting. Real pinned KaTeX checks model-produced displayed formulas at each
+producing step; invalid TeX retries only that step (up to four total attempts),
+while validator infrastructure failure stops without another model call.
+Runtime dependencies, limits, segmentation parity and codes 609/704 are documented
+in [the v2 contract](internal-v2-proposal.md#deterministic-formula-validation-and-reversible-figures--21-october-2026).

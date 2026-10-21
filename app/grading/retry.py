@@ -15,7 +15,7 @@ STEP = re.compile(r'^[a-z][a-z0-9_.-]{0,95}$')
 PATH = re.compile(r'^\$(?:\.[a-z_][a-z0-9_]*|\[\d{1,5}\]){0,20}$')
 ISSUES = {'missing_source_lines', 'duplicate_source_lines', 'unknown_source_lines', 'source_line_order',
           'unicode_math_script', 'composite_slash_fraction', 'ocr_doubt_invalid_marker', 'ocr_doubt_limit',
-          'ocr_doubt_no_consensus', 'invalid_stage_response', 'empty_response', 'answer_recheck', 'transcript_bounds'}
+          'ocr_doubt_no_consensus', 'invalid_stage_response', 'empty_response', 'answer_recheck', 'transcript_bounds', 'invalid_tex', 'figures_disabled'}
 
 
 def safe_diagnostics(data):
@@ -62,6 +62,7 @@ def classify(exc, phase='input'):
     if isinstance(exc, LLMResponseFormatError):
         category, number = 'model_response', 601
         if reason == 'provider_output_truncated': number = 602
+        elif reason == 'invalid_tex': number = 609
         elif reason in ('provider_empty_choices', 'empty_response'): number = 603
         elif reason in ('ocr_doubt_no_consensus', 'ocr_doubt_invalid_marker', 'ocr_doubt_limit'): number = 604
         elif reason in ('unicode_math_script', 'composite_slash_fraction'): number = 605
@@ -80,6 +81,8 @@ def classify(exc, phase='input'):
         category, number, reason = 'configuration', 702, reason or 'provider_bad_request'
     elif isinstance(exc, LLMError):
         category, number, reason = 'provider', 502, reason or 'provider_error'
+    elif getattr(exc, 'code', '') == 'tex_validator_unavailable':
+        category, number, reason = 'configuration', 704, 'tex_validator_unavailable'
     elif getattr(exc, 'code', '') in {'live_provider_disabled', 'grading_package_changed', 'service_unauthorized', 'unsupported_contract'}:
         category, number, reason = 'configuration', 703, exc.code
     elif getattr(exc, 'code', '') == 'grading_busy':

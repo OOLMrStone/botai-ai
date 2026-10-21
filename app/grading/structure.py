@@ -157,6 +157,9 @@ async def resolve_doubts(provider, reading: str, images, *, fail_on_transport=Fa
             if retry_steps:
                 candidate = ''.join(fragments) + reading[previous:match.start()] + best + reading[match.end():]
                 errors = transcript_errors(candidate)
+                if not errors:
+                    from app.grading.tex_validation import tex_errors
+                    errors = await tex_errors(candidate, '$.ocr')
                 if errors:
                     raise invalid_response('Расшифровка содержит неподдерживаемую запись формул', errors=errors)
             return best

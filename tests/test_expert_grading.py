@@ -186,7 +186,7 @@ def test_v2_discovery_does_not_expand_v1(local_client):
     assert {task['task_number'] for task in v1['tasks'] if task['supported']} == {16}
     assert 'grade_analysis' not in v1
     assert v2['grade_analysis'] == {'path': V2_PATH, 'contract_version': 'expert-grading.v1'}
-    assert {task['task_number'] for task in v2['tasks'] if task['supported']} == {14, 16, 17, 18}
+    assert {task['task_number'] for task in v2['tasks'] if task['supported']} == set(range(14, 21))
 
 
 @pytest.mark.parametrize('number,maximum', [(14, 2), (16, 2), (17, 2), (18, 3)])
@@ -307,7 +307,7 @@ def test_v2_invalid_input_never_dispatches(local_client, monkeypatch, change):
     stage = AsyncMock(side_effect=AssertionError('Invalid input reached provider'))
     monkeypatch.setattr('app.grading.expert_grading.grade_analysis', stage)
     value = payload()
-    if change == 'unsupported': value['task']['task_number'] = 15
+    if change == 'unsupported': value['task']['task_number'] = 21
     elif change == 'wrong_max': value['task']['max_score'] = 3
     elif change == 'missing_nullable': del value['analysis']['summary']
     elif change == 'nested_type': value['analysis']['block_reviews'][0]['follows_from_block_ids'] = {}
@@ -506,4 +506,21 @@ async def test_v2_grade_only_exhausts_four_invalid_scores_without_clamping():
     assert caught.value.details['exhausted'] is True
     assert caught.value.details['step'] == 'grading.expert'
     assert caught.value.details['failure_counts'] == {'model_response': 4}
+    provider.close.assert_awaited_once()
+
+
+async def test_v2_grade_only_real_tex_validation_retries_only_grading():
+    from app.grading.observability import RunStore
+    bad = json.dumps({'grading': {'score': 1, 'criterion': r'$\frac{1}{$', 'explanation': 'По анализу'}})
+    good = json.dumps({'grading': {'score': 1, 'criterion': r'$\frac{1}{2}$', 'explanation': 'По анализу'}})
+    provider = SimpleNamespace(chat=AsyncMock(side_effect=[{'content': bad}] * 3 + [{'content': good}]), close=AsyncMock())
+    trace = RunStore().start(str(uuid4()), provider_mode='mock')
+    result = await grade_analysis(parse_request(json.dumps(payload()).encode(), local_v2=True),
+                                 SimpleNamespace(llm=SimpleNamespace(provider='mock')),
+                                 {'criteria.md': '', 'popular_mistakes.md': ''}, provider=provider, trace=trace)
+    assert result == good and provider.chat.await_count == 4
+    events = trace.store.events(trace.run_id)['items']
+    retries = [event for event in events if event['type'] == 'retry']
+    assert len(retries) == 3 and all(event['data']['diagnostic_code'] == 609 for event in retries)
+    assert all(event['phase'] == 'grading' for event in events if event['type'] == 'model_started')
     provider.close.assert_awaited_once()

@@ -76,7 +76,7 @@ def events(trace, kind=None, phase=None):
             if (kind is None or e['type'] == kind) and (phase is None or e['phase'] == phase)]
 
 
-@pytest.mark.parametrize('number', [14, 16, 17, 18])
+@pytest.mark.parametrize('number', range(14, 21))
 async def test_mock_pipeline_all_approved_tasks_preserves_trusted_input(settings, monkeypatch, number):
     provider = ScriptedProvider()
     inputs = setup_run(number)
@@ -305,6 +305,7 @@ async def test_stage_exhaustion_emits_failed_never_completed(settings, monkeypat
 
 
 async def test_mixed_formula_and_diagram_is_one_step_with_original_crop(settings, monkeypatch):
+    settings.local_demo_ai.figures_enabled = True
     values = setup_run(18)
     box = {'x': 0.25, 'y': 0.2, 'width': 0.5, 'height': 0.6}
     figure = {'source_image_id': values[1][0], 'bbox': box, 'alt': 'Чертёж ученика'}
@@ -333,6 +334,7 @@ async def test_mixed_formula_and_diagram_is_one_step_with_original_crop(settings
                     'direction': 'ccw', 'full_circle': False}]}),
 ])
 async def test_structured_number_line_and_circle_remain_editable_with_same_step(settings, monkeypatch, number, figure):
+    settings.local_demo_ai.figures_enabled = True
     provider = ScriptedProvider({'layout': [layout(['l1', 'l2'], figure=figure)]})
     result, trace = await run(settings, monkeypatch, provider, number)
     assert result['ocr']['steps'][0]['figure'] == figure
@@ -341,6 +343,7 @@ async def test_structured_number_line_and_circle_remain_editable_with_same_step(
 
 
 async def test_structured_figure_invalid_reference_is_repaired_before_analysis(settings, monkeypatch):
+    settings.local_demo_ai.figures_enabled = True
     figure = {'kind': 'unit_circle', 'points': [],
               'arcs': [{'from': 'missing', 'to': '+inf', 'sign': None, 'selected': True,
                         'direction': 'cw', 'full_circle': False}]}
@@ -358,6 +361,7 @@ def circle_figure():
 
 
 async def test_circle_missing_direction_is_repaired_without_default_or_field_loss(settings, monkeypatch):
+    settings.local_demo_ai.figures_enabled = True
     good = circle_figure()
     missing = deepcopy(good)
     del missing['arcs'][0]['direction']
@@ -372,6 +376,7 @@ async def test_circle_missing_direction_is_repaired_without_default_or_field_los
 
 @pytest.mark.parametrize('missing', [True, False])
 async def test_ambiguous_circle_exhaustion_never_publishes_a_grade(settings, monkeypatch, missing):
+    settings.local_demo_ai.figures_enabled = True
     figure = circle_figure()
     if missing:
         del figure['arcs'][0]['direction']
@@ -391,6 +396,7 @@ async def test_ambiguous_circle_exhaustion_never_publishes_a_grade(settings, mon
 
 @pytest.mark.parametrize('field', ['points', 'arcs', 'id', 'value', 'variable', 'note'])
 async def test_native_limits_enter_layout_repair_before_analysis(settings, monkeypatch, field):
+    settings.local_demo_ai.figures_enabled = True
     good = circle_figure()
     if field in ('variable', 'note'):
         good.update(kind='number_line', variable='x', note=None)
@@ -466,6 +472,7 @@ async def test_persistent_unicode_ocr_stops_before_layout(settings, monkeypatch)
 @pytest.mark.parametrize('kind,marker', [('number_line', 'интервальная прямая'),
     ('unit_circle', 'тригонометрическая окружность')])
 async def test_explicit_diagram_requires_native_figure_without_losing_source(settings, monkeypatch, kind, marker):
+    settings.local_demo_ai.figures_enabled = True
     text = f'x>0\n[{marker}: отмечена точка 0]'
     figure = {'kind': kind, 'points': [{'id': 'p1', 'value': '0', 'included': False, 'sign': None}], 'arcs': []}
     if kind == 'number_line':
@@ -479,6 +486,7 @@ async def test_explicit_diagram_requires_native_figure_without_losing_source(set
 
 
 async def test_missing_native_figure_exhaustion_stops_before_analysis(settings, monkeypatch):
+    settings.local_demo_ai.figures_enabled = True
     provider = ScriptedProvider(transcript='[числовая прямая: отмечена точка 0]')
     with pytest.raises(LLMResponseFormatError):
         await run(settings, monkeypatch, provider)
@@ -497,6 +505,7 @@ def test_diagram_marker_on_another_step_does_not_cover_missing_figure():
 
 @pytest.mark.parametrize('kind', [[], {}, None, 'unit_circle'])
 async def test_wrong_or_malformed_native_kind_is_repaired(settings, monkeypatch, kind):
+    settings.local_demo_ai.figures_enabled = True
     good = {'kind': 'number_line', 'variable': 'x', 'note': None, 'points': [], 'arcs': []}
     bad = {**good, 'kind': kind}
     provider = ScriptedProvider({'layout': [layout(['l1'], figure=bad), layout(['l1'], figure=good)]},
@@ -610,3 +619,73 @@ async def test_preparation_cancellation_or_nonretryable_failure_never_starts_ocr
         await service.run_from_images(settings, metadata, images[0], images, trace)
     assert provider.calls['preparation'] == 1 and provider.calls['ocr'] == 0 and provider.closed
     assert not events(trace, 'retry', 'preparation')
+
+
+@pytest.mark.parametrize('stage', ['preparation', 'ocr', 'layout', 'analysis', 'grading'])
+@pytest.mark.parametrize('succeeds', [True, False])
+async def test_real_katex_retries_only_producing_stage_up_to_four(settings, monkeypatch, stage, succeeds):
+    bad = r'$\frac{1}{$'
+    class TexFaultProvider(ScriptedProvider):
+        async def transcribe(self, prompt, *images):
+            result = await super().transcribe(prompt, *images)
+            return bad if stage == 'ocr' and self.calls['ocr'] <= (3 if succeeds else 4) else result
+        async def chat(self, messages, tools=None, **kwargs):
+            result = await super().chat(messages, tools, **kwargs)
+            system = messages[0]['content']
+            current = ('layout' if 'STAGE: v2_layout' in system else 'grading' if 'Анализ завершён: notes.md' in system
+                       else 'preparation' if system == service.PREP_PROMPT else 'analysis')
+            if current != stage or self.calls[current] > (3 if succeeds else 4):
+                if current == 'analysis':
+                    return {'content': 'СТАТУС: подходит\nШАГИ:\ns1: ok\n\nРешение проверено'}
+                return result
+            if current == 'analysis':
+                return {'content': 'СТАТУС: подходит\nШАГИ:\ns1: ok\n\nРешение: ' + bad}
+            data = json.loads(result['content'])
+            if current == 'layout': data['steps'][0]['title'] = bad
+            elif current == 'preparation': data['statement'] = bad
+            else: data['grading']['explanation'] = bad
+            return {'content': json.dumps(data)}
+    provider = TexFaultProvider()
+    inputs = setup_run()
+    task, image_ids, images, trace = inputs
+    monkeypatch.setattr(service, 'V2MockProvider', lambda: provider)
+    async def execute():
+        if stage == 'preparation':
+            return await service.run_from_images(settings, {'task_id': task['id'], 'task_number': 16,
+                                                           'solution_image_ids': image_ids}, images[0], images, trace)
+        return await service.run_prepared(settings, task, image_ids, images, trace)
+    if succeeds:
+        assert json.loads(await execute())['is_graded']
+    else:
+        with pytest.raises(LLMResponseFormatError) as caught:
+            await execute()
+        assert caught.value.details['diagnostic_code'] == 609
+        assert caught.value.details['attempt'] == 4
+        assert caught.value.details['failure_counts'] == {'model_response': 4}
+    assert len(events(trace, 'retry', stage)) == 3
+    if stage not in ('preparation', 'ocr'): assert provider.calls['ocr'] == 4
+    if stage == 'grading': assert provider.calls['analysis'] == 1 and provider.calls['layout'] == 1
+    if stage == 'analysis': assert provider.calls['layout'] == 1
+
+
+async def test_katex_infrastructure_failure_never_retries_model(settings, monkeypatch):
+    from app.grading.tex_validation import TexValidatorUnavailable
+    provider = ScriptedProvider()
+    monkeypatch.setattr('app.grading.tex_validation.shutil.which', lambda _: None)
+    with pytest.raises(TexValidatorUnavailable):
+        await run(settings, monkeypatch, provider)
+    assert provider.calls == {'ocr': 1}
+
+
+async def test_figures_default_off_retains_source_description_and_rejects_generated_crop(settings, monkeypatch):
+    from app.config import LocalDemoAISettings
+    assert LocalDemoAISettings().figures_enabled is False
+    text = '[числовая прямая: точка 0 пустая, выделено справа]\n$x>0$'
+    inputs = setup_run()
+    crop = {'source_image_id': inputs[1][0], 'bbox': {'x': 0, 'y': 0, 'width': 1, 'height': 1}, 'alt': 'Рисунок'}
+    provider = ScriptedProvider({'layout': [layout(['l1', 'l2'], figure=crop), GOOD]}, transcript=text)
+    result, trace = await run(settings, monkeypatch, provider, values=inputs)
+    assert result['ocr']['steps'][0]['lines'] == text.splitlines()
+    assert result['ocr']['steps'][0]['figure'] is None and result['artifacts'] == []
+    assert trace.diagram_metadata == [] and provider.calls['layout'] == 2
+    assert provider.calls['ocr'] == 4 and provider.calls['analysis'] == 1

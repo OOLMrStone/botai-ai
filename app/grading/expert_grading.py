@@ -224,6 +224,7 @@ async def grade_analysis(request: GradingRequest, settings, package, *, provider
             # Import lazily: v2 owns model-call diagnostics, while v1 keeps its contract.
             from app.grading.retry import invalid_response, run_step
             from app.grading.v2_service import ObservedProvider
+            from app.grading.tex_validation import tex_errors
 
             observed = ObservedProvider(provider, trace, 'grading')
 
@@ -238,6 +239,11 @@ async def grade_analysis(request: GradingRequest, settings, package, *, provider
                 except LLMResponseFormatError:
                     raise invalid_response('Стадия оценки вернула недопустимый ответ',
                                            ['$.grading: invalid_stage_response']) from None
+                errors = await tex_errors(parse_response(raw))
+                if errors:
+                    messages.extend([{'role': 'assistant', 'content': raw}, {'role': 'user', 'content':
+                        'Исправь только синтаксис TeX, сохранив оценку и смысл:\n' + '\n'.join(errors)}])
+                    raise invalid_response('Некорректная формула в оценке', errors)
                 return raw
 
             return await run_step(trace, 'grading', 'grading.expert', operation)

@@ -215,6 +215,7 @@ class LocalDemoAISettings(BaseSettings):
     model_config = _BASE_CONFIG | SettingsConfigDict(env_prefix="LOCAL_DEMO_AI_")
     enabled: bool = False
     allow_live: bool = False
+    figures_enabled: bool = False
 
 
 class Settings(BaseModel):

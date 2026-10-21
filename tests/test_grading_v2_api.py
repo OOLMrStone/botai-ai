@@ -156,7 +156,7 @@ def test_capabilities_have_only_approved_tasks_without_dispatch(boundary):
     client, _, calls = boundary
     response = client.get(INTERNAL_PATH + '/capabilities', headers=headers())
     assert response.status_code == 200
-    assert {item['task_number'] for item in response.json()['tasks'] if item['supported']} == {14, 16, 17, 18}
+    assert {item['task_number'] for item in response.json()['tasks'] if item['supported']} == set(range(14, 21))
     assert response.json()['contract_version'] == CONTRACT_VERSION
     assert response.json()['input_modes'] == ['prepared', 'from-images']
     assert response.headers['x-grading-provider-mode'] == 'mock'
@@ -244,7 +244,7 @@ def test_artifact_cannot_be_read_through_another_run(boundary):
     lambda value: value['task'].update(task_number=True),
     lambda value: value['task'].update(max_score=99),
     lambda value: value['task'].update(statement='\ud800'),
-    lambda value: value['task'].update(task_number=15, max_score=3),
+    lambda value: value['task'].update(task_number=21, max_score=3),
     lambda value: value['solution_image_ids'].append(value['solution_image_ids'][0]),
 ])
 def test_invalid_prepared_metadata_never_dispatches(boundary, mutate):
@@ -423,3 +423,17 @@ def test_invalid_event_cursors_are_controlled(boundary, query):
     response = client.get(INTERNAL_PATH + '/runs/' + request_headers['X-Request-ID'] + '/events?' + query,
                           headers=headers())
     assert response.status_code == 422 and response.json()['error']['code'] == 'invalid_cursor'
+
+
+@pytest.mark.parametrize('number', range(14, 21))
+@pytest.mark.parametrize('manual', [False, True])
+def test_all_task_packages_accept_real_mock_flow(boundary, monkeypatch, number, manual):
+    client, _, _ = boundary
+    monkeypatch.setattr(v2_service, 'run_prepared', REAL_PREPARED)
+    monkeypatch.setattr(v2_service, 'run_from_images', REAL_MANUAL)
+    response = post(client, payload(number, manual=manual), manual=manual)
+    assert response.status_code == 200, response.text
+    result = response.json()
+    assert result['task']['task_number'] == number and result['task']['max_score'] == MAX_SCORES[number]
+    assert result['grading']['score'] == MAX_SCORES[number]
+    assert result['artifacts'] == []

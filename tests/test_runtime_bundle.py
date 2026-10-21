@@ -15,7 +15,7 @@ spec.loader.exec_module(builder)
 def source_tree(tmp_path):
     source = tmp_path / 'source'
     files = {
-        'app/main.py': '# app', 'app/__pycache__/main.pyc': 'private',
+        'app/main.py': '# app', 'app/grading/katex_runtime/node_modules/katex/private.js': 'excluded', 'app/__pycache__/main.pyc': 'private',
         'tasks/common/prompts/main.md': 'shared', 'prompts/legacy/stage.md': 'legacy',
         'tasks/common/prompts/analysis.md': 'analysis',
         'tasks/16/prompts/README.md': 'documentation',
@@ -58,3 +58,13 @@ def test_runtime_export_rejects_symlinks_before_writing(tmp_path):
     with pytest.raises(ValueError, match='Symlinks'):
         builder.export_runtime(output, source)
     assert not output.exists()
+
+
+def test_runtime_export_preserves_tex_lock_script_and_license(tmp_path):
+    source = source_tree(tmp_path)
+    files = ('package.json', 'package-lock.json', 'validate.cjs', 'KATEX-LICENSE')
+    for name in files:
+        (source / 'app/grading/katex_runtime' / name).write_text('synthetic runtime input')
+    hashes = builder.export_runtime(tmp_path / 'tex-runtime', source)
+    assert all('app/grading/katex_runtime/' + name in hashes for name in files)
+    assert not any('node_modules' in name for name in hashes)
