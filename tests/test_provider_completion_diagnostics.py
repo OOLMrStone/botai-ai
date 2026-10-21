@@ -59,3 +59,55 @@ def test_usage_logging_does_not_accept_arbitrary_provider_strings(caplog, finish
     assert record.finish_reason == 'other'
     assert record.prompt_tokens is record.completion_tokens is record.reasoning_tokens is None
     assert 'private' not in caplog.text
+
+
+@pytest.mark.parametrize('operation', ['chat', 'transcribe'])
+@pytest.mark.parametrize('failure,expected_type,retryable,cause', [
+    ('timeout', 'LLMTimeoutError', True, 'provider_timeout'),
+    ('connection', 'LLMError', True, 'provider_connection_error'),
+    ('rate_limit', 'LLMRateLimitError', True, 'provider_rate_limit'),
+    (429, 'LLMRateLimitError', True, 'provider_rate_limit'),
+    (500, 'LLMError', True, 'provider_unavailable'),
+    (503, 'LLMError', True, 'provider_unavailable'),
+    (401, 'LLMConfigError', False, 'provider_authentication'),
+    (403, 'LLMConfigError', False, 'provider_authentication'),
+    (400, 'LLMBadRequestError', False, 'provider_bad_request'),
+    (402, 'LLMBadRequestError', False, 'provider_bad_request'),
+    (422, 'LLMBadRequestError', False, 'provider_bad_request'),
+    ('unknown', 'LLMError', False, 'provider_error'),
+])
+async def test_upstream_failures_are_classified_without_exposing_private_payload(
+        operation, failure, expected_type, retryable, cause):
+    import httpx
+    from openai import APIError, APIConnectionError, APIStatusError, APITimeoutError, RateLimitError
+    from app.core.errors import ServiceError
+
+    request = httpx.Request('POST', 'https://provider.invalid/private-key',
+                            headers={'Authorization': 'Bearer private-key'})
+    if failure == 'timeout':
+        upstream = APITimeoutError(request=request)
+    elif failure == 'connection':
+        upstream = APIConnectionError(message='private provider body', request=request)
+    elif failure == 'unknown':
+        upstream = APIError('private provider body', request=request, body={'secret': 'private-key'})
+    else:
+        status = 429 if failure == 'rate_limit' else failure
+        response = httpx.Response(status, request=request)
+        error_type = RateLimitError if failure == 'rate_limit' else APIStatusError
+        upstream = error_type('private provider body', response=response, body={'secret': 'private-key'})
+    create = AsyncMock(side_effect=upstream)
+    provider = object.__new__(Provider)
+    provider.settings = NS(model='test-model', max_output_tokens=16000, extra_body=None)
+    provider.client = NS(chat=NS(completions=NS(create=create)))
+    with pytest.raises(ServiceError) as caught:
+        if operation == 'chat':
+            await provider.chat([{'role': 'user', 'content': 'private prompt'}])
+        else:
+            await provider.transcribe('private prompt')
+    error = caught.value
+    assert type(error).__name__ == expected_type
+    assert error.retryable is retryable
+    assert error.details == {'provider_failure': cause}
+    assert create.await_count == 1  # The adapter never repeats a model dispatch itself.
+    assert 'private' not in str(error.to_payload())
+    assert error.__suppress_context__ is True

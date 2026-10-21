@@ -94,7 +94,7 @@ def _doubt_issue(trace, code):
 
 
 async def resolve_doubts(provider, reading: str, images, *, fail_on_transport=False,
-                         recover_missing_options=False, trace=None) -> str:
+                         recover_missing_options=False, trace=None, retry_steps=False) -> str:
     """The reading with every doubtful place replaced by the variant two of three independent calls see."""
     if recover_missing_options:
         starts = list(V2_DOUBT_START.finditer(reading))
@@ -113,7 +113,7 @@ async def resolve_doubts(provider, reading: str, images, *, fail_on_transport=Fa
         raise LLMResponseFormatError('Не удалось достоверно прочитать спорные места. Пришли более чёткое фото')
     whole = [reader.enlarged(image).part() for image in images]
     fragments, previous = [], 0
-    for match in matches:
+    for fragment_number, match in enumerate(matches, 1):
         options = list(dict.fromkeys(o.strip() for o in (match.group(1) or '').split('|') if o.strip()))
         reread = len(options) < 2
         if reread and not recover_missing_options:
@@ -122,8 +122,9 @@ async def resolve_doubts(provider, reading: str, images, *, fail_on_transport=Fa
         end = reading.find('\n', match.end())
         end = len(reading) if end < 0 else end
         if reread:
-            _doubt_issue(trace, 'ocr_doubt_missing_candidates')
-            if trace is not None:
+            if not retry_steps:
+                _doubt_issue(trace, 'ocr_doubt_missing_candidates')
+            if trace is not None and not retry_steps:
                 trace.emit('retry', 'ocr', {'code': 'ocr_doubt_reread'})
             # Do not show the lone guess: each reread must supply its own visual evidence.
             line = reading[start:match.start()] + '⟪ФРАГМЕНТ⟫' + reading[match.end():end]
@@ -132,21 +133,41 @@ async def resolve_doubts(provider, reading: str, images, *, fail_on_transport=Fa
             line = reading[start:match.start()] + '…' + reading[match.end():end]
             prompt = DOUBT_PROMPT.format(line=line.strip(),
                                          options='; '.join(f'«{o}»' for o in options))
-        votes = []
-        for _ in range(VOTES):
-            try:
-                raw = await provider.transcribe(prompt, *whole)
-                answer = _reread_vote(raw) if reread else (raw or '').strip().strip('«»" ')
-            except Exception as exc:  # v1 keeps a lost vote; v2 never replays an uncertain dispatch
-                if fail_on_transport and not isinstance(exc, LLMResponseFormatError):
-                    raise
-                answer = None
-            # A substring is not a vote: “не >, а ≠” contains both alternatives.
-            votes.append(answer if reread or answer in options else None)
-        best, n = Counter(v for v in votes if v).most_common(1)[0] if any(votes) else (None, 0)
-        if n < 2:
-            _doubt_issue(trace, 'ocr_doubt_no_consensus')
-            raise LLMResponseFormatError('Не удалось достоверно прочитать спорное место. Пришли более чёткое фото')
+        async def consensus(_attempt):
+            votes = []
+            for _ in range(VOTES):
+                try:
+                    raw = await provider.transcribe(prompt, *whole)
+                    answer = _reread_vote(raw) if reread else (raw or '').strip().strip('«»" ')
+                except Exception as exc:  # Preserve legacy lost votes; new steps own service failures.
+                    if retry_steps:
+                        raise
+                    if fail_on_transport and not isinstance(exc, LLMResponseFormatError):
+                        raise
+                    answer = None
+                # A substring is not a vote: “не >, а ≠” contains both alternatives.
+                votes.append(answer if reread or answer in options else None)
+            best, n = Counter(v for v in votes if v).most_common(1)[0] if any(votes) else (None, 0)
+            if n < 2:
+                message = 'Не удалось достоверно прочитать спорное место. Пришли более чёткое фото'
+                if retry_steps:
+                    raise invalid_response(message, reason='ocr_doubt_no_consensus')
+                _doubt_issue(trace, 'ocr_doubt_no_consensus')
+                raise LLMResponseFormatError(message)
+            if retry_steps:
+                candidate = ''.join(fragments) + reading[previous:match.start()] + best + reading[match.end():]
+                errors = transcript_errors(candidate)
+                if errors:
+                    raise invalid_response('Расшифровка содержит неподдерживаемую запись формул', errors=errors)
+            return best
+
+        if retry_steps:
+            from app.grading.retry import invalid_response, run_step
+            from app.grading.v2_notation import transcript_errors
+
+            best = await run_step(trace, 'ocr', f'ocr.doubt.{fragment_number}', consensus)
+        else:
+            best = await consensus(1)
         fragments.extend((reading[previous:match.start()], best))
         previous = match.end()
     return ''.join([*fragments, reading[previous:]])

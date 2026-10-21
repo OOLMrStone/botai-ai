@@ -220,6 +220,28 @@ async def grade_analysis(request: GradingRequest, settings, package, *, provider
                 'task': request.task.model_dump(),
                 'analysis': request.analysis.model_dump(exclude_unset=True)}, ensure_ascii=False)},
         ]
+        if trace is not None:
+            # Import lazily: v2 owns model-call diagnostics, while v1 keeps its contract.
+            from app.grading.retry import invalid_response, run_step
+            from app.grading.v2_service import ObservedProvider
+
+            observed = ObservedProvider(provider, trace, 'grading')
+
+            async def operation(attempt):
+                message = await observed.chat(messages)
+                if type(message) is not dict or message.get('tool_calls'):
+                    raise invalid_response('Стадия оценки вернула недопустимый ответ',
+                                           ['$.grading: invalid_stage_response'])
+                raw = message.get('content')
+                try:
+                    validate_grade(raw, request.task.max_score)
+                except LLMResponseFormatError:
+                    raise invalid_response('Стадия оценки вернула недопустимый ответ',
+                                           ['$.grading: invalid_stage_response']) from None
+                return raw
+
+            return await run_step(trace, 'grading', 'grading.expert', operation)
+
         call = {'call_id': str(uuid4()), 'operation': 'chat', 'attempt': 1}
         started = time.monotonic()
         if trace is not None:

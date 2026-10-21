@@ -32,6 +32,15 @@ def math_notation_errors(text: str) -> list[str]:
     return errors
 
 
+def transcript_errors(text: str) -> list[str]:
+    """Validate the transcript before layout, including fragment replacement boundaries."""
+    lines = [line for line in text.splitlines() if line.strip()]
+    errors = math_notation_errors(text)
+    if not lines or len(lines) > 2000 or len(text) > 200_000 or any(len(line) > 16000 for line in lines):
+        errors.append('$.ocr: transcript_bounds: transcript must fit the layout limits')
+    return errors
+
+
 def native_diagram_kinds(text: str) -> set[str]:
     """Only an explicit bracketed OCR marker requires a native figure."""
     return {'unit_circle' if 'окружность' in match[1].casefold() or match[1].casefold() == 'unit_circle'

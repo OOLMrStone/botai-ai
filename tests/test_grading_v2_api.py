@@ -4,6 +4,7 @@ from copy import deepcopy
 from io import BytesIO
 import json
 from uuid import uuid4
+from types import SimpleNamespace
 
 from fastapi.testclient import TestClient
 from PIL import Image
@@ -146,7 +147,7 @@ async def test_authentication_precedes_body_reads(settings):
         raise AssertionError('Unauthorized request reached body parsing')
     async def send(message):
         sent.append(message)
-    scope = {'type': 'http', 'path': INTERNAL_PATH, 'method': 'POST', 'headers': []}
+    scope = {'type': 'http', 'app': SimpleNamespace(state=SimpleNamespace(photo_active=0)), 'path': INTERNAL_PATH, 'method': 'POST', 'headers': []}
     await GradingV2Middleware(forbidden, settings, RunStore())(scope, forbidden, send)
     assert sent[0]['status'] == 401
 
@@ -328,7 +329,7 @@ async def test_streaming_body_bound_without_content_length(settings, monkeypatch
         return {'type': 'http.request', 'body': b'x' * 11, 'more_body': False}
     async def send(message):
         sent.append(message)
-    scope = {'type': 'http', 'path': INTERNAL_PATH + ('/from-images' if manual else ''),
+    scope = {'type': 'http', 'app': SimpleNamespace(state=SimpleNamespace(photo_active=0)), 'path': INTERNAL_PATH + ('/from-images' if manual else ''),
              'method': 'POST', 'headers': [(key.lower().encode(), value.encode()) for key, value in headers().items()]}
     await GradingV2Middleware(consume, settings, RunStore())(scope, receive, send)
     assert sent[0]['status'] == 413
@@ -357,10 +358,10 @@ def test_store_ttl_run_limit_artifact_bytes_and_redaction():
 
 
 def test_store_total_bytes_and_diagram_count_are_bounded():
-    store = RunStore(max_bytes=1000)
+    store = RunStore(max_bytes=5000)
     trace = store.start(str(uuid4()), provider_mode='mock')
     with pytest.raises(InternalGradingError) as full:
-        trace.add_json('grading', {'score': 1, 'criterion': 'x', 'explanation': 'x' * 900})
+        trace.add_json('grading', {'score': 1, 'criterion': 'x', 'explanation': 'x' * 4900})
     assert full.value.code == 'run_store_full'
     store = RunStore()
     trace = store.start(str(uuid4()), provider_mode='mock')

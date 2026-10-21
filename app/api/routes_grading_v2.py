@@ -19,6 +19,7 @@ from app.grading.images import MAX_IMAGE_BYTES, sanitize
 from app.grading.internal_contract import (MAX_METADATA_BYTES, InternalGradingError, canonical_uuid,
                                            parse_metadata as parse_v1_metadata)
 from app.grading.observability import MAX_ARTIFACT_BYTES, MAX_DIAGRAMS, TTL_SECONDS
+from app.grading.retry import classify, safe_diagnostics
 from app.grading.package import MAX_SCORES, load_package, task_directory
 from app.grading.validator import load_error_codes, parse_response
 
@@ -28,6 +29,7 @@ PREPARED_BODY_BYTES = 33 * 1024 * 1024
 MANUAL_BODY_BYTES = 41 * 1024 * 1024
 SUPPORTED_TASKS = frozenset({14, 16, 17, 18})
 RUN_PATH = re.compile(re.escape(INTERNAL_PATH) + r'/runs/([^/]+)/(events|artifacts/([^/]+))$')
+ACK_PATH = re.compile(re.escape(INTERNAL_PATH) + r'/runs/([^/]+)$')
 router = APIRouter(prefix=INTERNAL_PATH, tags=['local internal grading v2'])
 
 
@@ -90,15 +92,25 @@ class RunContext:
                 'X-Grading-Provider-Mode': self.provider_mode, 'X-Grading-Package-Id': self.package_id}
 
 
-def error_response(run, code, message, status):
-    return JSONResponse({'error': {'code': code, 'message': message, 'details': {}}, 'request_id': run.run_id},
-                        status_code=status, headers=run.headers())
+def failure_details(run, error):
+    phase = run.trace.active_phase if run.trace is not None else 'input'
+    context = run.trace.step_context if run.trace is not None else {}
+    return safe_diagnostics({**context, **classify(error, phase)})
 
 
-def finish_failure(run, code, *, cancelled=False):
+def error_response(run, code, message, status, *, error=None):
+    error = error or InternalGradingError(code, message, status)
+    return JSONResponse({'error': {'code': code, 'message': message, 'details': failure_details(run, error)},
+                         'request_id': run.run_id}, status_code=status, headers=run.headers())
+
+
+def finish_failure(run, error, *, cancelled=False):
     if run.trace is not None:
+        if isinstance(error, str):
+            error = InternalGradingError(error, '', 500)
         try:
-            run.trace.emit('cancelled' if cancelled else 'failed', 'validation', {'code': code})
+            run.trace.emit('cancelled' if cancelled else 'failed', run.trace.active_phase,
+                           {'code': error.code, **({} if cancelled else failure_details(run, error))})
         except (ServiceError, ValueError):
             pass  # A full/expired evidence store must not replace the original failure.
 
@@ -128,10 +140,14 @@ class GradingV2Middleware:
             response.headers['WWW-Authenticate'] = 'Bearer'
             return await response(scope, receive, send)
         match = RUN_PATH.fullmatch(path)
+        ack = ACK_PATH.fullmatch(path)
         if path in (INTERNAL_PATH, INTERNAL_PATH + '/from-images', INTERNAL_PATH + '/grade-analysis'):
             method = 'POST'
         elif path == INTERNAL_PATH + '/capabilities':
             method = 'GET'
+        elif ack and canonical_uuid(ack[1]):
+            method = 'DELETE'
+            run.run_id = ack[1]
         elif match and canonical_uuid(match[1]) and (match[3] is None or canonical_uuid(match[3])):
             method = 'GET'
             run.run_id = match[1]
@@ -157,6 +173,8 @@ class GradingV2Middleware:
             if len(lengths[0]) > 12 or int(lengths[0]) > limit:
                 return await error_response(run, 'upload_too_large', 'Общий размер фотографий слишком большой', 413)(scope, receive, send)
         if method == 'POST':
+            if scope['app'].state.photo_active >= settings.photo.concurrency:
+                return await error_response(run, 'grading_busy', 'Сервис занят. Попробуй позже', 429)(scope, receive, send)
             try:
                 run.trace = self.store.start(run.run_id, provider_mode=run.provider_mode)
             except ServiceError as exc:
@@ -210,8 +228,8 @@ class GradingV2Middleware:
                 error = InternalGradingError('internal_error', 'Не удалось завершить проверку', 500)
             else:
                 raise
-            finish_failure(run, error.code)
-            await error_response(run, error.code, error.message, error.status_code)(scope, receive, send)
+            finish_failure(run, error)
+            await error_response(run, error.code, error.message, error.status_code, error=error)(scope, receive, send)
 
 
 @router.get('/capabilities')
@@ -219,6 +237,8 @@ async def capabilities(request: Request):
     run = request.state.grading_v2_run
     return JSONResponse({'contract_version': CONTRACT_VERSION, 'provider_mode': run.provider_mode,
                          'deadline_seconds': min(run.settings.photo.deadline_seconds, 360),
+                         'concurrency': run.settings.photo.concurrency,
+                         'available_run_records': request.app.state.grading_v2_store.available_records(),
                          'input_modes': ['prepared', 'from-images'], 'live_calls_allowed': run.settings.local_demo_ai.allow_live,
                          'grade_analysis': {'path': INTERNAL_PATH + '/grade-analysis',
                                             'contract_version': expert_grading.CONTRACT_VERSION},
@@ -266,11 +286,11 @@ async def grade_expert_analysis(request: Request):
         run.trace.emit('completed', 'validation', {'is_graded': True, 'artifact_id': artifact_id})
         return Response(raw, media_type='application/json')
     except ServiceError as exc:
-        finish_failure(run, exc.code)
-        raise
+        finish_failure(run, exc)
+        return error_response(run, exc.code, exc.message, exc.status_code, error=exc)
     except Exception:
         if run.body_error is not None:
-            finish_failure(run, run.body_error.code)
+            finish_failure(run, run.body_error)
             raise run.body_error from None
         finish_failure(run, 'internal_error')
         raise
@@ -350,11 +370,11 @@ async def grade_request(request, *, manual=False):
         # The outer deadline reports its actual cause; the slot is released immediately.
         raise
     except ServiceError as exc:
-        finish_failure(run, exc.code)
-        raise
+        finish_failure(run, exc)
+        return error_response(run, exc.code, exc.message, exc.status_code, error=exc)
     except Exception:
         if run.body_error is not None:
-            finish_failure(run, run.body_error.code)
+            finish_failure(run, run.body_error)
             raise run.body_error from None
         finish_failure(run, 'internal_error')
         raise InternalGradingError('internal_error', 'Не удалось завершить проверку', 500) from None
@@ -370,6 +390,12 @@ async def prepared(request: Request):
 @router.post('/from-images')
 async def from_images(request: Request):
     return await grade_request(request, manual=True)
+
+
+@router.delete('/runs/{run_id}')
+async def acknowledge_run(request: Request, run_id: str):
+    request.app.state.grading_v2_store.acknowledge(run_id)
+    return Response(status_code=204)
 
 
 @router.get('/runs/{run_id}/events')

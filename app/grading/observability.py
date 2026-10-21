@@ -17,14 +17,17 @@ from PIL import Image
 from app.core.errors import ServiceError
 from app.grading.images import MAX_PIXELS
 from app.grading.internal_contract import InternalGradingError, canonical_uuid
+from app.grading.retry import safe_diagnostics, classify
 
 TTL_SECONDS = 30 * 60
 MAX_RUNS = 32
+MAX_TOMBSTONES = 4096
 MAX_STORE_BYTES = 128 * 1024 * 1024
 MAX_ARTIFACT_BYTES = 1024 * 1024
 MAX_DIAGRAMS = 8
 MAX_JSON_ARTIFACTS = 8
 MAX_EVENTS = 512
+TERMINAL_EVENT_BYTES = 4096
 PHASES = {'input', 'preparation', 'ocr', 'diagrams', 'layout', 'analysis', 'grading', 'validation'}
 EVENT_TYPES = {'run_started', 'stage_started', 'stage_completed', 'stage_failed', 'validation_failed',
                'retry', 'artifact_ready', 'completed', 'failed', 'cancelled',
@@ -73,6 +76,7 @@ def _safe_data(data):
         values = data.get(key)
         if type(values) is list:
             safe[key] = [value for value in values[:40] if predicate(value)]
+    safe.update(safe_diagnostics(data))
     return safe
 
 
@@ -122,14 +126,18 @@ class RunRecord:
     artifacts: dict[str, Artifact] = field(default_factory=dict)
     byte_size: int = 0
     terminal: bool = False
+    acknowledged: bool = False
+    terminal_reserve: int = 0
 
 
 class RunStore:
     def __init__(self, *, clock=time.monotonic, ttl_seconds=TTL_SECONDS,
-                 max_runs=MAX_RUNS, max_bytes=MAX_STORE_BYTES):
+                 max_runs=MAX_RUNS, max_bytes=MAX_STORE_BYTES, max_tombstones=MAX_TOMBSTONES):
         self._clock = clock
         self.ttl_seconds, self.max_runs, self.max_bytes = ttl_seconds, max_runs, max_bytes
         self._runs = {}
+        self._tombstones = {}
+        self.max_tombstones = max_tombstones
         self._bytes = 0
         self._lock = RLock()
 
@@ -139,6 +147,10 @@ class RunStore:
             if now - record.created >= self.ttl_seconds:
                 self._bytes -= record.byte_size
                 del self._runs[run_id]
+
+        for run_id, created in list(self._tombstones.items()):
+            if now - created >= self.ttl_seconds:
+                del self._tombstones[run_id]
 
     def cleanup(self):
         with self._lock:
@@ -156,14 +168,53 @@ class RunStore:
             self._cleanup()
             if not canonical_uuid(run_id):
                 raise _failure('invalid_request_id', 'Нужен UUID запуска проверки')
-            if run_id in self._runs:
+            if run_id in self._runs or run_id in self._tombstones:
                 raise _failure('duplicate_run', 'Этот UUID проверки уже использован', 409)
+            if len(self._runs) >= self.max_runs:
+                self._reclaim_one()
             if len(self._runs) >= self.max_runs:
                 raise _failure('run_store_full', 'Хранилище проверок заполнено. Попробуй позже', 503)
             self._runs[run_id] = RunRecord(run_id, provider_mode, package_id, self._clock())
             trace = Trace(self, run_id)
-            trace.emit('run_started', 'input')
+            try:
+                record = self._runs[run_id]
+                self._reserve(record, TERMINAL_EVENT_BYTES)
+                record.terminal_reserve = TERMINAL_EVENT_BYTES
+                trace.emit('run_started', 'input')
+            except ServiceError:
+                self._bytes -= self._runs[run_id].byte_size
+                del self._runs[run_id]  # Admission failed before any work was dispatched.
+                raise
             return trace
+
+    def _reclaim_one(self, *, exclude=None):
+        """Only durably acknowledged terminal evidence can be replaced under pressure."""
+        if len(self._tombstones) >= self.max_tombstones:
+            return False
+        for run_id, record in list(self._runs.items()):
+            if run_id != exclude and record.terminal and record.acknowledged:
+                self._tombstones[run_id] = record.created
+                self._bytes -= record.byte_size
+                del self._runs[run_id]
+                return True
+        return False
+
+    def available_records(self):
+        with self._lock:
+            self._cleanup()
+            reclaimable = sum(r.terminal and r.acknowledged for r in self._runs.values())
+            return max(0, self.max_runs - len(self._runs)) + min(
+                reclaimable, max(0, self.max_tombstones - len(self._tombstones)))
+
+    def acknowledge(self, run_id):
+        with self._lock:
+            self._cleanup()
+            if run_id in self._tombstones:
+                return  # Idempotent after reclaim, until the original TTL.
+            record = self._record(run_id)
+            if not record.terminal:
+                raise _failure('run_active', 'Проверка ещё не завершена', 409)
+            record.acknowledged = True
 
     def set_package(self, run_id, package_id):
         with self._lock:
@@ -175,6 +226,8 @@ class RunStore:
             return record.provider_mode, record.package_id
 
     def _reserve(self, record, size):
+        while self._bytes + size > self.max_bytes and self._reclaim_one(exclude=record.run_id):
+            pass
         if self._bytes + size > self.max_bytes:
             raise _failure('run_store_full', 'Хранилище проверок заполнено. Попробуй позже', 503)
         record.byte_size += size
@@ -188,14 +241,31 @@ class RunStore:
             record = self._record(run_id)
             if record.terminal:
                 return
-            if len(record.events) >= MAX_EVENTS:
+            terminal = kind in ('completed', 'failed', 'cancelled')
+            if len(record.events) >= MAX_EVENTS - (0 if terminal else 1):
                 raise _failure('trace_limit_exceeded', 'Проверка превысила лимит событий', 503)
             event = {'seq': len(record.events) + 1, 'run_id': run_id, 'type': kind, 'phase': phase,
                      'created_at': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'), 'data': safe}
-            self._reserve(record, len(json.dumps(event).encode('utf-8')))
-            record.events.append(event)
-            if kind in ('completed', 'failed', 'cancelled'):
+            size = len(json.dumps(event).encode('utf-8'))
+            if terminal:
+                if size > record.terminal_reserve:
+                    # Keep the outcome and classification; optional long issue lists cannot
+                    # prevent a bounded terminal fact after the evidence store fills.
+                    event['data'] = {key: value for key, value in safe.items() if key in {
+                        'code', 'error_code', 'artifact_id', 'is_graded', 'failure_category',
+                        'diagnostic_code', 'reason_code', 'phase', 'step', 'attempt',
+                        'max_attempts', 'failure_counts', 'retryable', 'exhausted'}}
+                    size = len(json.dumps(event).encode('utf-8'))
+                if size > record.terminal_reserve:
+                    raise ValueError('Terminal event exceeds its bounded reserve')
+                released = record.terminal_reserve - size
+                record.byte_size -= released
+                self._bytes -= released
+                record.terminal_reserve = 0
                 record.terminal = True
+            else:
+                self._reserve(record, size)
+            record.events.append(event)
 
     def events(self, run_id, *, after=0, limit=100):
         if type(after) is not int or after < 0 or type(limit) is not int or not 1 <= limit <= 100:
@@ -241,6 +311,8 @@ class Trace:
         self.reader_ocr = None
         self.task_snapshot = None
         self.solution_image_ids = []
+        self.active_phase = 'input'
+        self.step_context = {}
 
     def emit(self, kind, phase, data=None):
         self.store.emit(self.run_id, kind, phase, data)
@@ -293,13 +365,19 @@ class Trace:
 
     @contextmanager
     def stage(self, phase):
+        self.active_phase = phase
         self.emit('stage_started', phase)
         started = time.monotonic()
         try:
             yield
         except BaseException as exc:
             code = exc.code if isinstance(exc, ServiceError) else 'stage_failed'
-            self.emit('stage_failed', phase, {'duration_ms': (time.monotonic() - started) * 1000, 'code': code})
+            facts = classify(exc, phase) if isinstance(exc, ServiceError) else {}
+            try:
+                self.emit('stage_failed', phase, {**self.step_context, **facts,
+                          'duration_ms': (time.monotonic() - started) * 1000, 'code': code})
+            except ServiceError:
+                pass  # The final failure uses reserved space; preserve the original cause.
             raise
         else:
             self.emit('stage_completed', phase, {'duration_ms': (time.monotonic() - started) * 1000})

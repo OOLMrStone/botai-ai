@@ -345,7 +345,8 @@ async def test_grade_only_model_events_and_transport_failure_never_retry():
     provider.chat.assert_awaited_once()
     provider.close.assert_awaited_once()
     events = trace.store.events(trace.run_id)['items']
-    calls = [event for event in events if event['type'].startswith('model_')]
+    calls = [event for event in events if event['type'].startswith('model_')
+             and 'call_id' in event['data']]
     assert [event['type'] for event in calls] == ['model_started', 'model_failed']
     assert calls[0]['data']['call_id'] == calls[1]['data']['call_id']
     assert 'PRIVATE' not in json.dumps(events)
@@ -450,10 +451,59 @@ async def test_grade_only_model_success_event_has_no_response_content():
                          {'criteria.md': 'PRIVATE CRITERIA', 'popular_mistakes.md': 'PRIVATE CATALOG'},
                          provider=provider, trace=trace)
     events = trace.store.events(trace.run_id)['items']
-    calls = [event for event in events if event['type'].startswith('model_')]
+    calls = [event for event in events if event['type'].startswith('model_')
+             and 'call_id' in event['data']]
     assert [event['type'] for event in calls] == ['model_started', 'model_completed']
     assert calls[0]['data']['call_id'] == calls[1]['data']['call_id']
     assert calls[1]['data']['duration_ms'] >= 0
     assert 'Личный ответ' not in json.dumps(events, ensure_ascii=False)
     assert 'PRIVATE' not in json.dumps(events)
+    provider.close.assert_awaited_once()
+
+
+async def test_v2_grade_only_fourth_attempt_returns_exact_bytes_with_shared_budget(monkeypatch):
+    from app.grading.observability import RunStore
+    from app.core.errors import LLMTimeoutError
+    from app.grading import retry
+    monkeypatch.setattr(retry.asyncio, 'sleep', AsyncMock())
+    trace = RunStore().start(str(uuid4()), provider_mode='mock')
+    raw = '{"grading": {"score": 1,"criterion":"Критерий","explanation":"По анализу"}}'
+    provider = SimpleNamespace(chat=AsyncMock(side_effect=[
+        LLMTimeoutError('Timeout', details={'provider_failure': 'provider_timeout'}, retryable=True),
+        {'content': '{"grading":{"score":3,"criterion":"x","explanation":"y"}}'},
+        {'content': '{}', 'tool_calls': [{'function': {'name': 'read_photo'}}]},
+        {'content': raw},
+    ]), close=AsyncMock())
+    request = parse_request(json.dumps(payload()).encode(), local_v2=True)
+    before = request.model_dump(exclude_unset=True)
+    result = await grade_analysis(request, SimpleNamespace(llm=SimpleNamespace(provider='mock')),
+                                  {'criteria.md': 'CRITERIA', 'popular_mistakes.md': 'CATALOG'},
+                                  provider=provider, trace=trace)
+    assert result == raw
+    assert request.model_dump(exclude_unset=True) == before
+    assert provider.chat.await_count == 4
+    provider.close.assert_awaited_once()
+    # The injected provider exposes no OCR/analysis methods: only the fixed grading input is sent.
+    for call in provider.chat.call_args_list:
+        data = json.loads(call.args[0][1]['content'])
+        assert data == {'task': before['task'], 'analysis': before['analysis']}
+    events = trace.store.events(trace.run_id)['items']
+    assert {e['phase'] for e in events if e['type'] != 'run_started'} == {'grading'}
+    assert len([e for e in events if e['type'] == 'retry']) == 3
+
+
+async def test_v2_grade_only_exhausts_four_invalid_scores_without_clamping():
+    from app.grading.observability import RunStore
+    trace = RunStore().start(str(uuid4()), provider_mode='mock')
+    provider = SimpleNamespace(chat=AsyncMock(return_value={
+        'content': '{"grading":{"score":3,"criterion":"x","explanation":"y"}}'}), close=AsyncMock())
+    with pytest.raises(LLMResponseFormatError) as caught:
+        await grade_analysis(parse_request(json.dumps(payload()).encode(), local_v2=True),
+                             SimpleNamespace(llm=SimpleNamespace(provider='mock')),
+                             {'criteria.md': '', 'popular_mistakes.md': ''}, provider=provider, trace=trace)
+    assert provider.chat.await_count == 4
+    assert caught.value.details['attempt'] == 4
+    assert caught.value.details['exhausted'] is True
+    assert caught.value.details['step'] == 'grading.expert'
+    assert caught.value.details['failure_counts'] == {'model_response': 4}
     provider.close.assert_awaited_once()

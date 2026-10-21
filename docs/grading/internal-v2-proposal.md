@@ -86,8 +86,8 @@ Success contains exactly `{"grading":{"score":1,"criterion":"…","explanation":
 and `X-Grading-Contract-Version: expert-grading.v1`, even though the local route
 uses the v2 prefix. Other provenance headers are unchanged. Both model and HTTP
 boundary validate the exact response; no clamping or analysis changes. Live mode
-makes one provider call with no tools or transport replay; invalid output is a
-502 `llm_bad_response` without a grade. Mock output is explicitly demonstrative.
+uses the same four-attempt validated-step policy described below, without tools;
+exhausted invalid output is a 502 `llm_bad_response` without a grade. V1 keeps its single-call contract. Mock output is explicitly demonstrative.
 The local enable/live gates, token, unique run UUID, shared concurrency and
 deadline apply. Events reflect actual input/grading/validation boundaries; the
 private artifact is the validated grading object. No OCR/analysis events are
@@ -250,34 +250,72 @@ provider requests/responses, prompts, headers, secrets and `reasoning_content`.
 Backend projects its own camelCase event DTO, checks actor scope and whitelists
 data rather than forwarding arbitrary observer payloads.
 
-Retries stay inside each documented bounded stage budget and the shared request
-deadline. No transport replay after uncertain dispatch. Structured v2 exhaustion
-fails without a grade; do not silently return legacy string OCR under v2.
+### Step retries and failure diagnostics (21 October 2026)
 
-Task preparation, layout, analysis and grading each permit two format repairs.
-For analysis only, a completed provider response with `finish_reason=length`
-may use the next existing repair slot with an output limit of 32000 tokens,
-once, if the actual previous limit was smaller. Truncation does not append a
-format-repair instruction or partial output. Truncation at 32000 or above,
-an exhausted repair budget or a second truncation after escalation fails without
-a grade. The per-call override does not mutate shared provider settings.
-Grading may additionally perform one answer-consistency recheck without resetting
-its repair budget. OCR strip/join reading permits one format retry per call;
-an unsuccessful join never falls back to overlapping strips. Doubt resolution
-requires two exact votes out of three and supports at most six doubtful locations.
-V2 markers with fewer than two distinct alternatives trigger three independent
-fragment readings from the original photos, with the lone suggestion hidden.
-Only two matching bounded JSON readings resolve the fragment; null, malformed
-responses and lack of consensus fail without a grade. Legacy recovery is unchanged.
-Malformed marker boundaries fail before dispatch. No uncertain guess is promoted
-to a final reading merely because it is the only candidate.
+`retry.py` owns **four total attempts per validated step**: task preparation,
+each individual photo strip, strip join, each doubtful fragment, layout, analysis,
+grading and local grade-only. No nested SDK retries or whole-pipeline replay.
+Completed predecessors remain in memory. Both malformed completed responses and
+transient connection/timeout/429/5xx failures use this same budget. Authentication,
+configuration, invalid input, programming errors and cancellation stop immediately.
+Transient failures back off by 0.25/0.5/1 seconds. The shared request deadline is
+still at most 360 seconds: if it expires before four attempts, report a deadline
+with the actual attempt and previous failure counts, never four model failures.
+If diagnostic storage fails, stop further model dispatch rather than spend tokens
+without a trace; retain the original failure and the reserved terminal event.
+A network retry may cause another provider charge if its earlier response was lost;
+backend does not resubmit the entire grading POST on uncertain dispatch.
+
+Validation repair messages describe the failed format while preserving approved
+rubrics. Truncation preserves its own reason and does not append incomplete output
+or a false format-repair instruction. Analysis may increase an actual lower output
+limit to 32000 on its next attempt; at 32000 or above it retries within the same
+four-attempt budget without increasing the limit. No non-thinking fallback or
+score normalization is introduced. The answer-consistency recheck shares the
+same grading budget; an older candidate is never revived after a failed recheck.
+
+OCR join validates notation, uncertainty markers and downstream transcript bounds
+before layout. An unsuccessful join never releases overlapping strips as a result.
+Doubt resolution requires two matching votes out of three, up to six locations;
+one attempt is one three-vote batch for that location (at most twelve calls per
+location). Transport failure interrupts that batch; already resolved locations
+are retained. Missing candidates trigger independent fragment reads with the lone
+suggestion hidden. Selected fragments are validated in their surrounding text.
+No uncertain guess is promoted merely because it is the only candidate. Legacy
+recovery is unchanged. Final validation is a deterministic integrity guard over
+already validated stage outputs, not another model step.
+
+HTTP status and string `error.code` remain compatible. `error.details`, validation,
+retry and terminal events carry only safe facts: `failure_category`, `diagnostic_code`,
+`reason_code`, actual `phase`, bounded `step`, `attempt`, `max_attempts=4`,
+`failure_counts`, `retryable`, `exhausted`, `issue_codes`, `issue_paths`.
+Retry events name the upcoming attempt; model events identify that step attempt,
+with distinct `call_id` values for its calls. Missing evidence is omitted.
+The terminal phase is the actual failed phase, never hardcoded to `validation`.
+Counts distinguish mixed failures (e.g. two network and two model responses).
+Diagnostic numbers are **not HTTP statuses**:
+
+| Range | Category | Examples |
+| --- | --- | --- |
+| 3xx | input | 301 invalid input |
+| 4xx | network | 401 connection, 402 provider timeout, 403 interrupted upload |
+| 5xx | provider | 501 rate limit, 502 unavailable provider |
+| 6xx | model_response | 601 invalid response, 602 truncated, 603 empty, 604 OCR ambiguity, 605 notation, 606 source coverage, 607 analysis, 608 grading |
+| 7xx | configuration | 701 provider auth, 702 invalid provider request, 703 local contract/package configuration |
+| 8xx | timeout | 801 whole-run deadline |
+| 9xx | internal | 901 internal failure, 902 local capacity busy, 903 trace storage full (`run_store_full`) |
+
+Backend retains these facts in its event storage and exposes a nullable camelCase
+`failure` on failed runs. Frontend uses category/phase/actual attempt for its message;
+legacy records without these facts are not retroactively classified. Safe HTTP
+error details provide a fallback when the event observer misses a terminal event.
 
 Layout repair feedback identifies missing/duplicate source IDs, unknown-ID
 positions and the first sequence mismatch. It does not insert, sort or deduplicate
 the returned layout. The original exact coverage and order condition remains
 mandatory. Events expose bounded issue codes and paths, never model text.
-Transport failures propagate immediately in v2, including OCR and doubt voting.
-All calls share the request deadline (at most 360 seconds).
+Retryable transport failures use the step budget above. All calls share the request
+deadline (at most 360 seconds).
 Provider failures distinguish `error_code=provider_output_truncated` from
 `provider_empty_choices` in model-failed events; the public error remains
 `llm_bad_response`. Console and JSON logs retain bounded finish reason, output
@@ -291,6 +329,34 @@ The backend must copy approved crops before expiry; restart loses temporary AI
 evidence. No raw provider text, reasoning, credentials or original input filenames
 are persisted in this store. Stage failure events never claim successful completion.
 
+After durably saving the terminal outcome and finishing event/artifact copying,
+backend acknowledges a run with authenticated `DELETE /internal/v2/grading/runs/{id}`.
+This returns 204; active runs return 409 and expired runs 404. An acknowledged
+terminal run remains readable until retention expiry or memory/count pressure.
+Only acknowledged terminal records can be reclaimed early. Bounded UUID tombstones
+(4096, original TTL) prevent replay after reclamation. Backend records successful
+ACKs durably; this prevents the old 32-completed-runs admission stall without
+discarding evidence that its observer has not yet copied.
+
+Capabilities expose `concurrency` and `available_run_records`. The B2B backend
+uses one FIFO database queue for full checks and expert grade-only jobs, with an
+effective limit equal to the smaller of its configured limit and AI concurrency.
+`B2B_AI_CONCURRENCY` sets both sides in the local Compose stack (1–8, default 1).
+Waiting jobs do not consume the execution deadline; a freed slot immediately
+admits the next job. An uncertain dispatched POST is not replayed and retains its
+reservation until the upstream deadline or terminal ACK. An early busy response
+does not allocate a retained AI record. The durable queue and reservation contract
+are documented in backend `docs/integration/B2B-LOCAL-DEMO.md`.
+
+Offline capacity measurements on 21 October used the real ASGI pipeline with a
+delayed mock provider and synthetic JPEGs. Four 20-megapixel photos per request
+produced peak process RSS of 309/478/1015/1427 MiB at concurrency 1/2/4/8.
+With the current 512 MiB AI container, 2 has insufficient reserve and 4 exceeds
+the limit. The operational default therefore remains 1; concurrent submissions
+wait in the backend queue. These macOS process measurements are risk evidence,
+not a Linux container or real provider/network capacity certification. A higher
+limit requires representative load measurements and sufficient memory headroom.
+
 New layout/causal instructions and the preserved grade-only instruction passed
 both required Astra reviews (structure and unnecessary clarifications). Existing
 approved task/common prompt files remain byte-for-byte unchanged.
@@ -301,7 +367,7 @@ The v2 reader and strip join request TeX for formula transcription, preserving
 all visible terms, signs, exponent scope and student errors. Narrow offline
 checks reject Unicode scripts and explicit `(numerator)/(denominator)` forms;
 simple ASCII `x>0` remains valid. A malformed transcription gets the existing
-single retry with diagnostic codes; persistent failure stops before layout.
+four-attempt step budget with exact diagnostic codes; exhaustion stops before layout.
 No server-side formula rewriting or mathematical inference is performed.
 The resolved transcript is checked again before layout.
 

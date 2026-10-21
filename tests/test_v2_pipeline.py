@@ -114,14 +114,14 @@ async def test_bad_recheck_never_revives_old_grade_and_attempt_facts_match(setti
         await run(settings, monkeypatch, provider, values=values)
     trace = values[-1]
     assert provider.calls['grading'] == 4 and provider.closed
-    assert [e['data']['attempt'] for e in events(trace, 'validation_failed', 'grading')] == [2, 3, 4]
+    assert [e['data']['attempt'] for e in events(trace, 'validation_failed', 'grading')] == [1, 2, 3, 4]
     assert [e['data']['attempt'] for e in events(trace, 'retry', 'grading')] == [2, 3, 4]
     assert events(trace, 'stage_failed', 'grading') and not events(trace, 'stage_completed', 'grading')
     assert not any(a.metadata['kind'] in ('grading', 'final')
                    for a in trace.store._runs[trace.run_id].artifacts.values())
 
 
-async def test_recheck_after_repair_shares_the_same_two_repair_budget(settings, monkeypatch):
+async def test_recheck_after_repair_shares_the_same_four_attempt_budget(settings, monkeypatch):
     provider = ScriptedProvider({'grading': [{'content': 'bad'}, GOOD, {'content': 'bad'}, {'content': 'bad'}]},
                                 transcript='x > 1\nОтвет: (1; +∞)')
     with pytest.raises(LLMResponseFormatError):
@@ -141,14 +141,14 @@ async def test_transport_dispatch_is_never_replayed(settings, monkeypatch, stage
 
 
 async def test_failed_strip_join_does_not_fall_back_to_unjoined_text(settings, monkeypatch):
-    provider = ScriptedProvider({'ocr': [GOOD, GOOD, GOOD, '', '']})
+    provider = ScriptedProvider({'ocr': [GOOD, GOOD, GOOD, '', '', '', '']})
     with pytest.raises(LLMResponseFormatError):
         await run(settings, monkeypatch, provider)
-    assert provider.calls['ocr'] == 5 and provider.calls['layout'] == 0
+    assert provider.calls['ocr'] == 7 and provider.calls['layout'] == 0
 
 
 async def test_ocr_vote_transport_failure_stops_before_another_vote(settings, monkeypatch):
-    provider = ScriptedProvider({'ocr': [GOOD, GOOD, GOOD, GOOD, LLMError('uncertain')]},
+    provider = ScriptedProvider({'ocr': [GOOD, GOOD, GOOD, GOOD, LLMError('uncertain', retryable=False)]},
                                 transcript='x [неразборчиво: > | ≠] 0')
     with pytest.raises(LLMError):
         await run(settings, monkeypatch, provider)
@@ -161,16 +161,16 @@ async def test_single_candidate_ocr_is_reread_before_layout(settings, monkeypatc
     result, trace = await run(settings, monkeypatch, provider)
     assert result['ocr']['steps'][0]['lines'] == ['x ≠ 0']
     assert result['is_graded'] and provider.calls['ocr'] == 7
-    assert events(trace, 'retry', 'ocr')[0]['data']['code'] == 'ocr_doubt_reread'
+    assert not events(trace, 'retry', 'ocr')  # Rereading is the first attempt of a distinct step.
 
 
 async def test_unsettled_single_candidate_stops_before_layout(settings, monkeypatch):
     provider = ScriptedProvider({'ocr': [GOOD, GOOD, GOOD, 'x [неразборчиво: >] 0',
-        '{"reading":">"}', '{"reading":null}', '{"reading":"≠"}']})
+        *(['{"reading":">"}', '{"reading":null}', '{"reading":"≠"}'] * 4)]})
     values = setup_run()
     with pytest.raises(LLMResponseFormatError):
         await run(settings, monkeypatch, provider, values=values)
-    assert provider.calls['ocr'] == 7 and provider.calls['layout'] == 0
+    assert provider.calls['ocr'] == 16 and provider.calls['layout'] == 0
     assert provider.calls['analysis'] == provider.calls['grading'] == 0
     assert events(values[-1], 'validation_failed', 'ocr')[-1]['data']['issue_codes'] == ['ocr_doubt_no_consensus']
 
@@ -206,14 +206,14 @@ async def test_layout_repair_gets_specific_coverage_facts_without_mutating_sourc
 
 
 async def test_coverage_failure_exhausts_without_autofilling_or_sorting(settings, monkeypatch):
-    provider = ScriptedProvider({'layout': [layout(['l2', 'l1'])] * 3})
+    provider = ScriptedProvider({'layout': [layout(['l2', 'l1'])] * 4})
     values = setup_run()
     with pytest.raises(LLMResponseFormatError):
         await run(settings, monkeypatch, provider, values=values)
-    assert provider.calls['layout'] == 3 and provider.calls['analysis'] == provider.calls['grading'] == 0
+    assert provider.calls['layout'] == 4 and provider.calls['analysis'] == provider.calls['grading'] == 0
     assert values[-1].reader_ocr is None
     assert [e['data']['issue_codes'] for e in events(values[-1], 'validation_failed', 'layout')] == [
-        ['source_line_order']] * 3
+        ['source_line_order']] * 4
 
 
 def truncated(limit=16000):
@@ -236,15 +236,16 @@ async def test_analysis_truncation_uses_one_existing_slot_with_larger_budget(set
     result, trace = await run(settings, monkeypatch, provider)
     assert result['is_graded'] and provider.calls['analysis'] == 2
     assert events(trace, 'model_failed', 'analysis')[0]['data']['error_code'] == 'provider_output_truncated'
-    assert events(trace, 'retry', 'analysis')[0]['data'] == {
-        'attempt': 2, 'code': 'provider_output_budget_increased'}
+    retry = events(trace, 'retry', 'analysis')[0]['data']
+    assert retry['attempt'] == 2 and retry['max_attempts'] == 4
+    assert retry['reason_code'] == 'provider_output_truncated'
 
 
 @pytest.mark.parametrize('answers,expected_calls', [
-    ([truncated(), truncated(32000)], 2),
-    ([truncated(32000)], 1),
-    ([truncated(64000)], 1),
-    ([{'content': 'bad'}, {'content': 'bad'}, truncated()], 3),
+    ([truncated(), truncated(32000), truncated(32000), truncated(32000)], 4),
+    ([truncated(32000)] * 4, 4),
+    ([truncated(64000)] * 4, 4),
+    ([{'content': 'bad'}, {'content': 'bad'}, truncated(), truncated(32000)], 4),
 ])
 async def test_analysis_truncation_never_repeats_exhausted_budget(settings, monkeypatch, answers, expected_calls):
     provider = ScriptedProvider({'analysis': answers})
@@ -261,7 +262,7 @@ async def test_truncation_after_format_error_shares_original_repair_budget(setti
     assert result['is_graded'] and provider.calls['analysis'] == 3
 
 
-@pytest.mark.parametrize('failure', [LLMError('uncertain'), asyncio.CancelledError()])
+@pytest.mark.parametrize('failure', [LLMError('uncertain', retryable=False), asyncio.CancelledError()])
 async def test_transport_error_after_budget_increase_is_not_replayed(settings, monkeypatch, failure):
     provider = ScriptedProvider({'analysis': [truncated(), failure]})
     with pytest.raises(type(failure)):
@@ -294,11 +295,11 @@ async def test_layout_repairs_missing_repeated_reordered_or_unencodable_sources(
 
 @pytest.mark.parametrize('stage', ['layout', 'analysis'])
 async def test_stage_exhaustion_emits_failed_never_completed(settings, monkeypatch, stage):
-    provider = ScriptedProvider({stage: [{'content': 'bad'}] * 3})
+    provider = ScriptedProvider({stage: [{'content': 'bad'}] * 4})
     values = setup_run()
     with pytest.raises(LLMResponseFormatError):
         await run(settings, monkeypatch, provider, values=values)
-    assert provider.calls[stage] == 3
+    assert provider.calls[stage] == 4
     assert events(values[-1], 'stage_failed', stage)
     assert not events(values[-1], 'stage_completed', stage)
 
@@ -377,14 +378,14 @@ async def test_ambiguous_circle_exhaustion_never_publishes_a_grade(settings, mon
         del figure['arcs'][0]['full_circle']
     else:
         figure['arcs'][0].update(direction=None, full_circle=None)
-    provider = ScriptedProvider({'layout': [layout(['l1', 'l2'], figure=figure)] * 3})
+    provider = ScriptedProvider({'layout': [layout(['l1', 'l2'], figure=figure)] * 4})
     values = setup_run(14)
     with pytest.raises(LLMResponseFormatError):
         await run(settings, monkeypatch, provider, values=values)
     trace = values[-1]
-    assert provider.calls['layout'] == 3 and provider.calls['analysis'] == provider.calls['grading'] == 0
+    assert provider.calls['layout'] == 4 and provider.calls['analysis'] == provider.calls['grading'] == 0
     assert trace.reader_ocr is None and trace.store._runs[trace.run_id].artifacts == {}
-    assert len(events(trace, 'validation_failed', 'layout')) == 3
+    assert len(events(trace, 'validation_failed', 'layout')) == 4
     assert events(trace, 'stage_failed', 'layout') and not events(trace, 'stage_completed', 'layout')
 
 
@@ -459,7 +460,7 @@ async def test_persistent_unicode_ocr_stops_before_layout(settings, monkeypatch)
     provider = ScriptedProvider(transcript='$4ˣ²$')
     with pytest.raises(LLMResponseFormatError):
         await run(settings, monkeypatch, provider)
-    assert provider.calls['ocr'] == 2 and provider.calls['layout'] == 0
+    assert provider.calls['ocr'] == 4 and provider.calls['layout'] == 0
 
 
 @pytest.mark.parametrize('kind,marker', [('number_line', 'интервальная прямая'),
@@ -481,7 +482,7 @@ async def test_missing_native_figure_exhaustion_stops_before_analysis(settings, 
     provider = ScriptedProvider(transcript='[числовая прямая: отмечена точка 0]')
     with pytest.raises(LLMResponseFormatError):
         await run(settings, monkeypatch, provider)
-    assert provider.calls['layout'] == 3 and provider.calls['analysis'] == 0
+    assert provider.calls['layout'] == 4 and provider.calls['analysis'] == 0
 
 
 def test_diagram_marker_on_another_step_does_not_cover_missing_figure():
@@ -511,3 +512,101 @@ async def test_join_notation_is_retried_and_keeps_original_tex_terms(settings, m
     result, _ = await run(settings, monkeypatch, provider)
     assert result['ocr']['steps'][0]['lines'] == [good]
     assert provider.calls['ocr'] == 5
+
+
+@pytest.mark.parametrize('stage', ['preparation', 'ocr', 'layout', 'analysis', 'grading'])
+@pytest.mark.parametrize('succeeds', [True, False])
+async def test_each_stage_has_four_shared_attempts_without_replaying_predecessors(
+        settings, monkeypatch, stage, succeeds):
+    from unittest.mock import AsyncMock
+    from app.core.errors import LLMTimeoutError
+    from app.grading import retry
+    monkeypatch.setattr(retry.asyncio, 'sleep', AsyncMock())
+    malformed = '' if stage == 'ocr' else {'content': 'invalid'}
+    good = ({'content': 'СТАТУС: подходит\nШАГИ:\ns1: ok\n\nОписание: тест интерфейса. Ошибки: нет.'}
+            if stage == 'analysis' else GOOD)
+    faults = [
+        LLMTimeoutError('Timeout', retryable=True, details={'provider_failure': 'provider_timeout'}),
+        malformed,
+        LLMError('Disconnected', retryable=True, details={'provider_failure': 'provider_connection_error'}),
+        good if succeeds else malformed,
+    ]
+    # Fail the second strip: the first strip must never be called again.
+    scripted = [GOOD, *faults, GOOD, GOOD] if stage == 'ocr' else faults
+    provider = ScriptedProvider({stage: scripted})
+    values = setup_run()
+    task, image_ids, images, trace = values
+    monkeypatch.setattr(service, 'V2MockProvider', lambda: provider)
+    settings.llm.provider = 'mock'
+
+    async def execute():
+        if stage == 'preparation':
+            metadata = {'task_id': task['id'], 'task_number': 16, 'solution_image_ids': image_ids}
+            return await service.run_from_images(settings, metadata, images[0], images, trace)
+        return await service.run_prepared(settings, task, image_ids, images, trace)
+
+    if succeeds:
+        result = json.loads(await execute())
+        assert result['is_graded'] and result['grading']['score'] == 2
+    else:
+        with pytest.raises(LLMResponseFormatError) as caught:
+            await execute()
+        assert caught.value.details['attempt'] == 4
+        assert caught.value.details['exhausted'] is True
+        assert caught.value.details['failure_counts'] == {'network': 2, 'model_response': 2}
+        assert not events(trace, 'stage_completed', stage)
+        assert not any(a.metadata['kind'] in ('grading', 'final')
+                       for a in trace.store._runs[trace.run_id].artifacts.values())
+    target_step = 'ocr.photo.1.strip.2' if stage == 'ocr' else stage
+    starts = [e for e in events(trace, 'model_started', stage) if e['data']['step'] == target_step]
+    assert [e['data']['attempt'] for e in starts] == [1, 2, 3, 4]
+    assert starts[-1]['data']['failure_counts'] == {'network': 2, 'model_response': 1}
+    assert all(e['data']['max_attempts'] == 4 for e in starts)
+    assert len(events(trace, 'retry', stage)) == 3
+    expected = {'preparation': 0, 'ocr': 4, 'layout': 1, 'analysis': 1, 'grading': 1}
+    if stage == 'preparation':
+        expected['preparation'] = 4
+    elif stage == 'ocr':
+        expected['ocr'] = 7 if succeeds else 5
+    else:
+        expected[stage] = 4
+    if not succeeds:
+        stages = ['preparation', 'ocr', 'layout', 'analysis', 'grading']
+        for later in stages[stages.index(stage) + 1:]:
+            expected[later] = 0
+    assert {name: provider.calls[name] for name in expected} == expected
+    assert provider.closed
+
+
+@pytest.mark.parametrize('stage', ['ocr', 'layout', 'analysis', 'grading'])
+async def test_cancellation_never_consumes_a_retry_or_replays_previous_stage(settings, monkeypatch, stage):
+    provider = ScriptedProvider({stage: [asyncio.CancelledError()]})
+    values = setup_run()
+    with pytest.raises(asyncio.CancelledError):
+        await run(settings, monkeypatch, provider, values=values)
+    assert provider.calls[stage] == 1 and provider.closed
+    assert not events(values[-1], 'retry', stage)
+    assert not events(values[-1], 'stage_completed', stage)
+
+
+async def test_join_fourth_success_does_not_reread_any_strip(settings, monkeypatch):
+    provider = ScriptedProvider({'ocr': [GOOD, GOOD, GOOD, '', '', '', GOOD]})
+    result, trace = await run(settings, monkeypatch, provider)
+    assert result['is_graded'] and provider.calls['ocr'] == 7
+    started = events(trace, 'model_started', 'ocr')
+    strips = [e['data']['step'] for e in started if '.strip.' in e['data']['step']]
+    assert strips == ['ocr.photo.1.strip.1', 'ocr.photo.1.strip.2', 'ocr.photo.1.strip.3']
+    assert [e['data']['attempt'] for e in started if e['data']['step'] == 'ocr.join'] == [1, 2, 3, 4]
+
+
+@pytest.mark.parametrize('failure', [asyncio.CancelledError(), LLMError('Do not retry', retryable=False)])
+async def test_preparation_cancellation_or_nonretryable_failure_never_starts_ocr(settings, monkeypatch, failure):
+    provider = ScriptedProvider({'preparation': [failure]})
+    task, image_ids, images, trace = setup_run()
+    monkeypatch.setattr(service, 'V2MockProvider', lambda: provider)
+    settings.llm.provider = 'mock'
+    metadata = {'task_id': task['id'], 'task_number': 16, 'solution_image_ids': image_ids}
+    with pytest.raises(type(failure)):
+        await service.run_from_images(settings, metadata, images[0], images, trace)
+    assert provider.calls['preparation'] == 1 and provider.calls['ocr'] == 0 and provider.closed
+    assert not events(trace, 'retry', 'preparation')

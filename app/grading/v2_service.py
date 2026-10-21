@@ -16,16 +16,14 @@ from app.grading.service import TaskPreparationError
 from app.grading.session import ATTACK_REASON, review_for_frontend
 from app.grading.staged import (ANALYSIS_PROMPT, GRADING_PROMPT, SCREEN_RULE, answer_block,
                                 answer_line, answer_recheck, block, parse_analysis, solution_text)
-from app.grading.structure import resolve_doubts
+from app.grading.structure import resolve_doubts, V2_DOUBT_START, V2_DOUBT, MAX_DOUBTS
+from app.grading.retry import run_step, invalid_response, classify
 from app.grading.validator import parse_response
 from app.grading.v2_artifacts import crop_diagram, project_native_figure_for_validation, validate_v2_response
-from app.grading.v2_notation import OCR_NOTATION_PROMPT, math_notation_errors, native_diagram_kinds
+from app.grading.v2_notation import OCR_NOTATION_PROMPT, math_notation_errors, native_diagram_kinds, transcript_errors
 
-MAX_REPAIRS = 2
 MAX_RESPONSE_BYTES = 256_000
 ANALYSIS_RECOVERY_OUTPUT_LIMIT = 32_000
-SOURCE_ISSUE_CODES = {'missing_source_lines', 'duplicate_source_lines',
-                      'unknown_source_lines', 'source_line_order'}
 
 LAYOUT_PROMPT = '''STAGE: v2_layout
 Разложи дословную расшифровку на смысловые шаги. Строки нельзя переписывать: укажи их line_ids.
@@ -81,7 +79,7 @@ class ObservedProvider:
         attempt = self.counters.get(self.phase, 0) + 1
         self.counters[self.phase] = attempt
         call_id, started = str(uuid4()), time.monotonic()
-        data = {'call_id': call_id, 'operation': operation, 'attempt': attempt}
+        data = {'call_id': call_id, 'operation': operation, **self.trace.step_context}
         self.trace.emit('model_started', self.phase, data)
         try:
             result = await getattr(self.provider, operation)(*args, **kwargs)
@@ -89,10 +87,15 @@ class ObservedProvider:
             reason = exc.details.get('provider_failure') if isinstance(exc, ServiceError) else None
             cause = {'error_code': reason} if type(reason) is str and reason in {
                 'provider_empty_choices', 'provider_output_truncated'} else {}
-            self.trace.emit('model_failed', self.phase, {**data,
-                            'duration_ms': int((time.monotonic() - started) * 1000),
-                            'code': exc.code if isinstance(exc, ServiceError) else 'cancelled_or_internal_error',
-                            **cause})
+            try:
+                self.trace.emit('model_failed', self.phase, {**(classify(exc, self.phase) if isinstance(exc, ServiceError) else {}), **data,
+                                'duration_ms': int((time.monotonic() - started) * 1000),
+                                'code': exc.code if isinstance(exc, ServiceError) else 'cancelled_or_internal_error',
+                                **cause})
+            except ServiceError:
+                # Preserve the provider failure; run_step must not dispatch again without evidence.
+                if isinstance(exc, ServiceError):
+                    exc._trace_unavailable = True
             raise
         self.trace.emit('model_completed', self.phase,
                         {**data, 'duration_ms': int((time.monotonic() - started) * 1000)})
@@ -106,21 +109,12 @@ class ObservedProvider:
 
 
 def _invalid(trace, phase, errors, attempt):
-    # Diagnostics carry paths/codes only, never quotes from the provider response.
-    paths = [e.split(':', 1)[0][:120] for e in errors if e.startswith('$')][:30]
-    codes = list(dict.fromkeys(e.split(':', 2)[1].strip() for e in errors
-                              if len(e.split(':', 2)) > 1
-                              and e.split(':', 2)[1].strip() in SOURCE_ISSUE_CODES))
-    trace.emit('validation_failed', phase, {'valid': False, 'attempt': attempt,
-                                           'issue_paths': paths,
-                                           'issue_codes': codes or ['invalid_stage_response']})
+    exc = invalid_response('Invalid stage response', errors)
+    trace.emit('validation_failed', phase, {'valid': False, 'attempt': attempt, **classify(exc, phase)})
 
 
 async def _candidate(provider, messages, **kwargs):
-    try:
-        message = await provider.chat(messages, **kwargs)
-    except LLMResponseFormatError:
-        return None, ''
+    message = await provider.chat(messages, **kwargs)
     raw = message.get('content') if type(message) is dict else None
     if type(raw) is not str or len(raw) > MAX_RESPONSE_BYTES:
         return None, ''
@@ -136,58 +130,59 @@ async def _candidate(provider, messages, **kwargs):
 
 
 async def _json_stage(provider, trace, phase, messages, validator, **kwargs):
-    with trace.stage(phase):
-        for attempt in range(MAX_REPAIRS + 1):
-            data, raw = await _candidate(provider.for_phase(phase), messages, **kwargs)
-            errors = validator(data)
-            if not errors:
-                return data
-            _invalid(trace, phase, errors, attempt + 1)
-            if attempt == MAX_REPAIRS:
-                break
-            trace.emit('retry', phase, {'attempt': attempt + 2})
-            messages += [{'role': 'assistant', 'content': raw},
+    async def attempt(_):
+        data, raw = await _candidate(provider.for_phase(phase), messages, **kwargs)
+        errors = validator(data)
+        if not errors:
+            return data
+        messages.extend([{'role': 'assistant', 'content': raw},
                          {'role': 'user', 'content': 'Сервер не принял ответ:\n' + '\n'.join(errors[:30])[:3000]
-                          + '\nВерни исправленный JSON целиком.'}]
-        raise LLMResponseFormatError('Модель не подготовила корректные данные этапа. Повтори проверку')
+                          + '\nВерни исправленный JSON целиком.'}])
+        raise invalid_response('Модель не подготовила корректные данные этапа. Повтори проверку', errors)
+    with trace.stage(phase):
+        return await run_step(trace, phase, phase, attempt)
 
 
-async def _transcribe(provider, trace, prompt, *images):
-    """Retry only completed malformed responses, never an uncertain transport dispatch."""
-    for attempt in range(2):
-        try:
-            text = await provider.transcribe(prompt, *images)
-        except LLMResponseFormatError:
-            text = None
-        errors = ['$.ocr: missing or oversized transcript']
+def _doubt_marker_errors(text):
+    starts, matches = list(V2_DOUBT_START.finditer(text)), list(V2_DOUBT.finditer(text))
+    if [m.start() for m in starts] != [m.start() for m in matches]:
+        return ['$: ocr_doubt_invalid_marker: use a complete uncertainty marker']
+    if len(matches) > MAX_DOUBTS:
+        return ['$: ocr_doubt_limit: too many uncertain fragments']
+    return []
+
+
+async def _transcribe(provider, trace, prompt, *images, step='ocr', joined=False):
+    async def attempt(_):
+        nonlocal prompt
+        text = await provider.transcribe(prompt, *images)
+        errors = ['$.ocr: empty_response: missing or oversized transcript']
         try:
             if type(text) is str and text.strip() and len(text.encode('utf-8')) <= MAX_RESPONSE_BYTES:
-                errors = math_notation_errors(text)
+                errors = (transcript_errors(text) + _doubt_marker_errors(text) if joined else math_notation_errors(text))
                 if not errors:
                     return text.strip()
         except UnicodeError:
             pass
-        call_attempt = provider.counters['ocr']
-        _invalid(trace, 'ocr', errors, call_attempt)
-        if attempt == 0:
-            prompt += '\nСервер не принял расшифровку:\n' + '\n'.join(errors)
-            trace.emit('retry', 'ocr', {'attempt': call_attempt + 1})
-    raise LLMResponseFormatError('Не удалось получить полную расшифровку решения')
+        prompt += '\nСервер не принял расшифровку:\n' + '\n'.join(errors)
+        raise invalid_response('Не удалось получить полную расшифровку решения', errors)
+    return await run_step(trace, 'ocr', step, attempt)
 
 
 async def _read(provider, trace, images, package):
     sections = []
     for photo, image in enumerate(images, 1):
         for number, strip in enumerate(strips(image), 1):
-            text = await _transcribe(provider, trace, reader_prompt(package) + OCR_NOTATION_PROMPT, strip.part())
+            text = await _transcribe(provider, trace, reader_prompt(package) + OCR_NOTATION_PROMPT, strip.part(),
+                                     step=f'ocr.photo.{photo}.strip.{number}')
             sections.append(f'## Фото {photo}, полоса {number} из {STRIPS}\n{text}')
     joined = '\n\n'.join(sections)
     # A failed join must not release overlapping strips as a completed v2 transcript.
     reading = await _transcribe(provider, trace,
         resolve_prompt(package) + OCR_NOTATION_PROMPT + '\n\n## Расшифровка по полосам\n' + joined,
-        *[enlarged(image).part() for image in images])
+        *[enlarged(image).part() for image in images], step='ocr.join', joined=True)
     reading = await resolve_doubts(provider, reading, images, fail_on_transport=True,
-                                   recover_missing_options=True, trace=trace)
+                                   recover_missing_options=True, trace=trace, retry_steps=True)
     errors = math_notation_errors(reading)
     if errors:
         _invalid(trace, 'ocr', errors, provider.counters['ocr'])
@@ -383,48 +378,38 @@ async def _analyse(provider, trace, task, package, reading, ocr):
         block('Шаги расшифровки', json.dumps(ocr, ensure_ascii=False))])
     messages = [{'role': 'system', 'content': ANALYSIS_PROMPT + CAUSAL_STEPS_RULE}, {'role': 'user', 'content': content}]
     output_override = None
-    with trace.stage('analysis'):
-        for attempt in range(MAX_REPAIRS + 1):
-            try:
-                budget = {} if output_override is None else {'max_output_tokens': output_override}
-                message = await provider.for_phase('analysis').chat(messages, plain=True, **budget)
-                raw = message.get('content') if type(message) is dict else None
-            except LLMResponseFormatError as exc:
-                if exc.details.get('provider_failure') == 'provider_output_truncated':
-                    trace.emit('validation_failed', 'analysis', {'valid': False, 'attempt': attempt + 1,
-                               'issue_paths': ['$.analysis'], 'issue_codes': ['provider_output_truncated']})
-                    limit = exc.details.get('output_limit')
-                    if (attempt == MAX_REPAIRS or output_override is not None
-                            or type(limit) is not int or not 0 < limit < ANALYSIS_RECOVERY_OUTPUT_LIMIT):
-                        raise
-                    # One completed truncated call may use the next existing repair slot.
-                    # Do not mislabel truncation as malformed analysis or replay transport failures.
+    async def attempt(_):
+        nonlocal output_override
+        try:
+            budget = {} if output_override is None else {'max_output_tokens': output_override}
+            message = await provider.for_phase('analysis').chat(messages, plain=True, **budget)
+        except LLMResponseFormatError as exc:
+            if exc.details.get('provider_failure') == 'provider_output_truncated':
+                limit = exc.details.get('output_limit')
+                if type(limit) is int and 0 < limit < ANALYSIS_RECOVERY_OUTPUT_LIMIT:
                     output_override = ANALYSIS_RECOVERY_OUTPUT_LIMIT
-                    trace.emit('retry', 'analysis', {'attempt': attempt + 2,
-                                                     'code': 'provider_output_budget_increased'})
-                    continue
-                raw = None
-            try:
-                valid_text = type(raw) is str and len(raw.encode('utf-8')) <= MAX_RESPONSE_BYTES
-            except UnicodeError:
-                valid_text = False
-            if not valid_text:
-                raw = ''
-            parsed = parse_analysis(raw)
-            errors = ['$.analysis: invalid status or review']
-            if parsed:
-                status, reason, notes = parsed
-                if status != 'ok':
-                    return status, reason, '', None
-                statuses, summary, errors = _analysis_steps(notes, ocr)
-                if not errors:
-                    return status, '', summary, statuses
-            _invalid(trace, 'analysis', errors, attempt + 1)
-            if attempt < MAX_REPAIRS:
-                trace.emit('retry', 'analysis', {'attempt': attempt + 2})
-                messages += [{'role': 'assistant', 'content': raw}, {'role': 'user', 'content':
-                    'Исправь формат разбора и ссылки шагов:\n' + '\n'.join(errors[:30]) + '\nВерни полный разбор.'}]
-        raise LLMResponseFormatError('Модель не подготовила полный разбор со связями шагов')
+            raise
+        raw = message.get('content') if type(message) is dict and not message.get('tool_calls') else None
+        try:
+            valid_text = type(raw) is str and len(raw.encode('utf-8')) <= MAX_RESPONSE_BYTES
+        except UnicodeError:
+            valid_text = False
+        if not valid_text:
+            raw = ''
+        parsed = parse_analysis(raw)
+        errors = ['$.analysis: invalid status or review']
+        if parsed:
+            status, reason, notes = parsed
+            if status != 'ok':
+                return status, reason, '', None
+            statuses, summary, errors = _analysis_steps(notes, ocr)
+            if not errors:
+                return status, '', summary, statuses
+        messages.extend([{'role': 'assistant', 'content': raw}, {'role': 'user', 'content':
+            'Исправь формат разбора и ссылки шагов:\n' + '\n'.join(errors[:30]) + '\nВерни полный разбор.'}])
+        raise invalid_response('Модель не подготовила полный разбор со связями шагов', errors)
+    with trace.stage('analysis'):
+        return await run_step(trace, 'analysis', 'analysis', attempt)
 
 
 async def _grade(provider, trace, task, image_ids, package, reading, ocr, artifacts, notes, statuses):
@@ -435,47 +420,43 @@ async def _grade(provider, trace, task, image_ids, package, reading, ocr, artifa
         block('Solution.md', solution_text(task)), block('ocr_result.md', reading), *answer_block(task, reading),
         block('notes.md', notes), block('Шаги и статусы', json.dumps({'ocr': ocr, 'statuses': statuses}, ensure_ascii=False))])
     messages = [{'role': 'system', 'content': GRADING_PROMPT + SCREEN_RULE}, {'role': 'user', 'content': content}]
-    rechecked, repairs, call_attempt = False, 0, 0
-    with trace.stage('grading'):
-        while True:
-            call_attempt += 1
-            data, raw = await _candidate(provider.for_phase('grading'), messages)
-            errors = ['$: expected analysis, grading and corrections']
-            response = None
-            if type(data) is dict and set(data) == {'analysis', 'grading', 'corrections'} and type(data['analysis']) is dict:
-                fixes = data['corrections']
-                expected = {s['id'] for s in statuses if s['status'] in ('error', 'consequence')}
-                fix_ids = [f.get('id') for f in fixes if type(f) is dict] if type(fixes) is list else []
-                errors = []
-                if (type(fixes) is not list or any(type(f) is not dict or set(f) != {'id', 'correct'}
-                        or type(f['id']) is not str or type(f['correct']) is not str or not f['correct'].strip() for f in fixes)
-                        or any(type(i) is not str for i in fix_ids)
-                        or len(fix_ids) != len(expected) or set(fix_ids) != expected):
-                    errors.append('$.corrections: one corrected record per error or consequence step is required')
-                if set(data['analysis']) != {'checks', 'student_answer', 'errors', 'strengths'}:
-                    errors.append('$.analysis: invalid grading analysis fields')
-                response = {'task': task, 'solution_image_ids': image_ids, 'is_graded': True, 'rejection_reason': '',
-                            'ocr': ocr, 'analysis': {'summary': review_for_frontend(notes), **data['analysis'],
-                                                   'statuses': corrected(statuses, fixes)},
-                            'grading': data['grading'], 'artifacts': artifacts}
-                candidate = json.dumps(response, ensure_ascii=False)
-                errors += validate_v2_response(candidate, task=task, image_ids=image_ids,
-                                               artifacts=artifacts, reader_ocr=ocr)
-            if not errors:
-                recheck = answer_recheck(task, reading, data) if not rechecked else None
-                if recheck:
-                    rechecked = True
-                    messages += [{'role': 'assistant', 'content': raw}, {'role': 'user', 'content': recheck}]
-                    trace.emit('retry', 'grading', {'attempt': call_attempt + 1, 'code': 'answer_recheck'})
-                    continue
+    rechecked = False
+    async def attempt(_):
+        nonlocal rechecked
+        data, raw = await _candidate(provider.for_phase('grading'), messages)
+        errors = ['$: expected analysis, grading and corrections']
+        response = None
+        if type(data) is dict and set(data) == {'analysis', 'grading', 'corrections'} and type(data['analysis']) is dict:
+            fixes = data['corrections']
+            expected = {s['id'] for s in statuses if s['status'] in ('error', 'consequence')}
+            fix_ids = [f.get('id') for f in fixes if type(f) is dict] if type(fixes) is list else []
+            errors = []
+            if (type(fixes) is not list or any(type(f) is not dict or set(f) != {'id', 'correct'}
+                    or type(f['id']) is not str or type(f['correct']) is not str or not f['correct'].strip() for f in fixes)
+                    or any(type(i) is not str for i in fix_ids)
+                    or len(fix_ids) != len(expected) or set(fix_ids) != expected):
+                errors.append('$.corrections: one corrected record per error or consequence step is required')
+            if set(data['analysis']) != {'checks', 'student_answer', 'errors', 'strengths'}:
+                errors.append('$.analysis: invalid grading analysis fields')
+            response = {'task': task, 'solution_image_ids': image_ids, 'is_graded': True, 'rejection_reason': '',
+                        'ocr': ocr, 'analysis': {'summary': review_for_frontend(notes), **data['analysis'],
+                                               'statuses': corrected(statuses, fixes)},
+                        'grading': data['grading'], 'artifacts': artifacts}
+            candidate = json.dumps(response, ensure_ascii=False)
+            errors += validate_v2_response(candidate, task=task, image_ids=image_ids,
+                                           artifacts=artifacts, reader_ocr=ocr)
+        if not errors:
+            recheck = answer_recheck(task, reading, data) if not rechecked else None
+            if not recheck:
                 return response
-            _invalid(trace, 'grading', errors, call_attempt)
-            if repairs >= MAX_REPAIRS:
-                raise LLMResponseFormatError('Модель не подготовила проверенный итоговый JSON')
-            repairs += 1
-            trace.emit('retry', 'grading', {'attempt': call_attempt + 1})
-            messages += [{'role': 'assistant', 'content': raw}, {'role': 'user', 'content':
-                'Сервер не принял ответ:\n' + '\n'.join(errors[:30])[:3000] + '\nВерни исправленный JSON целиком.'}]
+            rechecked = True
+            messages.extend([{'role': 'assistant', 'content': raw}, {'role': 'user', 'content': recheck}])
+            raise invalid_response('Нужна перепроверка итогового ответа', reason='answer_recheck')
+        messages.extend([{'role': 'assistant', 'content': raw}, {'role': 'user', 'content':
+            'Сервер не принял ответ:\n' + '\n'.join(errors[:30])[:3000] + '\nВерни исправленный JSON целиком.'}])
+        raise invalid_response('Модель не подготовила проверенный итоговый JSON', errors)
+    with trace.stage('grading'):
+        return await run_step(trace, 'grading', 'grading', attempt)
 
 
 def validate_final(raw, task, image_ids, trace):

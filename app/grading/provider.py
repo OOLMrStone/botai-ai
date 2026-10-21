@@ -4,9 +4,11 @@ import re
 import logging
 import time
 
-from openai import AsyncOpenAI, APIError, APITimeoutError, DefaultAsyncHttpxClient
+from openai import (AsyncOpenAI, APIError, APIConnectionError, APITimeoutError,
+                    RateLimitError, DefaultAsyncHttpxClient)
 
-from app.core.errors import LLMConfigError, LLMError, LLMResponseFormatError, LLMTimeoutError
+from app.core.errors import (LLMBadRequestError, LLMConfigError, LLMError,
+                             LLMRateLimitError, LLMResponseFormatError, LLMTimeoutError)
 from app.grading.session import READ_ORDER
 
 log = logging.getLogger(__name__)
@@ -60,6 +62,31 @@ def require_complete(completion, output_limit, message):
                                                   'output_limit': output_limit})
 
 
+def provider_error(exc):
+    """Classify upstream failures using SDK type/status only, never its private body."""
+    status = getattr(exc, 'status_code', None)
+    if isinstance(exc, APITimeoutError):
+        return LLMTimeoutError('Модель не ответила вовремя. Повтори проверку', retryable=True,
+                               details={'provider_failure': 'provider_timeout'})
+    if isinstance(exc, APIConnectionError):
+        return LLMError('Не удалось подключиться к модели. Повтори проверку', retryable=True,
+                        details={'provider_failure': 'provider_connection_error'})
+    if isinstance(exc, RateLimitError) or status == 429:
+        return LLMRateLimitError('Модель временно перегружена. Повтори проверку', retryable=True,
+                                 details={'provider_failure': 'provider_rate_limit'})
+    if type(status) is int and 500 <= status <= 599:
+        return LLMError('Сервис модели временно недоступен. Повтори проверку', retryable=True,
+                        details={'provider_failure': 'provider_unavailable'})
+    if status in (401, 403):
+        return LLMConfigError('Сервис модели отклонил авторизацию сервера', retryable=False,
+                              details={'provider_failure': 'provider_authentication'})
+    if type(status) is int and 400 <= status <= 499:
+        return LLMBadRequestError('Сервис модели отклонил запрос сервера',
+                                  details={'provider_failure': 'provider_bad_request'})
+    return LLMError('Модель не ответила. Попробуй проверить ещё раз', retryable=False,
+                    details={'provider_failure': 'provider_error'})
+
+
 class Provider:
     def __init__(self, settings, *, trust_env=True):
         if not settings.api_key:
@@ -94,11 +121,8 @@ class Provider:
         try:
             started = time.monotonic()
             completion = await self.client.chat.completions.create(**kwargs)
-        except APITimeoutError as exc:
-            raise LLMTimeoutError('Модель не ответила вовремя. Повтори проверку', retryable=False) from exc
         except APIError as exc:
-            # Do not leak provider response bodies, request headers or image payloads.
-            raise LLMError('Модель не ответила. Попробуй проверить ещё раз', retryable=False) from exc
+            raise provider_error(exc) from None
         log_usage('tools' if tools else ('prepare' if think else 'plain'), completion, started,
                   output_limit=kwargs[token_param])
         require_complete(completion, kwargs[token_param], 'Модель не завершила ответ. Повтори проверку')
@@ -116,10 +140,8 @@ class Provider:
         try:
             started = time.monotonic()
             completion = await self.client.chat.completions.create(**kwargs)
-        except APITimeoutError as exc:
-            raise LLMTimeoutError('Модель не ответила вовремя. Повтори проверку', retryable=False) from exc
         except APIError as exc:
-            raise LLMError('Модель не ответила. Попробуй проверить ещё раз', retryable=False) from exc
+            raise provider_error(exc) from None
         log_usage('reader', completion, started, output_limit=kwargs[token_param])
         require_complete(completion, kwargs[token_param], 'Модель не завершила расшифровку')
         return completion.choices[0].message.content or ''
