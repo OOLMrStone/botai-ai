@@ -1,0 +1,45 @@
+.local-diagnostics{margin-top:28px}
+.local-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
+.local-heading h2{margin-bottom:4px}
+.local-environment{color:var(--muted);font-size:13px;margin:0;overflow-wrap:anywhere}
+.local-download{flex:none;padding:0;min-height:30px;white-space:nowrap}
+.local-current{display:flex;align-items:baseline;gap:12px;margin:22px 0 14px;font-size:14px;min-height:22px}
+.local-current-label{font-weight:600;overflow-wrap:anywhere}
+.local-current-label::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:9px;background:var(--muted);vertical-align:2px}
+.local-current[data-state="active"] .local-current-label::before{background:var(--accent)}
+.local-current[data-state="complete"] .local-current-label::before{background:var(--good)}
+.local-current[data-state="error"] .local-current-label::before,.local-current[data-state="offline"] .local-current-label::before{background:var(--danger)}
+.local-current-wait{margin-left:auto;flex:none;color:var(--muted);font-variant-numeric:tabular-nums}
+.local-connection{margin-top:18px;border-left:3px solid var(--danger);padding-left:14px;font-size:14px;display:flex;align-items:center;gap:16px}
+.local-connection button{flex:none;font-size:13px}
+.local-timeline{max-height:380px;overflow:auto;overscroll-behavior:contain;border-block:1px solid var(--line);scrollbar-gutter:stable}
+.local-timeline:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
+.local-empty{color:var(--muted);font-size:14px;padding:24px 0;margin:0;max-width:560px}
+.local-events{list-style:none;padding:0;margin:0}
+.local-event{display:grid;grid-template-columns:64px minmax(0,1fr);gap:14px;padding:14px 0;margin:0;border-bottom:1px solid var(--line)}
+.local-event:last-child{border-bottom:0}
+.local-event-time{font:12px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--muted);padding-top:2px}
+.local-event-kind{font-size:12px;font-weight:650;color:var(--muted)}
+.local-event[data-kind="final"] .local-event-kind{color:var(--good)}
+.local-event[data-kind="error"] .local-event-kind,.local-event[data-kind="cancelled"] .local-event-kind{color:var(--danger)}
+.local-event-message{font-size:13px;margin:3px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.local-event-details{border:0;padding:4px 0 0}
+.local-event-details summary{min-height:30px;display:list-item;align-content:center;font-size:12px;color:var(--accent);font-weight:500;width:fit-content}
+.local-event-content{margin:8px 0 2px;padding:12px;background:var(--bg);border-radius:8px}
+.local-event-content pre{margin:8px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.local-event-content pre:first-child{margin-top:0}
+.local-content-label{font-size:12px;font-weight:600;margin:16px 0 0}
+.local-event-request{font-size:11px;color:var(--muted);overflow-wrap:anywhere;margin:0}
+.local-log-footer{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:8px 0 4px}
+.local-log-hint{font-size:12px;color:var(--muted)}
+.local-clear{padding:7px 10px;font-size:12px;flex:none;min-height:40px}
+.local-clear:disabled{cursor:default}
+.local-files{padding-bottom:0;margin-top:16px}
+.local-files summary{font-size:14px}
+.local-config{margin:0 0 18px;font-size:12px}
+.local-config-item{display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;padding:5px 0}
+.local-config dt{color:var(--muted)}
+.local-config dd{margin:0;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}
+.local-paths{margin-bottom:0}
+.local-key-warning{color:var(--danger)}
+@media(max-width:640px){.local-heading{flex-direction:column;gap:8px}.local-download{min-height:40px}.local-current{margin-top:16px}.local-event{grid-template-columns:55px minmax(0,1fr);gap:10px}.local-event-time{font-size:11px}.local-timeline{max-height:360px}.local-connection{align-items:flex-start;flex-direction:column;gap:10px}.local-config-item{grid-template-columns:1fr;gap:2px;padding:7px 0}.local-log-footer{align-items:flex-start}.local-log-hint{padding-top:8px}}

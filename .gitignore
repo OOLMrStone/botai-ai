@@ -1,3 +1,4 @@
+.venv
 .venv/
 venv/
 __pycache__/
@@ -7,6 +8,10 @@ __pycache__/
 *.egg-info/
 build/
 dist/
+
+# Portable executables may contain the private provider key.
+BotAI-Local
+BotAI-Local.exe
 
 .env
 .env.*

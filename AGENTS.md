@@ -1,6 +1,6 @@
 # AGENTS.md — start here
 
-BotAI checks photographed ЕГЭ mathematics solutions. Current task: project **16**, inequalities, corresponding to **ФИПИ-2026 №15**. One score 0–2. Python 3.14, FastAPI, OpenAI-compatible provider.
+BotAI checks photographed ЕГЭ mathematics solutions. The integrated staged flow covers project tasks **14–20** (ФИПИ-2026 №13–19), with one task-specific score. Task 16 is inequalities (ФИПИ №15), score 0–2. Python 3.14, FastAPI, OpenAI-compatible provider.
 
 Start an agent in this repository (`botai-ai`) and ask it to read this file first. Read only the relevant documents below; historical records are optional context, not current instructions.
 

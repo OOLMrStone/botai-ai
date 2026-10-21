@@ -1,8 +1,31 @@
 # Bot AI — standalone photo grading
 
-A FastAPI microservice for checking photographed ЕГЭ mathematics solutions. The current test workflow uses the inequalities prompt package (project task 16, corresponding to ФИПИ-2026 task 15), with one score from 0 to 2 and feedback in Russian. Integration with the main application's users, tasks and database is outside this implementation.
+A FastAPI microservice for checking photographed ЕГЭ mathematics solutions. The current workflow supports project tasks 14–20 (ФИПИ-2026 tasks 13–19), with one task-specific score and feedback in Russian. Integration with the main application's users, tasks and database is outside this implementation.
 
 Python 3.14 · FastAPI · OpenAI-compatible model · Docker Compose
+
+## Current development state — 21 October 2026
+
+`main` is the integrated service and portable application: the staged flow and
+approved prompt packages for project tasks 14–20, local v2 contract/validation
+fixes, and the native local launcher. See [architecture](docs/ARCHITECTURE.md),
+[photo workflow](docs/grading/service.md), and [local launch](docs/LOCAL_APP.md).
+The repository version is not a claim that production has been redeployed.
+
+Keep two named long-lived branches: `main` (verified integration) and `develop`
+(work not yet integrated). Start short-lived `codex/<feature>` branches from
+`main`, test, merge into `main`, and delete them. Bring `develop` back to `main`
+after its work is integrated. Do not maintain separate task-number or packaging
+branches. Historical branch tips are retained under `archive/2026-10-21/` tags.
+
+## Portable local app
+
+The [local app](docs/LOCAL_APP.md) runs the same staged checking service on the
+computer and calls DeepSeek directly. Native Windows/macOS builds need no Python
+on the tester's machine. Editable shared and task-specific prompts live beside
+the executable; all task packages 14–20, including optional OCR instructions,
+are included. Start from source without charges:
+`.venv/bin/python scripts/run_local.py --mock`.
 
 ## Run locally without model charges
 
@@ -17,11 +40,14 @@ Open [the test form](http://localhost:8000/ui/). Mock mode returns a clearly lab
 2. Attach one to four images of the student's work, in order.
 3. Submit and inspect the recognized text, analysis and single score, or the reason grading was declined.
 
-Each image may be up to 8 MiB. A complete request may contain all five images. Preparation and grading share a 480-second deadline; retries are manual. A readable statement and correct answer are required. A missing complete reference solution is allowed and shown in the form.
+Each image may be up to 8 MiB. A complete request may contain all five images. Preparation and grading share a 360-second deadline; retries are manual. A readable statement and correct answer are required. A missing complete reference solution is allowed and shown in the form.
 
 ## How the new workflow works
 
-A separate model session transcribes the task image into request-local `Statement.md` and `Solution.md`. It does not solve the problem. One subsequent conversation saves immutable `ocr_result.md` before receiving the reference solution, reads the shared analysis instructions and task criteria, and saves an unscored step-by-step review in `notes.md`. Reading grading instructions freezes that review; the conversation then writes and validates `response.json`. The server enforces tool permissions and order and returns the exact validated text.
+A separate session reads the task image. The student's photographs are read
+without the reference answer, then structured and analysed; a separate grading
+call applies the selected criteria. The server validates the final JSON and
+returns the exact checked text. See the current [workflow](docs/grading/service.md).
 
 The result contains `task`, `solution_image_ids`, `is_graded`, `rejection_reason`, `ocr`, `analysis` and `grading`. A declined submission has no score: its three result fields are `null`. Technical failures are errors, never zero grades. Structural validation does not establish mathematical correctness.
 
@@ -45,7 +71,7 @@ Paid model calls require a direct user request in the current message. Offline t
 
 | Endpoint | Purpose |
 | --- | --- |
-| `POST /api/v1/photo-check` | Multipart upload: one `task_image`, one to four repeated `solution_images` fields |
+| `POST /api/v1/photo-check` | Multipart upload: one `task_image`, one to four repeated `solution_images`, optional `task_number`14–20 (default16) |
 | `GET /api/v1/photo-check/config` | Form configuration and local test identity; no model call |
 | `GET /ui/` | Standalone test form |
 | `GET /health` | Application liveness when called directly on the application |

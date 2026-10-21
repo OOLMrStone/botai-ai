@@ -5,12 +5,9 @@ import hashlib
 from pathlib import Path
 
 from app.grading.internal_contract import CONTRACT_VERSION, InternalGradingError
-from app.grading.package import load_package, task_directory
+from app.grading.package import MAX_SCORES, load_package, task_directory
 from app.grading.service import GradingService
 from app.grading.validator import ValidationGate, load_error_codes
-
-# FIPI draft 2027 specification, section 10; independent of legacy rubrics.
-MAX_SCORES = {14: 2, 15: 3, 16: 2, 17: 2, 18: 3, 19: 4, 20: 4}
 
 
 def package_digest(package: dict[str, str]) -> str:

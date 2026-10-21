@@ -5,11 +5,13 @@
 | Путь | Назначение |
 | --- | --- |
 | `app/main.py`, `app/api/` | FastAPI, маршруты, middleware и ошибки |
-| `app/grading/` | Фото-проверка: service, session, provider, images, reports, validator |
+| `app/application.py` | Общая фабрика FastAPI без чтения окружения при импорте |
+| `app/local/`, `scripts/run_local.py` | Локальный запуск, прямое API и журнал; [инструкция](LOCAL_APP.md) |
+| `app/grading/` | Фото-проверка: service → reader → structure → staged → validator; provider вызывает модель, session сохраняет fallback |
 | `app/legacy_grading/` | Сохранённые старые текстовый и двухоценочный конвейеры |
 | `app/llm/`, `app/core/`, `app/config.py` | Общие модели доступа к LLM, ошибки, журналирование и настройки |
 | `tasks/common/prompts/` | Общие main, analysis, grading, response-format |
-| `tasks/14..20/prompts/` | Предметные промпты; реализован пакет 16 |
+| `tasks/14..20/prompts/` | Предметные промпты; заполнены пакеты 14–20 |
 | `tasks/N/hypotheses/` | Идеи и наблюдения конкретного задания, только для разработки |
 | `tasks/16/evals/` | Входы, скрытые эталоны и сохранённые результаты |
 | `tests/`, `scripts/` | Офлайн-проверки, валидация и инструменты разработки |

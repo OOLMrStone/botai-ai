@@ -1,5 +1,19 @@
 # Selectel test deployment
 
+## Read-only audit — 21 October 2026
+
+The running `ege-grading-api` and `botai-public-ai-1` containers retain older
+service/prompt versions. Rootless `botai-develop` contains the staged all-task
+flow: all shared code/prompt files compared against `staged-all-tasks-final`
+(`17332de`) match after CRLF/LF normalization. DEVELOP also has old task-local
+main/analysis/response-format files; package loading uses the common versions.
+No server deployment, environment change or paid request was performed.
+
+The integrated repository now also contains portable-launcher and v2 validation
+changes. A future deployment must use this document’s candidate/mock verification
+procedure; branch consolidation does not update any running container.
+
+
 Updated and deployed 27 September 2026. The service is on Selectel at `135.106.182.11`, with sources and its private environment file under `/srv/ege/app`. The updated `ege-grading-api` container is healthy on loopback port 8080. Existing authentication and database services were preserved; the `.env` hash is unchanged.
 
 The user-facing form is [https://api.botai-ege.ru/internal/grading/](https://api.botai-ege.ru/internal/grading/). Since 1 October 2026 the domain root serves a generic usage guide without credentials or internal addresses. The existing host Caddy maps the form to the application's `/ui/` and protects access. `/api/v1/*` accepts the existing tester Basic authentication or application session authentication. The form calls `/internal/grading/api/photo-check` (including `/config`), which Caddy protects with the same tester login and rewrites to `/api/v1/photo-check`. Keep this handler before the generic UI handler: browser Basic credentials are scoped to the page directory and are not reliably reused for the disjoint `/api/v1/` path. The sanitized host reference is `deploy/caddy-host.Caddyfile`.

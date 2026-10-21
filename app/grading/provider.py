@@ -4,7 +4,7 @@ import re
 import logging
 import time
 
-from openai import AsyncOpenAI, APIError, APITimeoutError
+from openai import AsyncOpenAI, APIError, APITimeoutError, DefaultAsyncHttpxClient
 
 from app.core.errors import LLMConfigError, LLMError, LLMResponseFormatError, LLMTimeoutError
 from app.grading.session import READ_ORDER
@@ -61,14 +61,16 @@ def require_complete(completion, output_limit, message):
 
 
 class Provider:
-    def __init__(self, settings):
+    def __init__(self, settings, *, trust_env=True):
         if not settings.api_key:
             raise LLMConfigError('Не настроен ключ модели на сервере')
         if not settings.base_url:
             raise LLMConfigError('Укажи LLM_BASE_URL для выбранного подключения модели')
         self.settings = settings
+        transport = ({'http_client': DefaultAsyncHttpxClient(trust_env=False, follow_redirects=False)}
+                     if not trust_env else {})
         self.client = AsyncOpenAI(api_key=settings.api_key, base_url=settings.base_url,
-                                  timeout=min(settings.timeout_s, 360), max_retries=0)
+                                  timeout=min(settings.timeout_s, 360), max_retries=0, **transport)
 
     async def close(self):
         await self.client.close()
@@ -128,6 +130,12 @@ class MockProvider:
     async def close(self):
         pass
 
+    @staticmethod
+    def _staged_maximum(messages):
+        content = str(messages[-1].get('content', ''))
+        match = re.search(r'## Максимальный балл\n(\d+)', content)
+        return int(match.group(1)) if match else 2
+
     async def transcribe(self, prompt, *image_parts):
         return 'Демонстрация mock: изображения не распознавались.\nx > 0'
 
@@ -155,7 +163,7 @@ class MockProvider:
                                         'completeness': {'is_complete': True, 'reason': 'Демонстрация'}},
                              'student_answer': {'text': '(0; +∞)', 'is_correct': True},
                              'errors': [], 'strengths': []},
-                'grading': {'score': 2, 'criterion': 'Демонстрационный результат',
+                'grading': {'score': self._staged_maximum(messages), 'criterion': 'Демонстрационный результат',
                             'explanation': 'Это тест интерфейса, а не оценка загруженной работы.'}},
                 ensure_ascii=False)}
         if not tools:
@@ -177,7 +185,7 @@ class MockProvider:
                                             'completeness': {'is_complete': True, 'reason': 'Демонстрация'}},
                                  'student_answer': {'text': '(0; +∞)', 'is_correct': True},
                                  'errors': [], 'strengths': []},
-                    'grading': {'score': 2, 'criterion': 'Демонстрационный результат',
+                    'grading': {'score': request['task']['max_score'], 'criterion': 'Демонстрационный результат',
                                 'explanation': 'Это тест интерфейса, а не оценка загруженной работы.'}}
         raw = json.dumps(response, ensure_ascii=False)
         sequence = [('read_file', {'path': p}) for p in READ_ORDER[:2]]

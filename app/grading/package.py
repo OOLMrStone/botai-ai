@@ -1,9 +1,8 @@
-"""Resolve one approved task package in a checkout or built runtime.
+"""Resolve shared and task prompts from one complete workspace layout.
 
-Runtime images put task prompts in prompts/<number>; authoring checkouts use
-tasks/<number>/prompts and tasks/common/prompts. If the runtime task
-directory exists it selects the runtime layout for both task and common files:
-missing runtime files fail rather than silently mixing two versions.
+Portable executables can sit beside common/ and numbered task folders. Runtime
+images use prompts/<number>; checkouts use tasks/<number>/prompts. A selected
+layout always supplies both shared and task files, with no fallback per file.
 """
 from pathlib import Path
 
@@ -48,17 +47,33 @@ def response_format(text: str, max_score: int) -> str:
             .replace('Целое 0, 1 или 2', 'Целое ' + scores))
 
 
-def task_directory(task_number: int = 16, *, root: Path = ROOT) -> Path:
-    if type(task_number) is not int or task_number not in SUPPORTED_TASKS:
+def task_max_score(task_number: int) -> int:
+    if type(task_number) is not int or task_number not in MAX_SCORES:
         raise ValueError(f'Unsupported grading task: {task_number!r}')
+    return MAX_SCORES[task_number]
+
+
+def _directories(task_number: int, root: Path) -> tuple[Path, Path]:
+    task_max_score(task_number)
     runtime = root / 'prompts' / str(task_number)
-    return runtime if runtime.exists() else root / 'tasks' / str(task_number) / 'prompts'
+    if runtime.exists():
+        return root / 'prompts' / 'common', runtime
+    common, task = root / 'common', root / str(task_number)
+    if common.exists() or task.exists():
+        # Existing authoring folders may contain prompts/ alongside hypotheses
+        # and evals. Select that shape as a whole, never from one folder only.
+        if (common / 'prompts').exists() or (task / 'prompts').exists():
+            return common / 'prompts', task / 'prompts'
+        return common, task
+    return root / 'tasks' / 'common' / 'prompts', root / 'tasks' / str(task_number) / 'prompts'
+
+
+def task_directory(task_number: int = 16, *, root: Path = ROOT) -> Path:
+    return _directories(task_number, root)[1]
 
 
 def package_paths(task_number: int = 16, *, root: Path = ROOT) -> dict[str, Path]:
-    task = task_directory(task_number, root=root)
-    runtime_layout = task == root / 'prompts' / str(task_number)
-    common = root / 'prompts' / 'common' if runtime_layout else root / 'tasks' / 'common' / 'prompts'
+    common, task = _directories(task_number, root)
     return {name: (common if name in COMMON_NAMES else task) / name for name in PROMPT_NAMES}
 
 
