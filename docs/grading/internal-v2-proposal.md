@@ -331,12 +331,18 @@ are persisted in this store. Stage failure events never claim successful complet
 
 After durably saving the terminal outcome and finishing event/artifact copying,
 backend acknowledges a run with authenticated `DELETE /internal/v2/grading/runs/{id}`.
-This returns 204; active runs return 409 and expired runs 404. An acknowledged
-terminal run remains readable until retention expiry or memory/count pressure.
-Only acknowledged terminal records can be reclaimed early. Bounded UUID tombstones
-(4096, original TTL) prevent replay after reclamation. Backend records successful
-ACKs durably; this prevents the old 32-completed-runs admission stall without
-discarding evidence that its observer has not yet copied.
+This returns 204 and immediately deletes the terminal run's event and artifact
+payloads, releases their byte budget and normally frees its run slot. Artifact and
+event reads then return 404. Creating or validating final JSON alone does not delete
+anything: backend must first durably copy the result and required evidence.
+Active ACKs return 409; missing or expired UUIDs return 404. Repeated ACKs return 204
+until the original TTL, and duplicate run UUIDs remain rejected with 409.
+Bounded UUID tombstones (4096, original TTL) preserve this idempotency. If that map
+is full, evidence is still deleted immediately; only an empty acknowledged receipt
+remains in the bounded run table until a tombstone slot or its TTL becomes available.
+That rare saturation can reduce admission capacity, but never retains acknowledged
+image/JSON/event payloads or evicts a live UUID guard. Backend records successful
+ACKs durably; unacknowledged evidence remains available until its original expiry.
 
 Capabilities expose `concurrency` and `available_run_records`. The B2B backend
 uses one FIFO database queue for full checks and expert grade-only jobs, with an

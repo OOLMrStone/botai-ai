@@ -159,7 +159,7 @@ class RunStore:
     def _record(self, run_id):
         self._cleanup()
         record = self._runs.get(run_id)
-        if record is None:
+        if record is None or record.acknowledged:
             raise _failure('run_not_found', 'Проверка не найдена или срок хранения истёк', 404)
         return record
 
@@ -188,7 +188,7 @@ class RunStore:
             return trace
 
     def _reclaim_one(self, *, exclude=None):
-        """Only durably acknowledged terminal evidence can be replaced under pressure."""
+        """Move an already cleared ACK receipt into the bounded UUID tombstone map."""
         if len(self._tombstones) >= self.max_tombstones:
             return False
         for run_id, record in list(self._runs.items()):
@@ -211,10 +211,23 @@ class RunStore:
             self._cleanup()
             if run_id in self._tombstones:
                 return  # Idempotent after reclaim, until the original TTL.
+            record = self._runs.get(run_id)
+            if record is not None and record.acknowledged:
+                return  # A bounded overflow receipt is also an idempotent ACK.
             record = self._record(run_id)
             if not record.terminal:
                 raise _failure('run_active', 'Проверка ещё не завершена', 409)
+            # Backend ACK follows durable result/event/crop import, never final JSON creation.
+            # Clear evidence even when the tombstone map is full; retain only a bounded
+            # empty receipt then, so an old UUID cannot silently start paid work again.
             record.acknowledged = True
+            self._bytes -= record.byte_size
+            record.byte_size = 0
+            record.events.clear()
+            record.artifacts.clear()
+            if len(self._tombstones) < self.max_tombstones:
+                self._tombstones[run_id] = record.created
+                del self._runs[run_id]
 
     def set_package(self, run_id, package_id):
         with self._lock:
