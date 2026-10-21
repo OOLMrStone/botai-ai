@@ -13,6 +13,43 @@ The integrated repository now also contains portable-launcher and v2 validation
 changes. A future deployment must use this document’s candidate/mock verification
 procedure; branch consolidation does not update any running container.
 
+## Server resources and backend memory — 21 October 2026
+
+The authenticated Selectel VDS panel confirms `botai`: **2 vCPU, 4 GB RAM,
+50 GB disk**. SSH reports 3915 MiB usable RAM and no swap. At the audit snapshot,
+MemAvailable was about 1780 MiB; this is momentary headroom, not reserved grading
+capacity. The local Mac/Docker resource budget does not describe this server.
+
+The owner's requested backend cap increase is applied to `botai-public-backend-1`:
+512 MiB → **1 GiB** (Docker Memory=1073741824, MemorySwap=2147483648).
+The change is persisted in the backend section of
+`/srv/botai-public/releases/20261008-ui-v9/back/compose.public.yaml`, and in the
+repository's `botai-back/compose.public.yaml`. Private rollback files are under
+`/root/backups/botai-backend-memory-20261021T140834Z`.
+The live cgroup limit was updated without restart, image/environment/prompt changes
+or model requests; the backend remains healthy. The existing JVM process keeps its
+startup heap sizing; the `MaxRAMPercentage=65` policy will use the new cap after a
+future normal recreation. Raising the cap does not reserve 1 GiB of host RAM.
+
+The public AI still has **384 MiB for the entire container**, configured concurrency
+**2**, and a **360-second** deadline. It runs older code without the new local v2
+queue/retry release. This audit does not certify two worst-case photo jobs as safe.
+Other consumers include the older front/auth/database/AI deployment and the
+rootless developer stack (1500 MiB parent slice). Some old services have no memory
+cap. Their simultaneous maxima exceed host RAM; a cap increase alone cannot create
+capacity. No server concurrency or cloud plan was changed.
+
+Per-check hard limits of 512 MiB require process/container isolation; requests
+currently share one AI process heap. A future isolated worker pool must budget its
+coordinator, traces, backend, database and OS separately. The current local v2
+operational default remains one slot with queued submissions. Two isolated workers
+are a candidate for measurement, not a verified server/network capacity. Four
+workers at 512 MiB would already consume 2 GiB before those shared services.
+
+The local B2B backend was independently raised from 768 MiB to 1 GiB, with the
+Compose source persisted, immutable images preserved and the accepted runtime
+controls provenance updated. This local adjustment does not deploy v2 to Selectel.
+
 
 Updated and deployed 27 September 2026. The service is on Selectel at `135.106.182.11`, with sources and its private environment file under `/srv/ege/app`. The updated `ege-grading-api` container is healthy on loopback port 8080. Existing authentication and database services were preserved; the `.env` hash is unchanged.
 
