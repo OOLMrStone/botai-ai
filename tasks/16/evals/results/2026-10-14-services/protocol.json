@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-14",
+  "task_number": 16,
+  "fipi_task_number": 15,
+  "user_prompt": "ты - эксперт ЕГЭ, проверь мое решение и поставь балл",
+  "baseline": {
+    "model": "deepseek-v4-flash",
+    "run_date": "2026-09-27",
+    "rerun": false
+  },
+  "expected_rejection_cases": 1,
+  "distinct_mathematical_scenarios": 35,
+  "input_hashes_match_baseline": true,
+  "input_note": "Same task-and-answer images as the historical run; Kostyan task images also contain a reference solution. Expert scores/verdicts, old responses, and BotAI prompts are excluded.",
+  "transport": "Codex in-app browser. A separate agent owns the protocol/review for each service; the parent operates the logged-in tabs because child browsers cannot access that session.",
+  "score_metric": "Exact agreement with the saved expert score on valid attempted cases. Missing/ambiguous scores, failures and unexpected rejections count as mismatches.",
+  "joint_metric": "Exact score match AND correct main material error location/explanation. Correct work must be accepted without invented material errors. Additional substantive false diagnoses also fail; minor slips do not. Exhaustive commentary or advice is not required.",
+  "rejection_metric": "K-M2 is excluded from both numeric score metrics and checked separately.",
+  "aggregation": "Use the same first7 FIPI cases for six-system comparison. All-available totals have different coverage and are reported separately. Never average dataset percentages.",
+  "human_review_note": "Explanation quality is an agent review against hidden expert comments and original images when needed, not a fresh official expert label.",
+  "baseline_joint_failures": [
+    "15.2.4",
+    "15.3.3",
+    "15.3.4",
+    "15.5.3",
+    "K-X4"
+  ],
+  "baseline_score_matches": 36,
+  "baseline_joint_matches": 34,
+  "services": {
+    "sokrat": "https://sokratai.ru/",
+    "tyutor": "https://tyutor-ai.ru/",
+    "sdamex": "https://sdamex.com/"
+  },
+  "status": "completed_available_quotas",
+  "input_adaptation": "Use original images wherever supported. For text-only task fields, transcribe exactly the same visible statement/reference answer/reference solution, never the hidden score/verdict. If only one solution file is accepted, combine original solution pages without changing content and document this adaptation. Do not substitute a different bank problem.",
+  "coverage_note": "Unattempted cases due exhausted quota are outside denominators. A valid submitted case with missing grade or technical failure stays in the denominator with no match; score remains null, never converted to zero.",
+  "planned_mathematical_cases": 39,
+  "valid_attempts": {
+    "sokrat": 7,
+    "tyutor": 11,
+    "sdamex": 19
+  },
+  "service_modes": {
+    "sokrat": "Native teacher demo: own task, mathematics, EGE, extended solution, KIM15, max2; original task PNG and original solution PNG; optional text answer/rubric blank.",
+    "tyutor": "Native teacher checker, grade11/profile mathematics; exact transcription of original task and visible answer; original solution PNG; no additional prompt or rubric. UI model google/gemini-2.5-flash.",
+    "sdamex": "AI chat, default quality Medium (Средне), new chat for each pair of original task/solution PNGs, exact minimal user prompt. Formal checking tool unavailable per returned responses; chat grades evaluated."
+  },
+  "selection": "Fixed manifest prefixes. Sokrat7 valid within10 submissions (3 operator-invalid wrong-scale excluded and corrected once). Tyutor11 attempts within10 successful-check quota (1 technical failure consumed no quota). SdamEx19 using9 initially available messages plus one already-owned native reset of10. No purchases or referrals."
+}
