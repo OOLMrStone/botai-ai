@@ -1,0 +1,35 @@
+# Sending through the botai.ege@gmail.com mailbox.
+#
+# Activate with:  SPRING_PROFILES_ACTIVE=gmail GMAIL_APP_PASSWORD=... ./gradlew bootRun
+#
+# GMAIL_APP_PASSWORD is a Google *app password* (16 characters), not the account
+# password: Google rejects plain passwords over SMTP. Create one at
+# https://myaccount.google.com/apppasswords - it requires 2-Step Verification on
+# the account. Never put it in this file - it is read from the environment, and
+# GmailConfigurationCheck refuses to start the app when it is missing (Boot
+# itself would silently keep the unresolved placeholder as the password).
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${GMAIL_ADDRESS:botai.ege@gmail.com}
+    password: ${GMAIL_APP_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          # Async senders must not hang on a stuck relay.
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+        ssl:
+          protocols: TLSv1.2 TLSv1.3
+
+app:
+  mail:
+    # Gmail rewrites From to the authenticated account, so anything else here
+    # would only break DKIM/DMARC alignment. Keep them identical.
+    from: botai <${GMAIL_ADDRESS:botai.ege@gmail.com}>

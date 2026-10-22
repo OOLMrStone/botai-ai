@@ -1,0 +1,22 @@
+# CANDIDATE ONLY. Insert inside www.botai-ege.ru after review; never use as full config.
+# Single exact endpoint; the generic production /api handler is not a fallback.
+handle /api/billing/yookassa/test/webhook {
+    route {
+        @billing_test_wrong_method not method POST
+        respond @billing_test_wrong_method "Method not allowed" 405
+        request_body {
+            max_size 64KB
+        }
+        reverse_proxy 127.0.0.1:18084 {
+            header_up -Cookie
+            header_up -Authorization
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto https
+            header_up X-Forwarded-Host {host}
+            transport http {
+                dial_timeout 2s
+                response_header_timeout 15s
+            }
+        }
+    }
+}

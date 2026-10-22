@@ -1,0 +1,25 @@
+{
+  "kind": "unit_circle",
+  "points": [
+    {
+      "id": "p1",
+      "value": "π/2",
+      "included": true,
+      "sign": null
+    },
+    {
+      "id": "p2",
+      "value": "π",
+      "included": false,
+      "sign": null
+    }
+  ],
+  "arcs": [
+    {
+      "from": "p1",
+      "to": "p2",
+      "sign": null,
+      "selected": true
+    }
+  ]
+}

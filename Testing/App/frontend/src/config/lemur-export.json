@@ -1,0 +1,68 @@
+{
+  "frameDigits": 3,
+  "millisecondsPerSecond": 1000,
+  "channels": 3,
+  "transparentWebpArguments": ["-lossless", "-exact", "-loop", "0"],
+  "flattenArguments": [
+    "-vf",
+    "split[fg][bg];[bg]drawbox=c=white:t=fill:replace=1[white];[white][fg]overlay=format=auto"
+  ],
+  "ffmpegArguments": ["-y", "-hide_banner", "-loglevel", "error"],
+  "mp4Arguments": [
+    "-c:v",
+    "libx264",
+    "-crf",
+    "12",
+    "-pix_fmt",
+    "yuv420p",
+    "-movflags",
+    "+faststart"
+  ],
+  "webp": { "lossless": true, "loop": 0 },
+  "poster": "poster.png",
+  "contactSheet": {
+    "columns": 4,
+    "tileSize": 300,
+    "background": "white",
+    "path": "../contact-sheet.png"
+  },
+  "animations": {
+    "paywall": {
+      "video": "paywall.mp4",
+      "master": "paywall.webp",
+      "alpha": true
+    },
+    "cool": {
+      "video": "cool.mp4",
+      "master": "cool.webp",
+      "alpha": true,
+      "motion": "src/config/lemur-cool-motion.json"
+    },
+    "hangIdle": { "video": "idle.mp4", "master": "idle.webp", "alpha": true },
+    "hangHeart": { "video": "heart.mp4", "master": "heart.webp", "alpha": true },
+    "sit": {
+      "video": "sit.mp4",
+      "master": "sit.webp",
+      "motion": "src/config/lemur-sit-motion.json",
+      "mirrors": [
+        { "output": "public/lemur-sit-left", "video": "sit-left.mp4", "master": "sit-left.webp" }
+      ]
+    },
+    "walk": { "video": "walk.mp4", "master": "walk.webp" },
+    "joy": {
+      "video": "joy.mp4",
+      "master": "joy.webp",
+      "motion": "src/config/lemur-joy-motion.json"
+    },
+    "wave": {
+      "video": "wave.mp4",
+      "master": "wave.webp",
+      "motion": "src/config/lemur-wave-motion.json"
+    },
+    "cry": {
+      "video": "cry.mp4",
+      "master": "cry.webp",
+      "motion": "src/config/lemur-cry-motion.json"
+    }
+  }
+}

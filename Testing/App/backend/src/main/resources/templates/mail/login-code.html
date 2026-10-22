@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <!-- Light-only: stops clients from auto-inverting the palette into mush. -->
+    <meta name="color-scheme" content="light"/>
+    <meta name="supported-color-schemes" content="light"/>
+    <title>Код для входа в botai</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f9fafb;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f9fafb"
+       style="background-color: #f9fafb;">
+    <tr>
+        <td align="center" style="padding: 24px 12px;">
+            <table role="presentation" width="480" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff"
+                   style="width: 480px; max-width: 480px; background-color: #ffffff; border-radius: 16px;">
+                <tr>
+                    <td style="padding: 32px 24px;
+                               font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+                               font-size: 16px; line-height: 24px; color: #111827;">
+
+                        <div th:replace="~{mail/_parts.html :: header}"></div>
+
+                        <h1 style="margin: 0 0 12px 0; font-size: 22px; line-height: 28px; font-weight: bold; color: #111827;">
+                            Код для входа
+                        </h1>
+
+                        <p style="margin: 0; color: #374151;">
+                            Введи этот код на странице входа, чтобы попасть в свой аккаунт:
+                        </p>
+
+                        <div th:replace="~{mail/_parts.html :: code(${code})}"></div>
+
+                        <p style="margin: 0 0 12px 0; color: #374151;">
+                            Код действует <strong>10 минут</strong> и сработает только один раз.
+                        </p>
+
+                        <div th:replace="~{mail/_parts.html :: warning}"></div>
+
+                        <p style="margin: 12px 0 0 0; font-size: 14px; line-height: 20px; color: #6b7280;">
+                            Если ты не запрашивал вход, просто удали это письмо — без кода
+                            в аккаунт никто не войдёт.
+                        </p>
+
+                        <div th:replace="~{mail/_parts.html :: footer}"></div>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

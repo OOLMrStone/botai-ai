@@ -1,0 +1,40 @@
+{
+  "kind": "number_line",
+  "variable": "x",
+  "note": null,
+  "points": [
+    {
+      "id": "p1",
+      "value": "0",
+      "included": false,
+      "sign": null
+    },
+    {
+      "id": "p2",
+      "value": "1",
+      "included": null,
+      "sign": null,
+      "bound": true
+    }
+  ],
+  "arcs": [
+    {
+      "from": "-inf",
+      "to": "p1",
+      "sign": "-",
+      "selected": false
+    },
+    {
+      "from": "p1",
+      "to": "p2",
+      "sign": "+",
+      "selected": true
+    },
+    {
+      "from": "p2",
+      "to": "+inf",
+      "sign": "+",
+      "selected": false
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "whiteThreshold": 250,
+  "rejectedPoster": "artifacts/lemur-sit/reviewed-v1/right/poster.png",
+  "junctions": [
+    {
+      "name": "paw",
+      "followsHead": false,
+      "points": [
+        [758, 730],
+        [758, 735],
+        [755, 740],
+        [755, 745]
+      ]
+    },
+    {
+      "name": "ear",
+      "followsHead": true,
+      "points": [
+        [438, 295],
+        [435, 305],
+        [432, 315],
+        [429, 330]
+      ]
+    },
+    {
+      "name": "seat",
+      "followsHead": false,
+      "rejectedPoster": "artifacts/lemur-sit/reviewed-v2/right/poster.png",
+      "points": [
+        [435, 759],
+        [445, 759],
+        [455, 759]
+      ]
+    }
+  ]
+}

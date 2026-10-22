@@ -1,0 +1,148 @@
+name: botai-billing-test
+x-defaults: &defaults
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options: {max-size: '5m', max-file: '2'}
+  security_opt: ['no-new-privileges:true']
+services:
+  postgres:
+    <<: *defaults
+    image: postgres:17.11-bookworm@sha256:639ab7ceb90e13123085b741fb31ef493fba25463002f6da665352e7b534b652
+    env_file: ['./runtime/evidence/billing-test/postgres.env']
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts/integration/billing-test-init-db.sh:/docker-entrypoint-initdb.d/10-roles.sh:ro
+    networks: [data]
+    mem_limit: 384m
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U botai_billing_migrator -d botai_payments_test']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  garage:
+    <<: *defaults
+    image: dxflrs/garage:v2.3.0@sha256:866bd13ed2038ba7e7190e840482bc27234c4afaf77be8cfa439ae088c1e4690
+    command: ['/garage', 'server', '--single-node', '--default-bucket']
+    env_file: ['./runtime/evidence/billing-test/garage.env']
+    volumes:
+      - ./runtime/evidence/billing-test/garage.toml:/etc/garage.toml:ro
+      - garage-meta:/var/lib/garage/meta
+      - garage-data:/var/lib/garage/data
+    networks: [data]
+    mem_limit: 192m
+    healthcheck:
+      test: ['CMD', '/garage', 'status']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  mailpit:
+    <<: *defaults
+    image: axllent/mailpit:v1.27.8@sha256:6abc8e633df15eaf785cfcf38bae48e66f64beecdc03121e249d0f9ec15f0707
+    environment: {MP_MAX_MESSAGES: '50', MP_DATABASE: /data/mailpit.db}
+    volumes: [mailpit-data:/data]
+    networks: [data]
+    mem_limit: 64m
+  ai:
+    <<: *defaults
+    image: botai-billing-test-ai:local
+    build: {context: ./runtime/evidence/billing-test/ai-export}
+    env_file: ['./runtime/evidence/billing-test/ai.env']
+    environment:
+      APP_ENV: prod
+      LLM_PROVIDER: mock
+      LLM_VISION_PROVIDER: mock
+      DEBUG_ENABLED: 'false'
+      DEBUG_ALLOW_IN_PROD: 'false'
+      INTERNAL_GRADING_ENABLED: 'true'
+    networks: [grading]
+    mem_limit: 384m
+    read_only: true
+    tmpfs: ['/tmp:rw,noexec,nosuid,size=64m']
+    volumes: [ai-diagnostics:/srv/data/suspicious-submissions]
+    cap_drop: [ALL]
+  backend:
+    <<: *defaults
+    image: ${BILLING_TEST_BACKEND_IMAGE:-botai-billing-test-backend:local}
+    build: {context: ., dockerfile: Dockerfile.integration, target: runtime}
+    env_file:
+      - path: ./runtime/evidence/billing-test/backend.env
+      - path: ./runtime/.env.billing-test
+        required: false
+    environment:
+      SPRING_DOCKER_COMPOSE_ENABLED: 'false'
+      SPRING_FLYWAY_ENABLED: 'false'
+      SESSION_COOKIE_SECURE: 'false'
+      SERVER_FORWARD_HEADERS_STRATEGY: none
+      APP_BILLING_MODE: ${BILLING_TEST_MODE:-disabled}
+      APP_BILLING_SANDBOX_DATABASE: botai_payments_test
+      APP_BILLING_RETURN_ORIGIN: http://localhost:13002
+      APP_BILLING_TEST_ACCOUNTS: billing-test@botai.test,billing-decline@botai.test,billing-pack@botai.test,test@test.test
+      FRONTEND_BASE_URL: http://localhost:13002
+      SMTP_HOST: mailpit
+      SMTP_PORT: '1025'
+    ports: ['127.0.0.1:18084:8080']
+    networks: [edge, data, grading]
+    depends_on:
+      postgres: {condition: service_healthy}
+      garage: {condition: service_healthy}
+      ai: {condition: service_healthy}
+    mem_limit: 512m
+    read_only: true
+    tmpfs: ['/tmp:rw,noexec,nosuid,size=128m']
+    cap_drop: [ALL]
+  initialize:
+    <<: *defaults
+    profiles: [ops]
+    image: ${BILLING_TEST_BACKEND_IMAGE:-botai-billing-test-backend:local}
+    env_file: ['./runtime/evidence/billing-test/migrate.env']
+    environment: {APP_BILLING_INITIALIZE_EMPTY_SANDBOX: 'yes'}
+    entrypoint: ['java', '-XX:MaxRAMPercentage=65', '-Dloader.main=org.botai.back.migration.SandboxMigrateOnly', '-cp', '/app/app.jar', 'org.springframework.boot.loader.launch.PropertiesLauncher']
+    networks: [data]
+    depends_on: {postgres: {condition: service_healthy}}
+    restart: 'no'
+    mem_limit: 384m
+    read_only: true
+    tmpfs: ['/tmp:rw,noexec,nosuid,size=32m']
+    cap_drop: [ALL]
+    healthcheck: {disable: true}
+  migrate:
+    <<: *defaults
+    profiles: [ops]
+    image: ${BILLING_TEST_BACKEND_IMAGE:-botai-billing-test-backend:local}
+    pull_policy: never
+    env_file: ['./runtime/evidence/billing-test/migrate.env']
+    entrypoint: ['java', '-XX:MaxRAMPercentage=65', '-Dloader.main=org.botai.back.migration.MigrateOnly', '-cp', '/app/app.jar', 'org.springframework.boot.loader.launch.PropertiesLauncher']
+    networks: [data]
+    restart: 'no'
+    mem_limit: 384m
+    read_only: true
+    tmpfs: ['/tmp:rw,noexec,nosuid,size=32m']
+    cap_drop: [ALL]
+    healthcheck: {disable: true}
+  frontend:
+    <<: *defaults
+    profiles: [web]
+    image: ${BILLING_TEST_FRONTEND_IMAGE:-botai-billing-test-frontend:local}
+    build:
+      context: ../botai-front
+      dockerfile: Dockerfile.integration
+      args: {APP_ENV: prod, BACKEND_URL: 'http://backend:8080'}
+    environment: {BACKEND_URL: 'http://backend:8080'}
+    ports: ['127.0.0.1:13002:3000']
+    networks: [edge]
+    depends_on: {backend: {condition: service_healthy}}
+    mem_limit: 384m
+    read_only: true
+    tmpfs: ['/tmp:rw,noexec,nosuid,size=64m', '/app/.next/cache:rw,noexec,nosuid,size=64m,uid=1000,gid=1000']
+    cap_drop: [ALL]
+networks:
+  edge: {}
+  data: {internal: true}
+  grading: {internal: true}
+volumes:
+  postgres-data: {}
+  garage-meta: {}
+  garage-data: {}
+  mailpit-data: {}
+  ai-diagnostics: {}

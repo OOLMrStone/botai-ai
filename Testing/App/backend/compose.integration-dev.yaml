@@ -1,0 +1,6 @@
+# Оптимизированная dev-сборка с настоящим API и безопасной панелью экранов.
+services:
+  frontend:
+    build:
+      args:
+        APP_ENV: dev

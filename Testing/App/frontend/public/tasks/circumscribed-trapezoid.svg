@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 320" role="img" aria-labelledby="title desc">
+  <title id="title">Описанная трапеция</title>
+  <desc id="desc">Окружность касается всех четырёх сторон трапеции</desc>
+  <g fill="none" stroke="#111" stroke-linecap="round" stroke-linejoin="round" stroke-width="3">
+    <path d="M125 40h150l85 240H40Z" />
+    <circle cx="200" cy="160" r="120" />
+    <path d="M200 160h120" />
+  </g>
+  <text x="251" y="148" fill="#111" font-family="system-ui, sans-serif" font-size="22">3</text>
+</svg>

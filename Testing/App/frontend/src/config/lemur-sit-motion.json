@@ -1,0 +1,25 @@
+{
+  "fps": 60,
+  "duration": 6,
+  "breath": { "cycles": 2, "bodyScaleY": 0.013, "headY": -4 },
+  "blink": [
+    [0, 0],
+    [1.63, 0],
+    [1.72, 1],
+    [1.76, 1],
+    [1.92, 0],
+    [4.45, 0],
+    [4.55, 1],
+    [4.58, 1],
+    [4.76, 0],
+    [6, 0]
+  ],
+  "qaTimes": [0, 0.75, 1.5, 1.68, 1.74, 1.84, 2.25, 3, 3.75, 4.56, 4.68, 5.983333333333333],
+  "paths": {
+    "art": "src/config/lemur-sit-art.json",
+    "baseArt": "src/config/lemur-joy-art.json",
+    "work": "artifacts/lemur-sit/frames",
+    "output": "public/lemur-sit",
+    "manifest": "artifacts/lemur-sit/manifest.json"
+  }
+}

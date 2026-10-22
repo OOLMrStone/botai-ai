@@ -1,0 +1,19 @@
+# Local Gmail credentials — TEMPLATE.
+#
+#   cp config/application-gmail.yaml.example config/application-gmail.yaml
+#   # then paste the app password into the copy
+#
+# The copy is git-ignored (see .gitignore); this .example file is not, so it
+# must never contain a real password.
+#
+# Spring Boot loads ./config/application-gmail.yaml on top of the classpath
+# application-gmail.yaml and wins, so this is the only value you need here -
+# host, port and TLS come from the committed file.
+#
+# The password is a Google app password (16 characters, no spaces) from
+# https://myaccount.google.com/apppasswords - not the account password.
+#
+# Run with:  SPRING_PROFILES_ACTIVE=gmail ./gradlew bootRun
+spring:
+  mail:
+    password: paste-the-16-character-app-password-here

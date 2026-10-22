@@ -1,0 +1,55 @@
+{
+  "version": 4,
+  "duration": 6,
+  "fps": 60,
+  "frames": 360,
+  "packing": "RGB top, alpha bottom",
+  "desktop": {
+    "video": "holder-alpha.mp4",
+    "poster": "poster-alpha.png",
+    "paws": "paws-alpha.png",
+    "width": 1080,
+    "height": 1080
+  },
+  "contact": {
+    "contactLine": 0.5642857142857143,
+    "card": {
+      "left": 0.12857142857142856,
+      "top": 0.5642857142857143,
+      "width": 0.8214285714285714,
+      "height": 0.36428571428571427
+    },
+    "paws": [
+      {
+        "name": "screen-left",
+        "center": [
+          0.4017857142857143,
+          0.5767857142857142
+        ],
+        "contact": [
+          0.4017857142857143,
+          0.5642857142857143
+        ]
+      },
+      {
+        "name": "screen-right",
+        "center": [
+          0.7321428571428571,
+          0.5767857142857142
+        ],
+        "contact": [
+          0.7321428571428571,
+          0.5642857142857143
+        ]
+      }
+    ]
+  },
+  "layers": [
+    "back-video",
+    "interactive-html-card",
+    "front-paws-png"
+  ],
+  "behavior": "Только голова и широкие кисти; Бо моргает, большую часть цикла смотрит на пользователя и ненадолго переводит взгляд вниз",
+  "appearance": "public/lemur-walk/reference.png, верхний правый персонаж; фронтальный ракурс из lemur-joy-art.json",
+  "approvedByUser": false
+}

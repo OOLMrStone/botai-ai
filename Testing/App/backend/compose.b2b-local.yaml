@@ -1,0 +1,165 @@
+# Separate loopback B2B demo. Never combine with other compose files.
+name: ${B2B_PROJECT:-botai-b2b-local}
+x-service: &defaults
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options: {max-size: '10m', max-file: '3'}
+  security_opt: ['no-new-privileges:true']
+services:
+  postgres:
+    <<: *defaults
+    image: postgres:17.11-bookworm@sha256:639ab7ceb90e13123085b741fb31ef493fba25463002f6da665352e7b534b652
+    environment:
+      POSTGRES_DB: botai_b2b_local
+      POSTGRES_USER: botai_migrator
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run scripts/b2b-local/init.py}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?}
+      OPS_DB_PASSWORD: ${OPS_DB_PASSWORD:?}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts/b2b-local/init-db.sh:/docker-entrypoint-initdb.d/10-roles.sh:ro
+    networks: [data]
+    mem_limit: 512m
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U botai_migrator -d botai_b2b_local']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  garage:
+    <<: *defaults
+    image: dxflrs/garage:v2.3.0@sha256:866bd13ed2038ba7e7190e840482bc27234c4afaf77be8cfa439ae088c1e4690
+    command: ['/garage', 'server', '--single-node', '--default-bucket']
+    environment:
+      GARAGE_DEFAULT_ACCESS_KEY: ${S3_ACCESS_KEY:?}
+      GARAGE_DEFAULT_SECRET_KEY: ${S3_SECRET_KEY:?}
+      GARAGE_DEFAULT_BUCKET: botai
+    volumes:
+      - ./${B2B_RUNTIME_DIR:-runtime/b2b-local}/garage.toml:/etc/garage.toml:ro
+      - garage-meta:/var/lib/garage/meta
+      - garage-data:/var/lib/garage/data
+    networks: [data]
+    mem_limit: 384m
+    healthcheck:
+      test: ['CMD', '/garage', 'status']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  mailpit:
+    <<: *defaults
+    image: axllent/mailpit:v1.27.8@sha256:6abc8e633df15eaf785cfcf38bae48e66f64beecdc03121e249d0f9ec15f0707
+    environment:
+      MP_MAX_MESSAGES: '200'
+      MP_DATABASE: /data/mailpit.db
+    ports: ['127.0.0.1:${B2B_MAIL_PORT:-18027}:8025']
+    volumes: [mailpit-data:/data]
+    networks: [edge, data]
+    mem_limit: 128m
+  ai:
+    <<: *defaults
+    build: {context: './${B2B_RUNTIME_DIR:-runtime/b2b-local}/ai-export'}
+    environment:
+      APP_ENV: local
+      APP_CORS_ORIGINS: ''
+      LLM_PROVIDER: mock
+      LLM_VISION_PROVIDER: mock
+      LLM_MAX_RETRIES: '0'
+      PHOTO_CONCURRENCY: '${B2B_AI_CONCURRENCY:-1}'
+      PHOTO_DEADLINE_SECONDS: '360'
+      LOCAL_DEMO_AI_ENABLED: 'true'
+      LOCAL_DEMO_AI_ALLOW_LIVE: 'false'
+      HTTP_PROXY: ''
+      HTTPS_PROXY: ''
+      ALL_PROXY: ''
+      DEBUG_ENABLED: 'false'
+      DEBUG_ALLOW_IN_PROD: 'false'
+      INTERNAL_GRADING_ENABLED: 'false'
+      INTERNAL_GRADING_TOKEN: ${AI_SERVICE_TOKEN:?}
+    networks: [grading]
+    mem_limit: 512m
+    read_only: true
+    tmpfs: ['/tmp:rw,noexec,nosuid,size=64m']
+    volumes: [ai-diagnostics:/srv/data/suspicious-submissions]
+    cap_drop: [ALL]
+  pdf-renderer:
+    <<: *defaults
+    build: {context: ., dockerfile: renderer/pdf/Dockerfile}
+    networks: [pdf]
+    mem_limit: 512m
+    cpus: 1.0
+    pids_limit: 64
+    read_only: true
+    tmpfs: ['/tmp:rw,noexec,nosuid,size=128m,mode=1777']
+    cap_drop: [ALL]
+  backend:
+    <<: *defaults
+    build: {context: ., dockerfile: Dockerfile.integration, target: runtime}
+    environment:
+      SPRING_DOCKER_COMPOSE_ENABLED: 'false'
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/botai_b2b_local
+      SPRING_DATASOURCE_USERNAME: botai_app
+      SPRING_DATASOURCE_PASSWORD: ${APP_DB_PASSWORD:?}
+      SPRING_FLYWAY_USER: botai_migrator
+      SPRING_FLYWAY_PASSWORD: ${POSTGRES_PASSWORD:?}
+      SMTP_HOST: mailpit
+      SMTP_PORT: '1025'
+      FRONTEND_BASE_URL: ${FRONTEND_BASE_URL:-http://student.localhost:13004}
+      SESSION_COOKIE_SECURE: 'false'
+      SERVER_SERVLET_SESSION_COOKIE_NAME: B2B_SESSION
+      APP_BILLING_MODE: disabled
+      APP_B2B_AI_CONCURRENCY: '${B2B_AI_CONCURRENCY:-1}'
+      APP_B2B_LOCAL_ENABLED: 'true'
+      APP_B2B_ALLOW_LIVE: 'false'
+      APP_B2B_OPERATOR_USER_IDS: ${APP_B2B_OPERATOR_USER_IDS:-}
+      APP_PDF_RENDERER_BASE_URL: http://pdf-renderer:8080
+      APP_EXPERT_GRADING_ALLOW_LIVE: 'false'
+      APP_STORAGE_ENDPOINT: http://garage:3900
+      APP_STORAGE_BUCKET: botai
+      APP_STORAGE_ACCESS_KEY: ${S3_ACCESS_KEY:?}
+      APP_STORAGE_SECRET_KEY: ${S3_SECRET_KEY:?}
+      APP_STORAGE_REGION: garage
+      APP_GRADING_BASE_URL: http://ai:8000
+      APP_GRADING_TOKEN: ${AI_SERVICE_TOKEN:?}
+    ports: ['127.0.0.1:${B2B_API_PORT:-18086}:8080']
+    networks: [edge, data, grading, pdf]
+    depends_on:
+      postgres: {condition: service_healthy}
+      garage: {condition: service_healthy}
+      ai: {condition: service_healthy}
+      pdf-renderer: {condition: service_healthy}
+    mem_limit: 1g
+    read_only: true
+    tmpfs: ['/tmp:rw,noexec,nosuid,size=128m']
+    cap_drop: [ALL]
+  asset-seed:
+    profiles: [ops]
+    image: ${B2B_PROJECT:-botai-b2b-local}-ai
+    pull_policy: never
+    user: '${B2B_SEED_UID:?Run scripts/b2b-local/init.py}:0'
+    entrypoint: ['python', '/tool/seed-assets.py']
+    healthcheck: {disable: true}
+    environment:
+      PYTHONDONTWRITEBYTECODE: '1'
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:?}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:?}
+    volumes:
+      - ./scripts/b2b-local:/tool:ro
+      - ./${B2B_RUNTIME_DIR:-runtime/b2b-local}/fixtures-package:/fixtures:ro
+    networks: [data]
+    mem_limit: 384m
+    pids_limit: 32
+    read_only: true
+    tmpfs: ['/tmp:rw,noexec,nosuid,size=64m']
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
+networks:
+  edge: {}
+  data: {internal: true}
+  grading: {internal: true}
+  pdf: {internal: true}
+volumes:
+  postgres-data: {}
+  garage-meta: {}
+  garage-data: {}
+  mailpit-data: {}
+  ai-diagnostics: {}

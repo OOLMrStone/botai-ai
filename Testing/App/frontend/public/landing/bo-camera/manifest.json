@@ -1,0 +1,17 @@
+{
+  "name": "bo-camera",
+  "version": "camera-v4",
+  "fps": 60,
+  "duration": 6,
+  "frames": 360,
+  "alphaPacking": "rgb-top-alpha-bottom",
+  "visibleAspectRatio": "3:2",
+  "posterTime": 0,
+  "delivery": "original-on-all-devices",
+  "desktop": {
+    "width": 1080,
+    "height": 720,
+    "source": "camera-alpha.mp4",
+    "poster": "poster-alpha.webp"
+  }
+}

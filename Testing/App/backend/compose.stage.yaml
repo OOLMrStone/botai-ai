@@ -1,0 +1,9 @@
+# Additional limits for the existing shared 4 GiB server; no production changes.
+services:
+  postgres: {mem_limit: 256m}
+  garage: {mem_limit: 192m}
+  ai: {mem_limit: 384m}
+  backend: {mem_limit: 512m}
+  frontend: {mem_limit: 384m}
+  mailpit: {mem_limit: 64m}
+  adminer: {mem_limit: 64m}

@@ -1,0 +1,37 @@
+{
+  "size": 1080,
+  "fps": 60,
+  "packedChannels": 3,
+  "sourceChannels": 4,
+  "alphaPanels": 2,
+  "edgeBleedPixels": 3,
+  "progressFrames": 60,
+  "poster": "poster-alpha.png",
+  "manifest": "artifacts/embedded-bo/manifest.json",
+  "encoder": [
+    "-c:v",
+    "libx264",
+    "-preset",
+    "fast",
+    "-crf",
+    "12",
+    "-threads",
+    "2",
+    "-pix_fmt",
+    "yuv420p",
+    "-movflags",
+    "+faststart"
+  ],
+  "animations": [
+    { "name": "wave", "renderer": "lemurWaveSvg", "background": "path", "video": "wave-alpha.mp4" },
+    { "name": "sit", "renderer": "lemurSitSvg", "background": "rect", "video": "sit-alpha.mp4" },
+    { "name": "joy", "renderer": "lemurJoySvg", "background": "path", "video": "joy-alpha.mp4" },
+    {
+      "name": "hang",
+      "renderer": "lemurHangSvg",
+      "background": "none",
+      "video": "idle-alpha.mp4",
+      "motion": "src/config/lemur-hang-motion.json"
+    }
+  ]
+}

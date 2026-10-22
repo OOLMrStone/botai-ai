@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-labelledby="title desc">
+  <title id="title">Равнобедренный треугольник</title>
+  <desc id="desc">Боковые стороны равны пяти, основание равно шести, к основанию проведена высота</desc>
+  <g fill="none" stroke="#111" stroke-linecap="round" stroke-linejoin="round" stroke-width="3">
+    <path d="M40 170 160 30l120 140Z" />
+    <path d="M160 30v140" stroke-dasharray="7 7" />
+    <path d="M160 152h18v18" />
+  </g>
+  <g fill="#111" font-family="system-ui, sans-serif" font-size="20">
+    <text x="84" y="92">5</text>
+    <text x="224" y="92">5</text>
+    <text x="154" y="194">6</text>
+  </g>
+</svg>

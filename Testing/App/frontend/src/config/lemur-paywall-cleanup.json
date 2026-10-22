@@ -1,0 +1,56 @@
+{
+  "root": "artifacts/lemur-paywall/",
+  "source": "source-v4.png",
+  "sourcePlate": "eye-clean-plate-v3.png",
+  "result": "source-v5.png",
+  "resultPlate": "eye-clean-plate-v5.png",
+  "auditDirectory": "cleanup-v5/",
+  "noseRegion": [1070, 490, 1168, 576],
+  "strokeRegions": [
+    [856, 530, 921, 595],
+    [1190, 638, 1236, 741],
+    [428, 649, 553, 689]
+  ],
+  "shadowRegion": [1040, 650, 1190, 754],
+  "groundRegion": [400, 700, 1140, 790],
+  "groundBlur": 0.45,
+  "eyeRepairRadius": 2,
+  "thresholds": {
+    "creamMin": [210, 180, 100],
+    "creamContrast": [14, 8],
+    "backgroundMin": 170,
+    "backgroundChroma": 10,
+    "grayRed": [85, 190],
+    "grayGreen": 170,
+    "grayContrast": 30,
+    "lineRedMax": 124,
+    "lineGreenMax": 115,
+    "pupilMax": 23
+  },
+  "samples": {
+    "forearm": [940, 650, 970, 710],
+    "muzzle": [1095, 537, 1110, 546],
+    "leftMask": [930, 420, 940, 455],
+    "rightMask": [1295, 427, 1313, 442],
+    "tail": [150, 400, 180, 438],
+    "belly": [680, 560, 800, 710],
+    "nose": [1124, 515, 1138, 527],
+    "head": [1110, 270, 1170, 280],
+    "hand": [993, 798, 1044, 837]
+  },
+  "crops": {
+    "face": {
+      "left": 914,
+      "top": 307,
+      "width": 456,
+      "height": 314
+    },
+    "arm": {
+      "left": 843,
+      "top": 532,
+      "width": 253,
+      "height": 373
+    }
+  },
+  "strokeExclusions": [[1188, 638, 1235, 638, 1188, 698]]
+}

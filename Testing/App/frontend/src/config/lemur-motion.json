@@ -1,0 +1,195 @@
+{
+  "fps": 60,
+  "duration": 2,
+  "size": 1080,
+  "viewBox": [-25, 0, 550, 500],
+  "stance": 0.65,
+  "stride": 78,
+  "body": {
+    "x": 0.7,
+    "y": 2.2,
+    "headAmplitude": 0.65,
+    "headLag": 0.035,
+    "headTilt": 0.55,
+    "phaseOffset": 0
+  },
+  "blink": {
+    "center": 0.5,
+    "halfWidth": 0.055
+  },
+  "colors": {
+    "body": "#978B92",
+    "far": "#8E838B",
+    "cream": "#FEF3D8",
+    "tail": "#463E42",
+    "paw": "#5B5156"
+  },
+  "torso": "M 194 262 C 219 262 236 271 252 280 C 284 296 320 309 360 322 C 363 348 348 377 321 391 C 292 405 256 404 223 394 C 199 389 173 381 152 369 C 129 356 118 335 118 310 C 118 287 128 271 149 265 C 163 260 180 260 194 262 Z",
+  "belly": "M 316 303 C 335 313 354 319 373 319 C 370 362 342 403 302 415 C 262 419 216 405 190 385 C 185 370 198 352 220 340 C 250 323 284 312 316 303 Z",
+  "legs": [
+    {
+      "name": "hind-far",
+      "far": true,
+      "shape": "hind",
+      "neutralX": 159
+    },
+    {
+      "name": "front-far",
+      "far": true,
+      "shape": "front",
+      "neutralX": 294
+    },
+    {
+      "name": "hind-near",
+      "far": false,
+      "shape": "hind",
+      "neutralX": 177
+    },
+    {
+      "name": "front-near",
+      "far": false,
+      "shape": "front",
+      "neutralX": 312
+    }
+  ],
+  "leg": {
+    "pawPitch": 12,
+    "sidePhaseOffset": {
+      "near": 0,
+      "far": 0.5
+    },
+    "farOffset": [-18, -3],
+    "frontPhaseLag": {
+      "near": 0.06,
+      "far": 0.085
+    },
+    "travelByShape": {
+      "front": {
+        "reach": 18,
+        "lift": 44
+      },
+      "hind": {
+        "reach": -12,
+        "lift": 28
+      }
+    },
+    "toeRoll": {
+      "shape": "hind",
+      "keys": [
+        [0, 0],
+        [0.44, 0],
+        [0.65, 18],
+        [0.8, 0],
+        [1, 0]
+      ]
+    },
+    "contourSubdivisions": 8
+  },
+  "mouth": {
+    "pivotY": 280,
+    "layers": ["mouth", "tongue"],
+    "closed": {
+      "path": "M 375 282 C 383 283 394 283 402 282",
+      "profilePath": "M 474 282 C 482 283 491 283 499 282",
+      "stroke": "#1C1B1D",
+      "width": 1.7
+    },
+    "smileIntensity": 0
+  },
+  "tail": {
+    "points": [
+      [170, 298],
+      [26, 299],
+      [32, 171],
+      [105, 109]
+    ],
+    "radius": [32, 46],
+    "sway": 19,
+    "lift": 5,
+    "lag": 0.16,
+    "bands": [0, 0.14, 0.29, 0.44, 0.6, 0.75, 1],
+    "samples": 100,
+    "bandCurve": 0.32,
+    "cycles": 2
+  },
+  "paths": {
+    "output": "public/lemur-walk",
+    "work": "artifacts/lemur-walk-reference/continuous",
+    "face": "src/config/lemur-face-art.json",
+    "manifest": "artifacts/lemur-walk-reference/continuous/manifest.json"
+  },
+  "phaseOffset": 0.2,
+  "shadow": {
+    "x": 71,
+    "y": 458,
+    "width": 350,
+    "height": 2.2,
+    "radius": 1.1,
+    "fill": "#655D61",
+    "opacity": 0.16
+  },
+  "headTurn": {
+    "keys": [
+      [0, 0],
+      [0.154, 0],
+      [0.346, 1],
+      [0.692, 1],
+      [0.846, 0],
+      [1, 0]
+    ],
+    "smileStart": 0.06,
+    "smileEnd": 0.58
+  },
+  "legShapes": {
+    "hind": {
+      "silhouette": "M 140 273 C 118 288 114 310 120 334 C 125 363 138 388 149 427 C 154 445 160 453 180 454 C 195 455 214 453 220 446 C 226 436 220 426 206 421 C 200 418 198 419 195 420 C 205 395 222 372 226 342 C 230 316 212 281 184 267 C 165 262 149 266 140 273 Z",
+      "pawPath": "M 163 443 C 169 431 183 420 196 420 C 210 420 220 427 223 438 C 226 451 211 455 195 455 C 181 456 169 454 161 449 C 161 447 162 445 163 443 Z",
+      "articulation": {
+        "keys": [
+          [0, "reference"],
+          [0.65, "reference"],
+          [0.825, "folded"],
+          [1, "reference"]
+        ],
+        "shapes": {
+          "folded": {
+            "silhouette": "M 140 273 C 118 288 114 310 120 334 C 130 365 140 395 149 427 C 154 445 160 453 180 454 C 195 455 214 453 220 446 C 226 436 220 426 206 421 C 200 418 198 419 195 420 C 233 396 246 374 238 348 C 230 316 212 281 184 267 C 165 262 149 266 140 273 Z"
+          }
+        }
+      },
+      "deformStartY": 287,
+      "pawHeight": 17,
+      "referenceFoot": {
+        "x": 192,
+        "y": 437,
+        "angle": 0
+      }
+    },
+    "front": {
+      "silhouette": "M 245 288 C 268 294 293 307 319 313 C 311 338 305 365 304 389 C 303 404 307 415 314 423 C 332 427 337 440 327 451 C 319 458 298 459 285 454 C 270 446 262 428 255 409 C 241 380 238 350 238 325 C 237 309 238 294 245 288 Z",
+      "pawPath": "M 276 443 C 282 430 296 423 308 423 C 321 423 330 431 331 440 C 334 453 320 458 302 458 C 292 458 282 456 274 450 C 274 448 275 445 276 443 Z",
+      "articulation": {
+        "keys": [
+          [0, "reference"],
+          [0.65, "reference"],
+          [0.825, "folded"],
+          [1, "reference"]
+        ],
+        "shapes": {
+          "folded": {
+            "silhouette": "M 245 288 C 268 294 293 307 319 313 C 322 338 306 367 302 389 C 300 400 306 414 314 423 C 332 427 337 440 327 451 C 319 458 298 459 285 454 C 270 446 260 423 252 407 C 242 387 223 350 238 325 C 237 309 238 294 245 288 Z"
+          }
+        }
+      },
+      "deformStartY": 288,
+      "pawHeight": 18,
+      "referenceFoot": {
+        "x": 303,
+        "y": 440,
+        "angle": 0
+      },
+      "deformRamp": 0.25,
+      "volumeAxisSamples": 12
+    }
+  }
+}

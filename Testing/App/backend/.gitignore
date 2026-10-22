@@ -1,0 +1,71 @@
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+### Local secrets ###
+# Spring Boot auto-loads ./config/*.yaml and they override the classpath ones.
+# Keep every local override out of git; the .example files are safe to commit.
+config/*
+!config/*.example
+
+# Isolated integration runtime secrets and generated snapshots
+runtime/.env*
+runtime/*.toml
+runtime/credentials.json
+runtime/backups/
+runtime/evidence/
+runtime/content-import/
+runtime/releases/
+
+runtime/ai-export/
+scripts/integration/__pycache__/
+runtime/STAGE
+
+# Owned SSH tunnel control socket
+runtime/*.sock
+
+# Separate expert demo: generated credentials, marker and private media/evidence.
+runtime/expert-local/
+scripts/expert-local/__pycache__/
+
+# Independent school/developer B2B sandbox (private credentials, media, evidence).
+runtime/b2b-local/
+runtime/b2b-local-partner-check/
+scripts/b2b-local/__pycache__/
+renderer/pdf/build/
+renderer/pdf/.gradle/
+.DS_Store

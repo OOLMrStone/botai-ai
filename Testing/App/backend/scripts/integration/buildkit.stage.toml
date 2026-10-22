@@ -1,0 +1,10 @@
+# Dedicated isolated-stage builder only; never configure the host/default builder.
+[worker.oci]
+  gc = true
+  max-parallelism = 1
+  reservedSpace = "512MB"
+  maxUsedSpace = "2GB"
+  minFreeSpace = "8GB"
+[history]
+  maxAge = 172800
+  maxEntries = 10

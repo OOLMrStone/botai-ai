@@ -43,3 +43,17 @@ tasks/16/evals/kostyan/assets/
 
 # Local deterministic TeX validator dependencies; npm ci recreates these.
 node_modules/
+
+# Local testing application: generated dependencies, credentials, database evidence.
+Testing/App/backend/runtime/
+Testing/App/backend/build/
+Testing/App/backend/.gradle/
+Testing/App/backend/renderer/**/build/
+Testing/App/backend/renderer/**/.gradle/
+Testing/App/frontend/.next*/
+Testing/App/frontend/*.tsbuildinfo
+Testing/App/frontend/.env*
+!Testing/App/frontend/.env.example
+Testing/App/__pycache__/
+Testing/evals/16/kostyan/raw/
+Testing/evals/16/kostyan/assets/

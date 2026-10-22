@@ -1,0 +1,50 @@
+{
+  "paths": {
+    "currentArt": "src/config/lemur-hang-art.json",
+    "rejectedArt": "artifacts/lemur-hang/reviewed-v1/lemur-hang-art.json",
+    "rejectedLimbsArt": "scripts/fixtures/lemur-hang/reviewed-v7/lemur-hang-art.json",
+    "rejectedLimbsMotion": "scripts/fixtures/lemur-hang/reviewed-v7/lemur-hang-motion.json",
+    "rejectedLimbsRenderer": "scripts/fixtures/lemur-hang/reviewed-v7/lemur-hang-svg.mjs",
+    "currentMotion": "src/config/lemur-hang-motion.json",
+    "rendererImportRoot": "src/lib/"
+  },
+  "bodyVolume": {
+    "axis": [
+      [417, 234],
+      [320, 355]
+    ],
+    "sections": [0.3, 0.4, 0.5, 0.6, 0.7],
+    "minimumWidth": 128,
+    "scanRadius": 200,
+    "scanStep": 0.5,
+    "rasterScale": 2,
+    "alphaThreshold": 128,
+    "morphSamples": 17,
+    "rationale": "Средняя часть подвешенного тела должна оставаться широкой округлой массой, а не узкой диагональной перемычкой v1. Фиксированный минимум 128 единиц относится к поперечникам на пяти сечениях оси круп-грудь. Отвергнутая v1 даёт 110-118,5; ключи v2 дают 131-177,5. Порог оставляет запас на сглаживание, но не допускает прежнюю узкую форму. Проверка не означает одобрения общей внешности, корней лап или движения"
+  },
+  "limbStability": {
+    "rasterScale": 2,
+    "samples": 24,
+    "alphaThreshold": 192,
+    "colorTolerance": 2,
+    "maximumTravel": 2,
+    "minimumArea": 100,
+    "crops": [
+      {
+        "name": "дальняя задняя стопа",
+        "x": 280,
+        "y": 100,
+        "width": 130,
+        "height": 165
+      },
+      {
+        "name": "ближняя задняя стопа",
+        "x": 420,
+        "y": 270,
+        "width": 150,
+        "height": 140
+      }
+    ],
+    "rationale": "Сравнивается тёмная видимая часть стопы полного готового SVG при отключённых общем swing и headFollow. Фиксированные окна исключают анатомические корни. Допуск 2 единицы разрешает лёгкое перекрытие при дыхании корпуса, но не прежнее поджимание/дрейф стоп v7. Контроль присутствия маски не позволяет пропавшей стопе пройти проверку стабильности."
+  }
+}

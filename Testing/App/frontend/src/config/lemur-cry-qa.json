@@ -1,0 +1,155 @@
+{
+  "step": 1e-5,
+  "positionTolerance": 0.001,
+  "velocityTolerance": 0.01,
+  "loopFields": [
+    "headY",
+    "headTilt",
+    "hugTilt",
+    "water",
+    "eyeOpen",
+    "mouthOpen",
+    "mouthX",
+    "mouthY",
+    "muzzleY",
+    "blink",
+    "appeal"
+  ],
+  "regression": {
+    "size": 960,
+    "dropTime": 1.7,
+    "blue": {
+      "redDifference": 4,
+      "greenDifference": 30
+    },
+    "amber": {
+      "redMin": 200,
+      "greenMin": 100,
+      "greenMax": 220,
+      "blueMax": 100
+    },
+    "eyes": [
+      {
+        "name": "левый глаз",
+        "left": 250,
+        "right": 490,
+        "top": 220,
+        "bottom": 500
+      },
+      {
+        "name": "правый глаз",
+        "left": 500,
+        "right": 760,
+        "top": 220,
+        "bottom": 500
+      }
+    ],
+    "gaze": {
+      "pupilChannelMax": 45,
+      "centerTolerance": 0.025,
+      "sizeTolerance": 0.03,
+      "minimumWidthRatio": 0.8,
+      "minimumEyeOpen": 0.99
+    },
+    "minimumComponentArea": 8,
+    "minimumBowlArea": 1000,
+    "rejectedPaths": {
+      "svg": "artifacts/lemur-cry/reviewed-v1/src/lemur-cry-svg.mjs",
+      "art": "artifacts/lemur-cry/reviewed-v1/src/lemur-cry-art.json",
+      "motion": "artifacts/lemur-cry/reviewed-v1/src/lemur-cry-motion.json",
+      "base": "artifacts/lemur-cry/reviewed-v1/src/lemur-joy-art.json"
+    },
+    "submergedIris": {
+      "redMin": 110,
+      "greenDifferenceMin": 20,
+      "blueDifferenceMin": -15,
+      "blueDifferenceMax": 35
+    },
+    "compactRejectedPaths": {
+      "svg": "artifacts/lemur-cry/reviewed-v4/src/lemur-cry-svg.mjs",
+      "art": "artifacts/lemur-cry/reviewed-v4/src/lemur-cry-art.json",
+      "motion": "artifacts/lemur-cry/reviewed-v4/src/lemur-cry-motion.json",
+      "base": "artifacts/lemur-cry/reviewed-v4/src/lemur-joy-art.json"
+    },
+    "waterShape": {
+      "time": 0,
+      "maxHeightWidthRatio": 0.45,
+      "minimumBlueMinusRed": 115,
+      "densitySamples": [
+        [366, 450],
+        [609, 450]
+      ]
+    },
+    "faceRejectedPaths": {
+      "svg": "artifacts/lemur-cry/reviewed-v5/src/lemur-cry-svg.mjs",
+      "art": "artifacts/lemur-cry/reviewed-v5/src/lemur-cry-art.json",
+      "motion": "artifacts/lemur-cry/reviewed-v5/src/lemur-cry-motion.json",
+      "base": "artifacts/lemur-cry/reviewed-v5/src/lemur-joy-art.json"
+    },
+    "face": {
+      "blinkTimes": [
+        [1.5, 1.68, 1.98],
+        [3.75, 3.94, 4.18]
+      ],
+      "maxClosedAmberRatio": 0.02,
+      "minimumRecoveredAmberRatio": 0.8,
+      "mouthRegion": {
+        "left": 460,
+        "right": 520,
+        "top": 425,
+        "bottom": 480
+      },
+      "mouthTimes": [0, 0.84, 1.21, 2.4, 3.17, 3.57],
+      "minimumMouthAreaRatio": 1.8,
+      "highlightTimes": [0.72, 0.76, 0.8, 0.84, 0.88],
+      "whiteChannelMin": 235,
+      "minimumHighlightAreaRatio": 0.14,
+      "minimumHighlightMotion": 1.5
+    }
+  },
+  "raster": {
+    "size": 480,
+    "lowerStart": 0.74,
+    "inkThreshold": 220,
+    "regions": [
+      {
+        "name": "левая стопа",
+        "range": [0.18, 0.31]
+      },
+      {
+        "name": "низ тела слева",
+        "range": [0.35, 0.4]
+      },
+      {
+        "name": "низ тела справа",
+        "range": [0.64, 0.68]
+      },
+      {
+        "name": "правая стопа",
+        "range": [0.7, 0.81]
+      }
+    ]
+  },
+  "waterMotion": {
+    "surface": {
+      "maxAbsolute": 4,
+      "minSpan": 2.5
+    },
+    "reflectionX": {
+      "maxAbsolute": 5,
+      "minSpan": 4
+    },
+    "reflectionY": {
+      "maxAbsolute": 1.25,
+      "minSpan": 0.5
+    },
+    "tilt": {
+      "maxAbsolute": 2.5,
+      "minSpan": 2
+    },
+    "shimmer": {
+      "maxAbsolute": 0.15,
+      "minSpan": 0.08
+    }
+  }
+}

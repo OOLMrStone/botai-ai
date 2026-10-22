@@ -1,0 +1,123 @@
+name: botai-public
+x-defaults: &defaults
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options: {max-size: '10m', max-file: '3'}
+  security_opt: ['no-new-privileges:true']
+services:
+  garage:
+    <<: *defaults
+    image: dxflrs/garage:v2.3.0@sha256:866bd13ed2038ba7e7190e840482bc27234c4afaf77be8cfa439ae088c1e4690
+    command: ['/garage', 'server', '--single-node', '--default-bucket']
+    env_file: ['${PUBLIC_RUNTIME_DIR:?}/garage.env']
+    volumes:
+      - ${PUBLIC_RUNTIME_DIR:?}/garage.toml:/etc/garage.toml:ro
+      - garage-meta:/var/lib/garage/meta
+      - garage-data:/var/lib/garage/data
+    networks: [data]
+    mem_limit: 192m
+    healthcheck:
+      test: ['CMD', '/garage', 'status']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  ai:
+    <<: *defaults
+    image: botai-public-ai:${RELEASE_ID:?}
+    build: {context: ../ai}
+    env_file: ['${PUBLIC_RUNTIME_DIR:?}/ai.env']
+    environment:
+      APP_ENV: prod
+      DEBUG_ENABLED: 'false'
+      DEBUG_ALLOW_IN_PROD: 'false'
+      INTERNAL_GRADING_ENABLED: 'true'
+    networks: [grading, provider]
+    mem_limit: 384m
+    read_only: true
+    tmpfs: ['/tmp:rw,noexec,nosuid,size=64m']
+    volumes: [ai-diagnostics:/srv/data/suspicious-submissions]
+    cap_drop: [ALL]
+  backend:
+    <<: *defaults
+    image: botai-public-backend:${RELEASE_ID:?}
+    build: {context: ., dockerfile: Dockerfile.integration, target: runtime}
+    env_file: ['${PUBLIC_RUNTIME_DIR:?}/backend.env']
+    environment:
+      SPRING_FLYWAY_ENABLED: 'false'
+      SESSION_COOKIE_SECURE: 'true'
+      SERVER_FORWARD_HEADERS_STRATEGY: native
+    ports: ['127.0.0.1:18083:8080']
+    networks:
+      edge: {gw_priority: 1}
+      database: {}
+      data: {}
+      grading: {}
+    depends_on:
+      garage: {condition: service_healthy}
+      ai: {condition: service_healthy}
+    mem_limit: 1g
+    read_only: true
+    tmpfs: ['/tmp:rw,noexec,nosuid,size=128m']
+    cap_drop: [ALL]
+  migrate:
+    <<: *defaults
+    profiles: [ops]
+    image: botai-public-backend:${RELEASE_ID:?}
+    env_file: ['${PUBLIC_RUNTIME_DIR:?}/migrate.env']
+    entrypoint: ['java', '-XX:MaxRAMPercentage=65', '-Dloader.main=org.botai.back.migration.MigrateOnly', '-cp', '/app/app.jar', 'org.springframework.boot.loader.launch.PropertiesLauncher']
+    networks: [database]
+    restart: 'no'
+    mem_limit: 384m
+    read_only: true
+    tmpfs: ['/tmp:rw,noexec,nosuid,size=32m']
+    cap_drop: [ALL]
+    healthcheck: {disable: true}
+  content-import:
+    <<: *defaults
+    profiles: [ops]
+    image: botai-public-content-import:${RELEASE_ID:?}
+    build: {context: ., dockerfile: Dockerfile.integration, target: content-import}
+    env_file: ['${PUBLIC_RUNTIME_DIR:?}/import.env']
+    environment:
+      SPRING_FLYWAY_ENABLED: 'false'
+      SPRING_PROFILES_ACTIVE: content-import
+      APP_GRADING_WORKER_ENABLED: 'false'
+      SERVER_ADDRESS: 127.0.0.1
+      SERVER_PORT: '0'
+      MANAGEMENT_SERVER_ADDRESS: 127.0.0.1
+      MANAGEMENT_SERVER_PORT: '0'
+      SPRING_SESSION_JDBC_CLEANUP_CRON: '-'
+      JAVA_TOOL_OPTIONS: '-Xmx384m -XX:MaxMetaspaceSize=192m'
+    networks: [database, data]
+    restart: 'no'
+    mem_limit: 1g
+    read_only: true
+    tmpfs: ['/tmp:rw,noexec,nosuid,size=128m']
+    cap_drop: [ALL]
+    healthcheck: {disable: true}
+  frontend:
+    <<: *defaults
+    image: botai-front:release-20261008-ui-v9
+    build:
+      context: ../front
+      dockerfile: Dockerfile.integration
+      args: {APP_ENV: prod, BACKEND_URL: 'http://backend:8080'}
+    environment: {BACKEND_URL: 'http://backend:8080'}
+    ports: ['127.0.0.1:13001:3000']
+    networks: [edge]
+    depends_on: {backend: {condition: service_healthy}}
+    mem_limit: 384m
+    read_only: true
+    tmpfs: ['/tmp:rw,noexec,nosuid,size=64m', '/app/.next/cache:rw,noexec,nosuid,size=64m,uid=1000,gid=1000']
+    cap_drop: [ALL]
+networks:
+  edge: {}
+  database: {external: true, name: auth_default}
+  data: {internal: true}
+  grading: {internal: true}
+  provider: {}
+volumes:
+  garage-meta: {}
+  garage-data: {}
+  ai-diagnostics: {}

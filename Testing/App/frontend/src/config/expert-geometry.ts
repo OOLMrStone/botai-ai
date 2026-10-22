@@ -1,0 +1,31 @@
+export const EXPERT_GEOMETRY = {
+  maximumExpressionLength: 512,
+  maximumExpressionDepth: 32,
+  coordinatePrecision: 6,
+  coordinateLocale: 'ru-RU',
+  piSymbol: 'π',
+  piCommand: '\\pi',
+  angleDenominators: [1, 2, 3, 4, 6, 8, 12],
+  angleTolerance: 1e-10,
+  rangePaddingRatio: 0.12,
+  minimumRangePadding: 1,
+  decimalPattern: /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/,
+  piPattern: /^([+-]?(?:\d+(?:\.\d+)?|\.\d+)?)π(?:\/([+-]?(?:\d+(?:\.\d+)?|\.\d+)))?$/,
+  fractionPattern: /^([+-]?(?:\d+(?:\.\d+)?|\.\d+))\/([+-]?(?:\d+(?:\.\d+)?|\.\d+))$/,
+} as const;
+
+export const EXPERT_GEOMETRY_COPY = {
+  angleHint: 'Можно ввести число, π/2 или 2π/3',
+  invalidAngle: 'Введи угол числом или выражением с π, например π/6',
+  invalidCoordinate: 'Введи числовую координату: число, дробь, корень или выражение без переменных',
+  duplicateCoordinate: 'Такая точка уже есть на прямой',
+  invalidInterval: 'Начало промежутка должно быть меньше конца',
+  invalidAxis: 'Левый край прямой должен быть меньше правого',
+  coordinateOutsideAxis: 'Точка должна находиться между краями прямой',
+  incomplete: 'Закончи ввод числа, чтобы применить правки',
+  needCirclePoints: 'Добавь две точки для новой дуги',
+  negativeInfinity: '−∞',
+  positiveInfinity: '+∞',
+  endpoint: (value: string, index: number) => `Точка ${index + 1}: ${value}`,
+  approximate: (value: string) => `≈ ${value}`,
+} as const;

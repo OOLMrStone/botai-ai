@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 420" role="img" aria-labelledby="title desc">
+  <title id="title">Четырёхугольник ABCD в окружности</title>
+  <desc id="desc">Вписанный четырёхугольник ABCD с диагоналями AC и BD</desc>
+  <g fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="220" cy="210" r="172" />
+    <path d="M48.000 210.000 306.000 61.044 374.593 134.600 311.146 355.864Z" />
+    <path d="M48.000 210.000 374.593 134.600M306.000 61.044 311.146 355.864" />
+  </g>
+  <g fill="#111" font-family="Georgia, 'Times New Roman', serif" font-size="30" font-style="italic">
+    <text x="18" y="220">A</text>
+    <text x="313" y="49">B</text>
+    <text x="389" y="141">C</text>
+    <text x="318" y="390">D</text>
+  </g>
+</svg>

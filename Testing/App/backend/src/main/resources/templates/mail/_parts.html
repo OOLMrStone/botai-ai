@@ -1,0 +1,53 @@
+<!--
+  Shared chrome for transactional email. Email clients are not browsers:
+  layout is table-based (Outlook's Word engine ignores margins, max-width and
+  styling on <body>), every style is inline (Gmail strips much of <style>),
+  and there are no external images so nothing breaks when remote content is
+  blocked. Rounded corners and letter-spacing are used only where losing them
+  degrades gracefully.
+-->
+<table th:fragment="header" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+        <td style="padding: 0 0 24px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+                   font-size: 20px; font-weight: bold; color: #111827;">
+            botai
+        </td>
+    </tr>
+</table>
+
+<table th:fragment="footer" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+        <td style="padding: 24px 0 0 0; border-top: 1px solid #e5e7eb;
+                   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+                   font-size: 12px; line-height: 18px; color: #6b7280;">
+            Это автоматическое письмо — отвечать на него не нужно.<br/>
+            botai — подготовка к ЕГЭ по профильной математике.
+        </td>
+    </tr>
+</table>
+
+<!-- The code itself: large, spaced out, selectable as one chunk. -->
+<table th:fragment="code(code)" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+       style="margin: 24px 0;">
+    <tr>
+        <td align="center" bgcolor="#f3f4f6"
+            style="padding: 16px; background-color: #f3f4f6; border-radius: 12px;
+                   font-family: 'SF Mono', Menlo, Consolas, monospace; font-size: 32px;
+                   font-weight: bold; letter-spacing: 8px; color: #111827;">
+            <span th:text="${code}">000000</span>
+        </td>
+    </tr>
+</table>
+
+<!-- Highlighted safety note; bgcolor attribute is the Outlook-safe twin of the style. -->
+<table th:fragment="warning" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+        <td bgcolor="#fef3c7"
+            style="padding: 12px; background-color: #fef3c7; border-radius: 8px;
+                   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+                   font-size: 14px; line-height: 20px; color: #92400e;">
+            Никому не сообщай этот код. Сотрудники botai никогда не спрашивают
+            его — ни в переписке, ни по телефону.
+        </td>
+    </tr>
+</table>

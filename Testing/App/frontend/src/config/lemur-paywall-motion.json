@@ -1,0 +1,110 @@
+{
+  "fps": 60,
+  "duration": 8,
+  "source": "artifacts/lemur-paywall/source-v5.png",
+  "work": "artifacts/lemur-paywall/frames-v5",
+  "output": "public/lemur-paywall",
+  "pivot": [1014, 779],
+  "flexRange": [755, 828],
+  "region": [910, 740, 1140, 965],
+  "inverseIterations": 6,
+  "travelPerRadian": 60,
+  "keys": [
+    [0, 0],
+    [0.45, 0],
+    [0.8, -0.29],
+    [1.16, 0.2],
+    [1.35, 0.2],
+    [1.7, -0.24],
+    [2.06, 0.17],
+    [2.25, 0.17],
+    [2.85, 0],
+    [4, 0]
+  ],
+  "qaFrames": [0, 60, 120, 178, 190, 240, 300, 402, 479],
+  "contactSheet": {
+    "columns": 3,
+    "width": 512,
+    "height": 342,
+    "path": "artifacts/lemur-paywall/contact-sheet-v5.png"
+  },
+  "gestureDuration": 4,
+  "eyeCleanPlate": "artifacts/lemur-paywall/eye-clean-plate-v5.png",
+  "face": {
+    "gazeKeys": [
+      [0, 0],
+      [2.7, 0],
+      [3.1, 1],
+      [4.3, 1],
+      [4.7, 0],
+      [8, 0]
+    ],
+    "blinkKeys": [
+      [0, 0],
+      [2.85, 0],
+      [2.97, 1],
+      [3.02, 1],
+      [3.18, 0],
+      [6.6, 0],
+      [6.71, 1],
+      [6.75, 1],
+      [6.92, 0],
+      [8, 0]
+    ],
+    "eyes": [
+      {
+        "region": [944, 349, 1130, 537],
+        "center": [1035, 442],
+        "gaze": [12, -42],
+        "lidSlope": 0.22,
+        "lidRange": [-89, 89],
+        "closureY": 12,
+        "pupil": [1025, 489, 43, 41],
+        "shine": [-31, -17, 13]
+      },
+      {
+        "region": [1161, 427, 1333, 607],
+        "center": [1246, 517],
+        "gaze": [24, -40],
+        "lidSlope": 0.25,
+        "lidRange": [-80, 81],
+        "closureY": 12,
+        "pupil": [1220, 560, 43, 42],
+        "shine": [-28, -16, 12]
+      }
+    ],
+    "matte": {
+      "goldMin": 150,
+      "goldGreen": 90,
+      "goldBlue": 130,
+      "goldContrast": 45
+    },
+    "lid": {
+      "softness": 1.3,
+      "lineWidth": 2.5,
+      "curve": 0.0012
+    },
+    "eyeDilation": 2,
+    "pupilSoftness": 0.8
+  },
+  "body": {
+    "region": [16, 128, 1524, 750],
+    "groundFade": [660, 748],
+    "torsoX": [400, 610, 930, 1130],
+    "headX": [760, 960],
+    "headPivot": [1275, 625],
+    "headFade": [605, 730],
+    "breathPeriod": 4,
+    "breathLift": 1.35,
+    "bellyWidth": 0.45,
+    "headLift": 0.51,
+    "nodRadians": 0.00135,
+    "gestureLift": 0.45,
+    "tailPivot": [470, 650],
+    "tailX": [280, 480],
+    "tailFade": [620, 735],
+    "tailRadians": 0.023,
+    "tailPeriod": 8,
+    "tailPhase": 0.45
+  }
+}

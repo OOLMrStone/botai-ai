@@ -1,0 +1,72 @@
+{
+  "fps": 60,
+  "duration": 4.8,
+  "loopOverlap": 0.6,
+  "swingDegrees": 8,
+  "anchor": [380, 0],
+  "viewSize": 620,
+  "mode": "idle",
+  "headFollow": 2,
+  "headNod": 1.4,
+  "samples": 60,
+  "bandOverlap": 0.002,
+  "blink": [
+    [0, 0],
+    [4.15, 0],
+    [4.24, 1],
+    [4.36, 0],
+    [4.8, 0]
+  ],
+  "gesture": [
+    [0, 0],
+    [0.05, 0],
+    [0.42, 1],
+    [0.9, 1],
+    [1.5, 0],
+    [4.8, 0]
+  ],
+  "heart": [
+    [0, 0],
+    [0.27, 0],
+    [0.46, 1],
+    [0.9, 1],
+    [1.3, 0],
+    [4.8, 0]
+  ],
+  "qaTimes": [0, 0.35, 0.7, 1.05, 1.45, 1.8, 2.2, 2.4, 2.85, 3.45, 4.2, 4.78333333333333],
+  "paths": {
+    "art": "src/config/lemur-hang-art.json",
+    "baseArt": "src/config/lemur-joy-art.json",
+    "output": "public/lemur-hang"
+  },
+  "posterSvg": "poster.svg",
+  "variants": [
+    {
+      "mode": "idle",
+      "export": "hangIdle",
+      "work": "artifacts/lemur-hang/idle/frames",
+      "manifest": "artifacts/lemur-hang/idle/manifest.json",
+      "previewWork": "artifacts/lemur-hang/idle/preview",
+      "previewVideo": "idle-preview.mp4"
+    },
+    {
+      "mode": "heart",
+      "export": "hangHeart",
+      "work": "artifacts/lemur-hang/heart/frames",
+      "manifest": "artifacts/lemur-hang/heart/manifest.json",
+      "previewWork": "artifacts/lemur-hang/heart/preview",
+      "previewVideo": "heart-preview.mp4"
+    }
+  ],
+  "bodyPeriod": 2.4,
+  "curl": [
+    [0, 0],
+    [1.2, 1],
+    [2.4, 0]
+  ],
+  "reactionPhaseStep": 0.2,
+  "reactionEnd": 1.6,
+  "reactionPhaseVideo": "heart-phase-{index}.mp4",
+  "reactionPhaseWork": "artifacts/lemur-hang/heart/phases",
+  "reactionPhaseDigits": 2
+}

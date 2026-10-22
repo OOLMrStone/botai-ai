@@ -1,0 +1,63 @@
+Immutable AI fixture provenance (audit corrected after the first full-suite failure)
+
+No provider/model calls or runtime school submissions were used. Native resources
+were regenerated ONLY from git show <full-commit>:tests/test_v2_pipeline.py,
+parsed with Python ast.literal_eval on the pytest.mark.parametrize argument of
+ test_structured_number_line_and_circle_remain_editable_with_same_step.
+The current working tree was not read to obtain fixture objects.
+JSON uses ensure_ascii=False, indent=2, and one trailing newline.
+
+OLD commit: 4565127952edbb86262ad43d94d7dccab26e7ca9
+Source Git blob tests/test_v2_pipeline.py:
+ c42a8902ed8b02007fa7a4ee490c446a28108d16
+ ai-456512-native-14.json SHA256:
+  9fa82c95c0798204dd2652d72fdb2c4d110c3ecdcf6e9df418a082c45622038d
+ ai-456512-native-16.json SHA256:
+  3bb443cb3fa301111cafaac35e03b1d9a9099f7688a638630a9e22b8e187a1fd
+The old circle arc has only from/to/sign/selected. Its negative test must reject
+missing direction/full_circle; it is not silently upgraded to the new contract.
+
+NEW commit: 131fd79b1f9f253b598089eba6cc7d46ebe61659
+Source Git blob tests/test_v2_pipeline.py:
+ 0fdc640ed618ab929e0b455a41f88d9d35fb67a8
+ ai-131fd-native-14.json SHA256:
+  ad92ad046c93c4a0599f0736bcf1f547a20cb787f8477db340c721395d3803e3
+ ai-131fd-native-16.json SHA256:
+  3bb443cb3fa301111cafaac35e03b1d9a9099f7688a638630a9e22b8e187a1fd
+The new circle explicitly adds direction='ccw', full_circle=false. Both new
+native fixtures have positive lossless adapter/canonical tests. The number-line
+literal is identical across the two commits, including source order and bound.
+The previously misnamed old-circle resource matched the NEW commit exactly;
+this audit restored the old literal from its immutable commit, not by hand.
+
+GEOMETRY / REJECTION / SOURCE IMAGE audit:
+These existing resources were recomputed and compared against ONLY pure AST
+functions/classes/constants read via git show OLD commit. No current-worktree
+app module was imported. SafeImage came from committed app/grading/images.py;
+source()/safe()/response() from committed tests/test_v2_artifacts.py;
+crop_diagram/_bbox_errors/_uuid/_fields from committed app/grading/v2_artifacts.py.
+Geometry JSON equality, source PNG byte equality, and rejection JSON equality
+all passed. Their resource contents were therefore retained unchanged.
+Rejection is the exact null transition from the AI owner's committed test
+ test_rejections_are_null_without_diagrams_and_legacy_ocr_cannot_grade:
+ is_graded=False, rejection_reason='Нечитаемое фото', ocr/analysis/grading=None,
+ artifacts=[].
+
+OLD tests/test_v2_artifacts.py Git blob: 8c44d0fc0d621a1822664fea5d089edea228fb63
+NEW tests/test_v2_artifacts.py Git blob: af4ea122d0dff586c8f13aeb94ba116673449714
+Selected safe/source/response AST SHA256 is identical in both commits:
+ 6dad5bb413d9155046d80721917cf2ed9b48ae2aad8d52960dbf938b17b74641
+OLD app/grading/v2_artifacts.py Git blob: 7f7f50f26ed0bf7ec8993b6eb192181f26892dd7
+NEW app/grading/v2_artifacts.py Git blob: 8feb062b22ce47be829e70f050dbb35b4353b26d
+Selected crop_diagram/_bbox_errors/_uuid/_fields AST SHA256 is identical:
+ 2811e4d00fa7357330dabd00595fd9607843023658d35aca12105d1cb42da37e
+AST digests use ast.dump(ast.Module(selected_nodes, []), include_attributes=False).
+
+ ai-456512-geometry.json SHA256:
+  a9373848e45fcad2172641ab6674547a9e18de896b7a8cab807e298d0c3a5aff
+ ai-456512-rejected.json SHA256:
+  013abd8e2ab7eb6864c2edc3698a5608752a01e3243d26f323dbd955e734ab22
+ ai-456512-source.png SHA256:
+  8fa9c3a98e9de6c9b3c6c64c8de555b92ec9b627ec794802c913b5f6f9f4c871
+Tests pin resource byte hashes so a future live-worktree export cannot silently
+replace a fixture while retaining an obsolete source-commit label.

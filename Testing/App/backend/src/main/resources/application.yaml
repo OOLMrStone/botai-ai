@@ -1,0 +1,92 @@
+spring:
+  application:
+    name: back
+
+  # Datasource: in local dev, spring-boot-docker-compose starts compose.yaml's
+  # Postgres and wires the connection automatically. In production, provide:
+  #   SPRING_DATASOURCE_URL, SPRING_DATASOURCE_USERNAME, SPRING_DATASOURCE_PASSWORD
+
+  jpa:
+    hibernate:
+      # The schema is owned by Flyway migrations; Hibernate only verifies it matches.
+      ddl-auto: validate
+    open-in-view: false
+
+  flyway:
+    enabled: true
+
+  session:
+    # Sessions are stored server-side in Postgres (SPRING_SESSION tables), so the
+    # cookie only carries an opaque random id — nothing to tamper with or forge.
+    jdbc:
+      # Tables are created by Flyway (V2), not by Spring Session itself.
+      initialize-schema: never
+    # Sliding expiration: each request pushes the deadline forward, so active
+    # users are never logged out; idle sessions die after 14 days.
+    timeout: 14d
+
+  mvc:
+    problemdetails:
+      enabled: true
+
+  mail:
+    # Dev default: Mailpit from compose.yaml (SMTP :1025, inbox UI at
+    # http://localhost:8025) - no credentials, nothing leaves the machine.
+    # To send through the real Gmail mailbox instead, run with the "gmail"
+    # profile (see application-gmail.yaml).
+    host: ${SMTP_HOST:localhost}
+    port: ${SMTP_PORT:1025}
+
+  # ---------------------------------------------------------------------------
+  # External login providers (base — enable when credentials exist).
+  # 1. Create OAuth credentials at https://console.cloud.google.com/apis/credentials
+  #    with redirect URI: {baseUrl}/login/oauth2/code/google
+  # 2. Uncomment below and supply the values via environment variables.
+  # 3. Uncomment the oauth2Login section in SecurityConfig.
+  # ---------------------------------------------------------------------------
+  #  security:
+  #    oauth2:
+  #      client:
+  #        registration:
+  #          google:
+  #            client-id: ${GOOGLE_CLIENT_ID}
+  #            client-secret: ${GOOGLE_CLIENT_SECRET}
+  #            scope: openid, profile, email
+
+app:
+  mail:
+    from: botai <no-reply@botai.example>
+  frontend:
+    # Base URL of the SPA - emailed links point here, not at this API.
+    # Production: set FRONTEND_BASE_URL to the real https origin.
+    base-url: ${FRONTEND_BASE_URL:http://localhost:3000}
+
+# Metrics and health live on a separate port: the public API (8080) never
+# serves /actuator, and Prometheus scrapes 8081 over the internal network.
+# Do NOT expose 8081 publicly.
+management:
+  server:
+    port: 8081
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+  metrics:
+    tags:
+      # Distinguishes this service in a shared Prometheus.
+      application: ${spring.application.name}
+
+server:
+  servlet:
+    session:
+      cookie:
+        name: SESSION
+        http-only: true   # not readable from JavaScript (XSS mitigation)
+        same-site: lax    # cookie not sent on cross-site POSTs (CSRF mitigation)
+        secure: ${SESSION_COOKIE_SECURE:false}
+
+# Streaming ingress remains bounded before image decoding.
+spring.servlet.multipart.max-file-size: 8MB
+spring.servlet.multipart.max-request-size: 9MB
+spring.jackson.deserialization.fail-on-unknown-properties: true
+spring.jackson.default-property-inclusion: non_null

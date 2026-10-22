@@ -4,6 +4,14 @@ A FastAPI microservice for checking photographed ЕГЭ mathematics solutions. T
 
 Python 3.14 · FastAPI · OpenAI-compatible model · Docker Compose
 
+## Three local testing sites from one clone
+
+Student, expert and AI developer interfaces, backend and evals are included in
+[`Testing/`](Testing/README.md). Give a fresh agent
+[`Testing/App/prompt.md`](Testing/App/prompt.md), or run
+`python3 Testing/App/run.py up` from this repository. The first launch uses mock
+AI and requires no provider key; the guide explains real-model testing.
+
 ## Current development state — 21 October 2026
 
 `main` is the integrated service and portable application: the staged flow and
@@ -12,11 +20,10 @@ fixes, and the native local launcher. See [architecture](docs/ARCHITECTURE.md),
 [photo workflow](docs/grading/service.md), and [local launch](docs/LOCAL_APP.md).
 The repository version is not a claim that production has been redeployed.
 
-Keep two named long-lived branches: `main` (verified integration) and `develop`
-(work not yet integrated). Start short-lived `codex/<feature>` branches from
-`main`, test, merge into `main`, and delete them. Bring `develop` back to `main`
-after its work is integrated. Do not maintain separate task-number or packaging
-branches. Historical branch tips are retained under `archive/2026-10-21/` tags.
+Only two named branches are allowed: `main` (verified integration) and `develop`
+(work not yet integrated). Do not create feature or agent branches. Use a detached
+checkout for isolated validation when needed, then integrate verified changes into
+`main`. Historical branch tips are retained under `archive/2026-10-21/` tags.
 
 ## Portable local app
 

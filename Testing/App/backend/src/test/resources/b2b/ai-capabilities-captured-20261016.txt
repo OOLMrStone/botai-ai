@@ -1,0 +1,13 @@
+Exact HTTP response body captured by the local runtime owner on 2026-10-16 at
+12:58:10.519388 UTC via authenticated GET /internal/v2/grading/capabilities.
+HTTP 200; Content-Type application/json. No grading POST or model call was made.
+No credentials, request headers, environment values, or image payloads are in
+this fixture. provider_mode=live describes the advertised provider only.
+
+Original private local capture:
+runtime/b2b-local/capabilities-live-20261016T125810519388Z.json
+Fixture: ai-capabilities-captured-20261016.json (byte-identical, no rewriting)
+SHA-256: b561018af4b6046eb06c2f3dd16b247de4b26e15df0d6130e92f91bc873c43b7
+
+Regression trigger: deadline_seconds is the JSON number 360.0, as emitted by
+the AI's float setting. The old Java integral-only check rejected this body.

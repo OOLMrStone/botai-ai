@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" role="img" aria-labelledby="title desc">
+  <title id="title">Две цилиндрические кружки</title>
+  <desc id="desc">Левый цилиндр вдвое выше правого, диаметр правого цилиндра в полтора раза больше диаметра левого</desc>
+  <g fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="105" cy="65" rx="70" ry="18" />
+    <path d="M35 65v200M175 65v200M35 265a70 18 0 0 0 140 0" />
+    <path d="M35 265a70 18 0 0 1 140 0" stroke-dasharray="6 7" />
+    <ellipse cx="340" cy="165" rx="105" ry="27" />
+    <path d="M235 165v100M445 165v100M235 265a105 27 0 0 0 210 0" />
+    <path d="M235 265a105 27 0 0 1 210 0" stroke-dasharray="6 7" />
+  </g>
+</svg>

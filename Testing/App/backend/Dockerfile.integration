@@ -1,0 +1,30 @@
+# syntax=docker/dockerfile:1
+FROM eclipse-temurin:21-jdk@sha256:3e3c176ffed168beb42c607be9bc1639b466cf00261a0fb04425562c9d0c5c2b AS build
+WORKDIR /workspace
+COPY gradlew settings.gradle.kts build.gradle.kts ./
+COPY gradle ./gradle
+COPY src ./src
+RUN --mount=type=cache,target=/root/.gradle chmod +x gradlew && ./gradlew bootJar --no-daemon --max-workers=2 -Dorg.gradle.jvmargs="-Xmx384m -XX:MaxMetaspaceSize=256m"
+RUN cp build/libs/*-SNAPSHOT.jar /app.jar
+FROM eclipse-temurin:21-jre@sha256:cff19e6215689161eb6162c11b86b0c60ddf802164f2eaf48d570f8fb79a36c5 AS runtime
+WORKDIR /app
+RUN useradd --system --uid 10001 app
+COPY --from=build /app.jar ./app.jar
+USER 10001
+EXPOSE 8080
+HEALTHCHECK --interval=15s --timeout=5s --start-period=60s --retries=10 CMD curl -fsS http://127.0.0.1:8081/actuator/health >/dev/null || exit 1
+ENTRYPOINT ["java","-XX:MaxRAMPercentage=65","-jar","/app/app.jar"]
+
+# Isolated operator-only image. The regular backend target remains unchanged.
+FROM node:22.23.1-bookworm-slim@sha256:6c74791e557ce11fc957704f6d4fe134a7bc8d6f5ca4403205b2966bd488f6b3 AS import-math
+WORKDIR /opt/import-math
+COPY scripts/content_import/math-runtime/package*.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev --ignore-scripts --no-audit --no-fund
+FROM runtime AS content-import
+COPY --from=import-math /usr/local/bin/node /usr/local/bin/node
+COPY --from=import-math /opt/import-math /opt/import-math
+COPY scripts/content_import/validate-math.mjs /opt/import-math/validate-math.mjs
+ENV APP_CONTENT_IMPORT_NODE=/usr/local/bin/node \
+    APP_CONTENT_IMPORT_MATH_VALIDATOR=/opt/import-math/validate-math.mjs \
+    APP_CONTENT_IMPORT_KATEX_PACKAGE=/opt/import-math/package.json
+RUN ["/usr/local/bin/node", "-e", "const k=require('/opt/import-math/node_modules/katex');k.renderToString('x^2',{trust:false,throwOnError:true,strict:'error'});"]
