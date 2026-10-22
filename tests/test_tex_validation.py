@@ -12,6 +12,9 @@ from app.grading.retry import classify
 @pytest.mark.parametrize('text', [
     r'Обычный текст, цена 100 рублей и экранированный \$ символ',
     r'Ответ: $\frac{1}{2}$ и $$x^{2} + 1$$',
+    r'$\frac{13\cancel{x}}{\cancel{x}}$',
+    r'$2x^{\cancel{2}} = \cancel{x}1$',
+    r'$\cancel{12}3 \ge n \ge \cancel{4}1$',
     r'Ответ: \(\sqrt{x}\), затем \[x \ne 0\]',
     r'\frac{1}{2}', 'x = 1', r'$\text{верно: } x\in\mathbb{R}$',
     'Незакрытый доллар $ остаётся текстом как во frontend',

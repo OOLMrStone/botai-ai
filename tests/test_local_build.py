@@ -44,7 +44,7 @@ def test_export_is_allowlisted_and_preserves_prompt_bytes(tmp_path, system, exec
     hashes = builder.export_workspace(destination, executable, source=source, system=system)
     expected_prompts = {
         "common/main.md", "common/analysis.md", "common/grading.md",
-        "common/response-format.md", "16/ocr.md", "16/criteria.md", "16/popular_mistakes.md",
+        "common/response-format.md", "common/ocr.md", "16/ocr_specialties.md", "16/criteria.md", "16/popular_mistakes.md",
     }
     assert set(builder.PROMPT_FILES) == expected_prompts
     expected = {*expected_prompts, executable_name, "README.txt"}
@@ -65,7 +65,7 @@ def test_export_is_allowlisted_and_preserves_prompt_bytes(tmp_path, system, exec
     with zipfile.ZipFile(archive) as bundle:
         assert "portable/14/" in bundle.namelist()
         assert "portable/common/main.md" in bundle.namelist()
-        assert "portable/16/ocr.md" in bundle.namelist()
+        assert "portable/16/ocr_specialties.md" in bundle.namelist()
         assert not any(name.startswith("portable/prompts/") for name in bundle.namelist())
         assert not any("private" in name or "evals" in name for name in bundle.namelist())
         if system == "Darwin":
@@ -76,8 +76,8 @@ def test_export_is_allowlisted_and_preserves_prompt_bytes(tmp_path, system, exec
 
 def test_missing_approved_prompt_fails_before_export(tmp_path):
     source = source_tree(tmp_path)
-    (source / "tasks/16/prompts/ocr.md").unlink()
-    with pytest.raises(ValueError, match="Incomplete task package 16.*ocr.md"):
+    (source / "tasks/16/prompts/ocr_specialties.md").unlink()
+    with pytest.raises(ValueError, match="Incomplete task package 16.*ocr_specialties.md"):
         builder.export_workspace(tmp_path / "portable", tmp_path / "native", source=source)
     assert not (tmp_path / "portable").exists()
 
@@ -103,7 +103,7 @@ def test_export_includes_each_complete_package_without_borrowing_task_16(tmp_pat
 def test_partial_optional_package_fails_before_writing(tmp_path):
     source = source_tree(tmp_path)
     (source / "tasks/17/prompts/criteria.md").write_text("synthetic partial package")
-    with pytest.raises(ValueError, match="Incomplete task package 17.*ocr.md.*popular_mistakes.md"):
+    with pytest.raises(ValueError, match="Incomplete task package 17.*ocr_specialties.md.*popular_mistakes.md"):
         builder.export_workspace(tmp_path / "portable", tmp_path / "native", source=source)
     assert not (tmp_path / "portable").exists()
 
@@ -113,7 +113,7 @@ def test_missing_task_packages_stay_empty_and_shared_files_remain_required(tmp_p
     for name in builder.TASK_PROMPT_NAMES:
         (source / f"tasks/16/prompts/{name}.md").unlink()
     assert set(builder.prompt_inputs(source)) == {
-        "common/main.md", "common/analysis.md", "common/grading.md", "common/response-format.md",
+        "common/main.md", "common/analysis.md", "common/grading.md", "common/response-format.md", "common/ocr.md",
     }
     executable = tmp_path / "native"
     executable.write_bytes(b"fake executable")
@@ -148,21 +148,22 @@ def test_pyinstaller_data_allowlist_excludes_credentials(tmp_path):
     assert not any("prompts" in value or ".env" in value for value in command)
 
 
-def test_optional_ocr_biases_are_exported_byte_for_byte(tmp_path):
+def test_ocr_specialties_are_exported_byte_for_byte(tmp_path):
     source = source_tree(tmp_path)
-    biases = source / 'tasks/16/prompts/ocr_biases.md'
+    biases = source / 'tasks/16/prompts/ocr_specialties.md'
     biases.write_bytes('Уточнения OCR\r\n'.encode('utf-8'))
     executable = tmp_path / 'native'
     executable.write_bytes(b'fake executable')
     destination = tmp_path / 'portable'
     hashes = builder.export_workspace(destination, executable, source=source)
-    assert (destination / '16/ocr_biases.md').read_bytes() == biases.read_bytes()
-    assert hashes['16/ocr_biases.md'] == hashlib.sha256(biases.read_bytes()).hexdigest()
-    assert not (destination / '17/ocr_biases.md').exists()
+    assert (destination / '16/ocr_specialties.md').read_bytes() == biases.read_bytes()
+    assert hashes['16/ocr_specialties.md'] == hashlib.sha256(biases.read_bytes()).hexdigest()
+    assert not (destination / '17/ocr_specialties.md').exists()
 
 
-def test_optional_ocr_biases_symlink_is_rejected(tmp_path):
+def test_ocr_specialties_symlink_is_rejected(tmp_path):
     source = source_tree(tmp_path)
-    (source / 'tasks/16/prompts/ocr_biases.md').symlink_to(source / '.env')
+    (source / 'tasks/16/prompts/ocr_specialties.md').unlink()
+    (source / 'tasks/16/prompts/ocr_specialties.md').symlink_to(source / '.env')
     with pytest.raises(ValueError, match='Symlinks'):
         builder.prompt_inputs(source)

@@ -518,7 +518,8 @@ async def test_task_14_runs_reader_then_isolated_stages(tmp_path):
     calls = provider.transcribe.call_args_list
     assert len(calls) == 4  # three strips, then joining and settling doubts on the whole photo
     strip_prompt, resolve = calls[0].args[0], calls[3].args
-    assert package['ocr.md'] in strip_prompt and package['ocr_biases.md'] in strip_prompt
+    assert package['ocr.md'] in strip_prompt and package['ocr_specialties.md'] in strip_prompt
+    assert package['ocr.md'] in resolve[0] and package['ocr_specialties.md'] in resolve[0]
     assert 'Демонстрационный пример' not in strip_prompt + resolve[0]  # the statement never reaches the reader
     assert '## Фото 1, полоса 1 из 3\nx = π + πn' in resolve[0] and len(resolve) == 2  # text and the whole photo
     # The final transcript is laid out as steps for the expert screen; the analysis gives each step a status.

@@ -186,7 +186,8 @@ async def test_selected_task_uses_local_package_and_its_full_score_scale(tmp_pat
     assert 'SYNTHETIC TEST FIXTURE common/main.md' in provider.inputs[1][0]['content']
     returned_ocr = [json.loads(message['content'])['content'] for message in provider.inputs[-1]
                     if message['role'] == 'tool' and json.loads(message['content']).get('kind') == 'server_instruction']
-    assert f'SYNTHETIC TEST FIXTURE {task_number}/ocr.md' in returned_ocr
+    assert ('SYNTHETIC TEST FIXTURE common/ocr.md\n\n'
+            f'SYNTHETIC TEST FIXTURE {task_number}/ocr_specialties.md') in returned_ocr
     saved = [json.loads(message['tool_calls'][0]['function']['arguments'])['content']
              for message in provider.inputs[-1] if message.get('tool_calls')
              and message['tool_calls'][0]['function']['name'] == 'write_file'
@@ -273,8 +274,8 @@ async def test_staged_observer_preserves_inputs_and_exact_result_for_every_scale
 
 
 @pytest.mark.parametrize('layout', ['tasks', 'prompts', 'siblings', 'siblings-nested'])
-async def test_staged_reader_uses_optional_external_biases_and_local_catalog(tmp_path, staged_images, layout):
-    package = {**load_package(16), 'ocr_biases.md': 'LOCAL OCR BIAS MARKER'}
+async def test_staged_reader_uses_external_specialties_and_local_catalog(tmp_path, staged_images, layout):
+    package = {**load_package(16), 'ocr_specialties.md': 'LOCAL OCR SPECIALTIES MARKER'}
     catalog = None
     for name, content in package.items():
         group = 'common' if name in COMMON_NAMES else '16'
@@ -295,7 +296,7 @@ async def test_staged_reader_uses_optional_external_biases_and_local_catalog(tmp
     result = await service.run_prepared(TASK, IDS, staged_images, AsyncMock())
     assert json.loads(result)['is_graded']
     reading_prompts = [payload[0] for kind, payload in provider.inputs if kind == 'transcribe']
-    assert reading_prompts and all('LOCAL OCR BIAS MARKER' in prompt for prompt in reading_prompts)
+    assert reading_prompts and all('LOCAL OCR SPECIALTIES MARKER' in prompt for prompt in reading_prompts)
     catalog.write_text('No error-code rows', encoding='utf-8')
     with pytest.raises((ValueError, LLMResponseFormatError)):
         await GradingService(config(tmp_path), StagedRecordingMock(), package_root=tmp_path).run_prepared(

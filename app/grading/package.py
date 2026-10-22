@@ -7,8 +7,8 @@ layout always supplies both shared and task files, with no fallback per file.
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-COMMON_NAMES = ('main.md', 'analysis.md', 'grading.md', 'response-format.md')
-PROMPT_NAMES = ('main.md', 'ocr.md', 'analysis.md', 'popular_mistakes.md',
+COMMON_NAMES = ('ocr.md', 'main.md', 'analysis.md', 'grading.md', 'response-format.md')
+PROMPT_NAMES = ('main.md', 'ocr.md', 'ocr_specialties.md', 'analysis.md', 'popular_mistakes.md',
                 'grading.md', 'criteria.md', 'response-format.md')
 # Project task number -> maximum score of the matching FIPI-2026 task (13, 14, 15, 16, 17, 18, 19).
 MAX_SCORES = {14: 2, 15: 3, 16: 2, 17: 2, 18: 3, 19: 4, 20: 4}
@@ -31,8 +31,6 @@ EXPERT_JSON_TASKS = frozenset({14, 15, 16, 17, 18, 19, 20})
 # Reader tasks whose photos are first turned upright (reader.upright). Off: on 14.10 it turned 7 of 36 upright
 # photos of task 16 and missed two of three turned ones (tasks/16/evals/fix-2026-10-14.md).
 ORIENT_TASKS = frozenset()
-# Optional per-task files; a task without them keeps its package unchanged.
-OPTIONAL_NAMES = ('ocr_biases.md',)
 TASK_TITLES = {14: 'Уравнение', 15: 'Стереометрия', 16: 'Неравенство', 17: 'Экономическая задача',
                18: 'Планиметрия', 19: 'Задача с параметром', 20: 'Числа и их свойства'}
 
@@ -80,8 +78,4 @@ def package_paths(task_number: int = 16, *, root: Path = ROOT) -> dict[str, Path
 def load_package(task_number: int = 16, *, root: Path = ROOT) -> dict[str, str]:
     package = {name: path.read_text(encoding='utf-8')
                for name, path in package_paths(task_number, root=root).items()}
-    for name in OPTIONAL_NAMES:
-        path = task_directory(task_number, root=root) / name
-        if path.exists():
-            package[name] = path.read_text(encoding='utf-8')
     return package

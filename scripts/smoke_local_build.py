@@ -127,9 +127,9 @@ def smoke_test(executable: Path) -> dict:
             raise RuntimeError('Native task 16 package must be available for the grading smoke test')
         if set(status.get("prompt_files", {})) != {
             "main.md", "analysis.md", "grading.md", "response-format.md", "ocr.md",
-            "criteria.md", "popular_mistakes.md",
+            "ocr_specialties.md", "criteria.md", "popular_mistakes.md",
         }:
-            raise RuntimeError("Native application did not load the seven approved prompt files")
+            raise RuntimeError("Native application did not load the eight approved prompt files")
         for suffix in ("/ui/?local=1", "/ui/local.js", "/ui/local.css", "/local/events"):
             with opener.open(base + suffix, timeout=5) as response:
                 if response.status != 200 or not response.read():

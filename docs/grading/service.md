@@ -12,9 +12,13 @@
 Максимум из запроса не принимается. Предел — 8 MiB на изображение, общий
 тайм-аут — 360 секунд. `/config` показывает шкалу и доступность каждого пакета.
 
-Общие инструкции: `tasks/common/prompts/{main,analysis,grading,response-format}.md`.
-Предметные: `tasks/N/prompts/{ocr,criteria,popular_mistakes}.md` и необязательный
-`ocr_biases.md`. В runtime используются `prompts/common/` и `prompts/N/`.
+Общие инструкции: `tasks/common/prompts/{main,ocr,analysis,grading,response-format}.md`.
+Предметные: `tasks/N/prompts/{ocr_specialties,criteria,popular_mistakes}.md`.
+С 21 октября общие правила OCR и предметный `ocr_specialties.md` обязательны и
+передаются как при чтении полос, так и при сведении по полному фото. Прежние
+предметные `ocr.md` и `ocr_biases.md` объединены в `ocr_specialties.md`.
+В fallback-вызове `read_file(ocr.md)` сервер отдаёт общий и предметный тексты
+вместе, сохраняя порядок и ограничения инструментов. В runtime используются `prompts/common/` и `prompts/N/`.
 Локальная программа поддерживает также соседние папки common и N; весь пакет
 и каталог E-кодов берутся из одной выбранной структуры, без подмены файлами 16.
 
@@ -170,3 +174,14 @@ producing step; invalid TeX retries only that step (up to four total attempts),
 while validator infrastructure failure stops without another model call.
 Runtime dependencies, limits, segmentation parity and codes 609/704 are documented
 in [the v2 contract](internal-v2-proposal.md#deterministic-formula-validation-and-reversible-figures--21-october-2026).
+
+### Локальная проверка нового OCR — 21 октября 2026
+
+В B2B на порту 13004 установлен runtime `cddc439c9663863146ab39c42957845d5c1b1a1b`
+с общим OCR и предметными Specialties. Сохранены прежние настройки провайдера,
+backend, остальные промпты и результаты. 112 файлов кода и промптов сверены
+в контейнере с manifest; отдельный контейнер без сети прошёл mock v2 и проверку
+TeX-зачёркивания. Один явно разрешённый live-прогон 13.3.2 завершён, результат
+доступен эксперту. Наблюдение о сохранившейся ошибке чтения — в
+[гипотезах задания 14](../../tasks/14/hypotheses/README.md#локальная-проверка-зачёркивания-π--21102026).
+Приватная квитанция выкладки: `botai-back/runtime/b2b-local/ocr-release.json`.

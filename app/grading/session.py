@@ -161,6 +161,9 @@ class Session:
             if path in self.files:
                 return {'kind': 'untrusted_data', 'content': self.files[path]}
             result = {'kind': 'server_instruction', 'content': self.package[path]}
+            if path == 'ocr.md':
+                # Keep the guarded tool-loop order; this virtual instruction includes both files.
+                result['content'] += '\n\n' + self.package['ocr_specialties.md']
             if path == 'response-format.md':
                 result['content'] = response_format(self.package[path], self.task.get('max_score', 2))
                 result['request_data'] = {'kind': 'untrusted_data',

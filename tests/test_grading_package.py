@@ -51,8 +51,9 @@ def test_each_known_task_loads_only_its_own_files_and_shared_files(tmp_path, tas
     populate(tmp_path, relative, f'synthetic-test-task-{task_number}', task_number)
     package = load_package(task_number, root=tmp_path)
     assert package == {name: f'synthetic-test-task-{task_number}:' + name for name in PROMPT_NAMES}
-    assert str(task_number) in str(package_paths(task_number, root=tmp_path)['ocr.md'].relative_to(tmp_path))
+    assert str(task_number) in str(package_paths(task_number, root=tmp_path)['ocr_specialties.md'].relative_to(tmp_path))
     assert 'common' in str(package_paths(task_number, root=tmp_path)['main.md'].relative_to(tmp_path))
+    assert 'common' in str(package_paths(task_number, root=tmp_path)['ocr.md'].relative_to(tmp_path))
 
 
 @pytest.mark.parametrize('task_number', sorted(set(MAX_SCORES) - {16}))
@@ -85,7 +86,7 @@ def test_every_task_shares_common_files_and_keeps_its_own(task_number):
 
 
 @pytest.mark.parametrize('task_relative', ['16', '16/prompts'])
-@pytest.mark.parametrize('missing', ['main.md', 'criteria.md'])
+@pytest.mark.parametrize('missing', ['main.md', 'criteria.md', 'ocr.md', 'ocr_specialties.md'])
 def test_sibling_layout_does_not_borrow_files_from_checkout(tmp_path, task_relative, missing):
     populate(tmp_path, 'tasks/16/prompts', 'checkout')
     populate(tmp_path, task_relative, 'local')

@@ -241,7 +241,7 @@ def test_task_choices_report_missing_packages_without_fallback(workspace):
 def test_selected_number_uses_its_own_files_score_and_catalog(workspace, number):
     directory = workspace / 'prompts' / str(number)
     directory.mkdir(exist_ok=True)
-    (directory / 'ocr.md').write_text(f'SYNTHETIC OCR FOR TASK {number}', encoding='utf-8')
+    (directory / 'ocr_specialties.md').write_text(f'SYNTHETIC OCR FOR TASK {number}', encoding='utf-8')
     (directory / 'criteria.md').write_text(f'SYNTHETIC CRITERIA FOR TASK {number}', encoding='utf-8')
     (directory / 'popular_mistakes.md').write_text('| E99 | Synthetic error | Synthetic advice |', encoding='utf-8')
     app = create_local_app(workspace, LocalConfig(), mock=True)
@@ -254,7 +254,7 @@ def test_selected_number_uses_its_own_files_score_and_catalog(workspace, number)
         events = client.get('/local/events').json()['events']
         reads = {e['details']['path']: e['details']['content'] for e in events
                  if e['kind'] == 'package_file'}
-        assert reads['ocr.md'] == f'SYNTHETIC OCR FOR TASK {number}'
+        assert reads['ocr_specialties.md'] == f'SYNTHETIC OCR FOR TASK {number}'
         assert reads['criteria.md'] == f'SYNTHETIC CRITERIA FOR TASK {number}'
         assert '| E99 |' in reads['popular_mistakes.md']
         saved = next(e['details']['content'] for e in events if e['kind'] == 'artifact' and e['details'].get('path') == 'response.json')

@@ -17,11 +17,10 @@ ROOT = Path(__file__).resolve().parents[1]
 APP_NAME = "BotAI-Local"
 STATIC_FILES = ("index.html", "console.html", "local.js", "local.css")
 TASK_NUMBERS = range(14, 21)
-TASK_PROMPT_NAMES = ("ocr", "criteria", "popular_mistakes")
-OPTIONAL_TASK_PROMPT_NAMES = ("ocr_biases",)
+TASK_PROMPT_NAMES = ("ocr_specialties", "criteria", "popular_mistakes")
 PROMPT_FILES = {
     **{f"common/{name}.md": f"tasks/common/prompts/{name}.md"
-       for name in ("main", "analysis", "grading", "response-format")},
+       for name in ("ocr", "main", "analysis", "grading", "response-format")},
     **{f"16/{name}.md": f"tasks/16/prompts/{name}.md"
        for name in TASK_PROMPT_NAMES},
 }
@@ -42,6 +41,7 @@ Start.command двойным щелчком. Окно терминала дер�
 ├── BotAI-Local.exe (Windows) или BotAI-Local (macOS)
 ├── Start.command (только macOS)
 ├── common/
+│   ├── ocr.md
 │   ├── main.md
 │   ├── analysis.md
 │   ├── grading.md
@@ -49,7 +49,7 @@ Start.command двойным щелчком. Окно терминала дер�
 ├── 14/
 ├── 15/
 ├── 16/
-│   ├── ocr.md
+│   ├── ocr_specialties.md
 │   ├── criteria.md
 │   └── popular_mistakes.md
 ├── 17/
@@ -57,8 +57,8 @@ Start.command двойным щелчком. Окно терминала дер�
 ├── 19/
 └── 20/
 
-Четыре общих файла лежат в common. Для каждого выбранного номера нужны
-собственные ocr.md, criteria.md и popular_mistakes.md в папке этого номера.
+Пять общих файлов лежат в common. Для каждого выбранного номера нужны
+собственные ocr_specialties.md, criteria.md и popular_mistakes.md в папке этого номера.
 В дереве выше показан пакет 16. Для другого номера положите его три файла
 в соответствующую папку 14, 15, 17, 18, 19 или 20.
 Они читаются с вашего компьютера; меняйте их без пересборки программы.
@@ -73,7 +73,7 @@ tasks/common/prompts + tasks/16/prompts; программа лежит рядо�
 14 — 2; 15 — 3; 16 — 2; 17 — 2; 18 — 3; 19 — 4; 20 — 4.
 Интерфейс показывает недостающие файлы и не запускает проверку неполного пакета.
 В исходном репозитории подготовлены пакеты 14–20 (ФИПИ-2026 №13–19).
-Дополнительный ocr_biases.md копируется, если присутствует в пакете.
+Общие правила OCR лежат в common/ocr.md; сущности и типичные ошибки номера — в ocr_specialties.md.
 Все номера используют отдельное чтение фото, анализ и выставление оценки.
 Копирование промптов 16 в другие номера не делает их готовыми.
 Наличие файлов означает готовность запуска, а не подтверждённое качество
@@ -121,10 +121,6 @@ def prompt_inputs(source: Path) -> dict[str, Path]:
                                 if target not in checked)
             raise ValueError(f"Incomplete task package {number}; missing build inputs: {missing}")
         planned.update(checked)
-        for name in OPTIONAL_TASK_PROMPT_NAMES:
-            original = f"tasks/{number}/prompts/{name}.md"
-            if (source / original).exists() or (source / original).is_symlink():
-                planned[f"{number}/{name}.md"] = safe_file(source, original)
     return planned
 
 
