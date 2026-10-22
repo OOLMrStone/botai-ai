@@ -29,7 +29,23 @@ def backend_script(name, *args):
 
 def require_clean(repo):
     if git(repo, 'status', '--porcelain'):
-        raise SystemExit(f'Checkout has local changes; preserve it and use a fresh sibling clone: {repo}')
+        raise SystemExit(f'Checkout has local changes; preserve it and use a fresh clone: {repo}')
+
+
+def guard_project_owner():
+    """Do not replace/stop another checkout's containers sharing a project name."""
+    if not shutil.which('docker'):
+        raise SystemExit('Install Docker and start its local daemon; see Testing/App/prompt.md.')
+    project = 'botai-b2b-local' + ('' if ARGS.instance == 'default' else '-partner-check')
+    ids = run(['docker', 'ps', '-aq', '--filter',
+               'label=com.docker.compose.project=' + project], capture=True).stdout.decode().split()
+    for container in ids:
+        owner = run(['docker', 'inspect', '--format',
+                     '{{ index .Config.Labels "com.docker.compose.project.working_dir" }}',
+                     container], capture=True).stdout.decode().strip()
+        if not owner or Path(owner).resolve() != BACK.resolve():
+            raise SystemExit('This Compose project belongs to a different checkout. '
+                             'Existing services were preserved; use its checkout or an unused profile.')
 
 
 def read_json(path):
@@ -163,6 +179,8 @@ if __name__ == '__main__':
     RUNTIME = BACK / ('runtime/b2b-local' + suffix)
     PORT, API_PORT = (13004, 18086) if ARGS.instance == 'default' else (13014, 18096)
     try:
+        if ARGS.action != 'credentials':
+            guard_project_owner()
         if ARGS.action == 'credentials':
             if not sys.stdout.isatty():
                 raise SystemExit('Display passwords only in your interactive terminal; do not paste them into chat.')

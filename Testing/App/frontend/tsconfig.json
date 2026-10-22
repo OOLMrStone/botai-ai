@@ -40,7 +40,9 @@
     ".next-expert-build/types/**/*.ts",
     ".next-expert-build/dev/types/**/*.ts",
     ".next-b2b-local/types/**/*.ts",
-    ".next-b2b-local/dev/types/**/*.ts"
+    ".next-b2b-local/dev/types/**/*.ts",
+    ".next-partner-local/types/**/*.ts",
+    ".next-partner-local/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

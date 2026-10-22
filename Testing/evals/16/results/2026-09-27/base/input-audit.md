@@ -23,7 +23,7 @@ These crops contain handwritten student work, including student task numbers, ex
 
 Each `expected.json` has exactly `score` (integer 0, 1 or 2) and `verdict` (string). Distribution: 11 scores of 2, four scores of 1 and six scores of 0.
 
-The manifest maps cases to source pages 90–110 of `matematika_mr_ege_2026.pdf`, source task 15 and product task 16. The local original exists at `/Users/vasiliyslobozhanov/projects/botai/references/matematika_mr_ege_2026.pdf`. The official source is [ФИПИ, методические материалы ЕГЭ-2026 по математике](https://doc.fipi.ru/ege/dlya-predmetnyh-komissiy-subektov-rf/2026/matematika_mr_ege_2026.pdf). The historical [work notes](../../../../hypotheses/history.md#evals) record previous verification of all 21 scores against the source PDF; this input audit did not repeat that page-by-page label verification.
+The manifest maps cases to source pages 90–110 of `matematika_mr_ege_2026.pdf`, source task 15 and product task 16. The local original exists at `/Users/vasiliyslobozhanov/projects/botai/references/matematika_mr_ege_2026.pdf`. The official source is [ФИПИ, методические материалы ЕГЭ-2026 по математике](https://doc.fipi.ru/ege/dlya-predmetnyh-komissiy-subektov-rf/2026/matematika_mr_ege_2026.pdf). The historical [work notes](../../../../../../tasks/16/hypotheses/history.md#evals) record previous verification of all 21 scores against the source PDF; this input audit did not repeat that page-by-page label verification.
 
 For each request, send only `problem_and_reference_answer` as `task_image` and `solution` as `solution_images`. Keep expected scores, expert verdicts, source-page grading commentary and this audit outside model messages. Use hidden labels only for comparison after the service returns a result.
 

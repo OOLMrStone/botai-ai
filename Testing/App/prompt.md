@@ -39,6 +39,11 @@ WSL**, клонируй в файловую систему Linux (`~/botai-ai`),
 с Unix socket. Не переключайся на удалённый Docker/production.
 Не выводи `docker inspect` окружение или полный Compose config: там пароли.
 
+На macOS системный `python3` может быть 3.9. Если установлен `uv`, используй
+`uv run --no-project --python 3.14 python Testing/App/run.py up` и тот же префикс
+для остальных команд launcher. Либо установи актуальный Python и вызывай его
+явно (`python3.14`). Не используй Python 3.9 и не заменяй системный Python.
+
 ## Первый запуск
 
 ```bash

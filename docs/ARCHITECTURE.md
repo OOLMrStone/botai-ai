@@ -13,7 +13,8 @@
 | `tasks/common/prompts/` | Общие main, analysis, grading, response-format |
 | `tasks/14..20/prompts/` | Предметные промпты; заполнены пакеты 14–20 |
 | `tasks/N/hypotheses/` | Идеи и наблюдения конкретного задания, только для разработки |
-| `tasks/16/evals/` | Входы, скрытые эталоны и сохранённые результаты |
+| `Testing/evals/14` … `Testing/evals/20` | Входы, скрытые эталоны и сохранённые результаты; `tasks/N/evals` — совместимые ссылки |
+| `Testing/App/` | Исходники трёх локальных кабинетов, backend и launcher; запуск — по `Testing/App/prompt.md` |
 | `tests/`, `scripts/` | Офлайн-проверки, валидация и инструменты разработки |
 | `deploy/` | Конфигурация и сборка production |
 | `docs/grading/archive/` | История решений, читать по необходимости |
