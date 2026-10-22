@@ -158,6 +158,7 @@ def live():
     backend_script('smoke-read.py')
     backend_script('accept-build.py', '--accepted-ai-head', proof['aiHead'],
                    '--accepted-backend-source-sha256', proof['backendSourceSha256'], '--security-reviewed')
+    import_partner_key()
     backend_script('set-provider-key.py')
     private_write(RUNTIME / 'provider-profile.json', json.dumps({
         'baseUrl': 'https://api.deepseek.com/v1', 'model': 'deepseek-flash',
@@ -165,6 +166,26 @@ def live():
     backend_script('provider-mode.py', 'prepare-live')
     backend_script('provider-mode.py', 'enable-live', '--apply', '--accepted-head', proof['aiHead'])
     print('Live enabled. New UI checks can now incur provider charges; no model call was made by this command.')
+
+
+def import_partner_key():
+    """Import the owner's explicitly shared key from the private partner package."""
+    source = APP / 'secrets/provider-key.json'
+    if not source.exists():
+        return
+    if source.is_symlink() or not source.is_file():
+        raise SystemExit('Expected a regular private partner key file.')
+    value = read_json(source)
+    key = value.get('apiKey') if isinstance(value, dict) else None
+    if not isinstance(key, str) or not key or len(key) > 4096 or any(c.isspace() for c in key):
+        raise SystemExit('Invalid partner key file; nothing imported.')
+    target = RUNTIME / 'provider-key.json'
+    if target.exists() or target.is_symlink():
+        if target.is_symlink() or read_json(target).get('apiKey') != key:
+            raise SystemExit('Existing runtime key differs; preserved without replacement.')
+        return
+    private_write(target, json.dumps({'schemaVersion': 1, 'apiKey': key}) + '\n')
+    print('Shared partner key imported privately; key contents are not logged.')
 
 
 if __name__ == '__main__':
